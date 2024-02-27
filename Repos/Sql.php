@@ -5,6 +5,7 @@ namespace Azad;
 class Sql {
     protected static $DataBase;
     protected static $TableData=[];
+    protected static $Query;
 
     public function __construct($host, $username, $password, $database) {
         self::$DataBase = new Database($host, $username, $password, $database);

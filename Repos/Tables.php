@@ -47,26 +47,47 @@ namespace Azad\Database {
         public function Select (...$Column) {
             $Column = ($Column[0] == "all") ? "*" : $Column;
             parent::$TableData['column_name'] = $Column;
+            parent::$Query = \Azad\Query::SelectQuery(parent::$TableData);
             return new Table\Columns();
         }
     }
 }
 
 namespace Azad\Database\Table {
+    class AzadException extends \Exception {
+
+    }
     class Columns extends \Azad\Database\Table {
-        public function __construct() {
-            
+        public function __construct() { }
+        public function WHERE ($key,$value,$Conditions="=") {
+            parent::$Query .= (strpos(parent::$Query, "WHERE") === false)?" WHERE ":throw new AzadException("You are allowed to use the WHERE method only once here.");
+            parent::$Query .= \Azad\Query::MakeWhere($key,$value,$Conditions);
+            return new $this;
         }
-        public function Find ($WHERE) {
-            // if one result:
-            return new Column\Row();
-            // if more result:
-            // return new \Azad\Database\Table\Column\Rows();
+        public function AND ($key,$value,$Conditions="=") {
+            parent::$Query .= (strpos(parent::$Query, "WHERE") === false)?throw new AzadException("First, you need to use the WHERE method."):" AND ";
+            parent::$Query .= \Azad\Query::MakeWhere($key,$value,$Conditions);
+            return new $this;
+        }
+        public function OR ($key,$value,$Conditions="=") {
+            parent::$Query .= (strpos(parent::$Query, "WHERE") === false)?throw new AzadException("First, you need to use the WHERE method."):" OR ";
+            parent::$Query .= \Azad\Query::MakeWhere($key,$value,$Conditions);
+            return new $this;
         }
         public function Get() {
-            return $this->Fetch($this->Query(\Azad\Query::SelectQuery(parent::$TableData)));
+            return $this->Fetch($this->Query(parent::$Query));
+        }
+        public function MyQuery () { /* Debug Method */
+            return parent::$Query;
         }
     }
+    /*class LogicalOperators extends Columns {
+        private $data = [];
+        public function __get($Logical) {
+            parent::$Query .= " $Logical ";
+            return $this;
+        }
+    }*/
 }
 
 namespace Azad\Database\Table\Column {

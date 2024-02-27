@@ -33,5 +33,9 @@ namespace Azad {
             $Query .= "FROM `".$data["table_name"]."`";
             return $Query;
         }
+
+        public static function MakeWhere($key,$value,$Conditions="=") {
+            return $key.$Conditions."'".$value."'";
+        }
     }
 }

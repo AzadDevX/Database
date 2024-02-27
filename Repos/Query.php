@@ -17,5 +17,21 @@ namespace Azad {
             $Query .= " )";
             return $Query;
         }
+
+        public static function SelectQuery($data) {
+            $Query = "SELECT ";
+            if ($data["column_name"] != "*") {
+                $keys=array_values($data["column_name"]);
+                $EndColumn = array_pop($keys);
+                array_map(function($ColumnName) use (&$Query,$EndColumn) {
+                    $Query .= $ColumnName." ";
+                    $Query .= ($EndColumn == $ColumnName) ? "":",";
+                },$data["column_name"]);
+            } else {
+                $Query .= "* ";
+            }
+            $Query .= "FROM `".$data["table_name"]."`";
+            return $Query;
+        }
     }
 }

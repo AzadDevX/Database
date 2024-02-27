@@ -5,3 +5,4 @@ namespace Azad\Plugins {
         abstract public function __construct($Database,$Data);
     }
 }
+

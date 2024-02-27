@@ -3,11 +3,11 @@
 namespace Azad;
 
 class Sql {
-    protected $DataBase;
-    protected $TableData=[];
+    protected static $DataBase;
+    protected static $TableData=[];
 
     public function __construct($host, $username, $password, $database) {
-        $this->DataBase = new Database($host, $username, $password, $database);
+        self::$DataBase = new Database($host, $username, $password, $database);
         $this->MakeFolders();
         $this->LoadTables();
         
@@ -32,6 +32,9 @@ class Sql {
         array_map(fn($x) => $this->Query($x['query']),\Azad\Database\MakeTableData::MakeTables());
     }
     protected function Query($command) {
-        $this->DataBase->Query($command);
+        return self::$DataBase->QueryRun($command);
+    }
+    protected function Fetch($queryResult) {
+        return self::$DataBase->FetchQuery($queryResult);
     }
 }

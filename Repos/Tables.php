@@ -42,9 +42,11 @@ namespace Azad\Database {
 
     class Table extends \Azad\Sql {
         public function __construct($Table_Name) {
-            $this->TableData['table_name'] = $Table_Name;
+            parent::$TableData['table_name'] = $Table_Name;
         }
-        public function Select () {
+        public function Select (...$Column) {
+            $Column = ($Column[0] == "all") ? "*" : $Column;
+            parent::$TableData['column_name'] = $Column;
             return new Table\Columns();
         }
     }
@@ -52,12 +54,17 @@ namespace Azad\Database {
 
 namespace Azad\Database\Table {
     class Columns extends \Azad\Database\Table {
-        public function __construct() { }
+        public function __construct() {
+            
+        }
         public function Find ($WHERE) {
             // if one result:
             return new Column\Row();
             // if more result:
             // return new \Azad\Database\Table\Column\Rows();
+        }
+        public function Get() {
+            return $this->Fetch($this->Query(\Azad\Query::SelectQuery(parent::$TableData)));
         }
     }
 }

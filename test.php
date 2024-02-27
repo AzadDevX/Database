@@ -9,7 +9,7 @@ $Users = $Sql->Table("Users")
     ->WHERE("first_name","mohammad")
         ->AND("last_name","azad")
             ->OR("ID",12,"!=")
-    ->MyQuery ();
+    ->Get ();
 
 var_dump($Users);
 
@@ -17,6 +17,6 @@ var_dump($Users);
 $Wallet = $Sql->Table("Wallet")
     ->Select("USD")
     ->WHERE("ID",13)
-    ->MyQuery ();
-    
+    ->Get ();
+
 var_dump($Wallet);

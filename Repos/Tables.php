@@ -45,7 +45,6 @@ namespace Azad\Database {
             parent::$TableData['table_name'] = $Table_Name;
         }
         public function Select (...$Column) {
-            $Column = ($Column[0] == "all") ? "*" : $Column;
             parent::$TableData['column_name'] = $Column;
             parent::$Query = \Azad\Query::SelectQuery(parent::$TableData);
             return new Table\Columns();
@@ -77,10 +76,18 @@ namespace Azad\Database\Table {
         public function Get() {
             return $this->Fetch($this->Query(parent::$Query));
         }
-        public function MyQuery () { /* Debug Method */
-            return parent::$Query;
+        public function Manage () {
+            $QueryResult = $this->Get();
+            parent::$TableData['table_data'] = $QueryResult;
+            if(count($QueryResult) == 0) {
+                return false;
+            } elseif (count($QueryResult) == 1) {
+                return new Column\Row();
+            } else {
+                return new Column\Rows();
+            }
         }
-    }
+    }   
     /*class LogicalOperators extends Columns {
         private $data = [];
         public function __get($Logical) {
@@ -92,16 +99,15 @@ namespace Azad\Database\Table {
 
 namespace Azad\Database\Table\Column {
     class Row extends \Azad\Database\Table\Columns {
-        public function __construct() { }
         public function Update($value,$key=null) {
-
+            $key = ($key == null)?((parent::$TableData['column_name'][0] != "*") ? parent::$TableData['column_name'][0] : throw new \Azad\Database\Table\AzadException("Column not set.")):$key;
+            return ($this->Query(\Azad\Query::UpdateQuery(parent::$TableData,$value,$key)) == true)?$this:false;
         }
         public function Remove() {
             return new Row\Remove();
         }
     }
     class Rows extends \Azad\Database\Table\Columns {
-
     }
 }
 

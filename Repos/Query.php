@@ -37,5 +37,20 @@ namespace Azad {
         public static function MakeWhere($key,$value,$Conditions="=") {
             return $key.$Conditions."'".$value."'";
         }
+        
+        public static function UpdateQuery($table_data,$value,$key) {
+            $Query = "UPDATE ";
+            $Query .= $table_data['table_name'];
+            $Query .= " SET ";
+            $Query .= $key."='".$value."'";
+            $Query .= " WHERE ";
+            $keys=array_keys($table_data["table_data"][0]);
+            $EndColumn = array_pop($keys);
+            array_walk($table_data["table_data"][0],function($value,$key) use (&$Query,$EndColumn) {
+                $Query .= $key." = ".$value;
+                $Query .= ($EndColumn == $key) ? "":" AND ";
+            });
+            return $Query;
+        }
     }
 }

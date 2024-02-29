@@ -76,11 +76,12 @@ namespace Azad\Database\Table {
             return new $this;
         }
         public function Get() {
-            return $this->Fetch($this->Query(parent::$Query));
+            $data = $this->Fetch($this->Query(parent::$Query));
+            parent::$TableData['table_data'] = $data;
+            return $data;
         }
         public function Manage () {
             $QueryResult = $this->Get();
-            parent::$TableData['table_data'] = $QueryResult;
             if(count($QueryResult) == 0) {
                 return false;
             } elseif (count($QueryResult) == 1) {
@@ -109,16 +110,15 @@ namespace Azad\Database\Table\Column {
             $this->QueryResult = $this->Get();
             $this->Condition = new \Azad\Conditions\Conditions($this->QueryResult[0],$this);
         }
-        public function EndIF () {
-            return $this->IFResult;
-        }
         public function Update($value,$key=null) {
             if ($this->IFResult == false) {
-                // throw
                 return false;
             }
             $key = ($key == null)?((parent::$TableData['column_name'][0] != "*") ? parent::$TableData['column_name'][0] : throw new \Azad\Database\Table\AzadException("Column not set.")):$key;
-            return ($this->Query(\Azad\Query::UpdateQuery(parent::$TableData,$value,$key)) == true)?true:false;
+            $Result = ($this->Query(\Azad\Query::UpdateQuery(parent::$TableData,$value,$key)) == true)?$this:false;
+            $this->QueryResult = $this->Get();
+            $this->Condition = new \Azad\Conditions\Conditions($this->QueryResult[0],$this);
+            return $Result;
         }
         public function Remove() {
             return new Row\Remove();

@@ -35,7 +35,7 @@ namespace Azad {
         }
 
         public static function MakeWhere($key,$value,$Conditions="=") {
-            return $key.$Conditions."'".$value."'";
+            return $key." $Conditions '".$value."'";
         }
         
         public static function UpdateQuery($table_data,$value,$key) {

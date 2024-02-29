@@ -57,6 +57,8 @@ namespace Azad\Database\Table {
 
     }
     class Columns extends \Azad\Database\Table {
+        public $IFResult=true;
+        public $IF;
         public function __construct() { }
         public function WHERE ($key,$value,$Conditions="=") {
             parent::$Query .= (strpos(parent::$Query, "WHERE") === false)?" WHERE ":throw new AzadException("You are allowed to use the WHERE method only once here.");
@@ -87,7 +89,10 @@ namespace Azad\Database\Table {
                 return new Column\Rows();
             }
         }
-    }   
+        public function CheckQuery() {
+            return parent::$Query;
+        }
+    }
     /*class LogicalOperators extends Columns {
         private $data = [];
         public function __get($Logical) {
@@ -99,9 +104,21 @@ namespace Azad\Database\Table {
 
 namespace Azad\Database\Table\Column {
     class Row extends \Azad\Database\Table\Columns {
+        public $Condition,$QueryResult;
+        public function __construct() {
+            $this->QueryResult = $this->Get();
+            $this->Condition = new \Azad\Conditions\Conditions($this->QueryResult[0],$this);
+        }
+        public function EndIF () {
+            return $this->IFResult;
+        }
         public function Update($value,$key=null) {
+            if ($this->IFResult == false) {
+                // throw
+                return false;
+            }
             $key = ($key == null)?((parent::$TableData['column_name'][0] != "*") ? parent::$TableData['column_name'][0] : throw new \Azad\Database\Table\AzadException("Column not set.")):$key;
-            return ($this->Query(\Azad\Query::UpdateQuery(parent::$TableData,$value,$key)) == true)?$this:false;
+            return ($this->Query(\Azad\Query::UpdateQuery(parent::$TableData,$value,$key)) == true)?true:false;
         }
         public function Remove() {
             return new Row\Remove();

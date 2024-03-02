@@ -1,6 +1,7 @@
 <?php
 
 namespace Azad;
+class SqlException extends \Exception { }
 
 class Sql {
     protected static $DataBase;
@@ -33,7 +34,11 @@ class Sql {
         array_map(fn($x) => $this->Query($x['query']),\Azad\Database\MakeTableData::MakeTables());
     }
     protected function Query($command) {
-        return self::$DataBase->QueryRun($command);
+        try {
+            return self::$DataBase->QueryRun($command);
+        } catch (\mysqli_sql_exception $E) {
+            throw new SqlException($E->getMessage());
+        }
     }
     protected function Fetch($queryResult) {
         return self::$DataBase->FetchQuery($queryResult);

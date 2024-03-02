@@ -42,6 +42,7 @@ namespace Azad\Database {
 
     class Table extends \Azad\Sql {
         public $Insert;
+        protected static $InsertSetting=[];
         public function __construct($Table_Name) {
             parent::$TableData['table_name'] = $Table_Name;
         }
@@ -50,7 +51,8 @@ namespace Azad\Database {
             parent::$Query = \Azad\Query::SelectQuery(parent::$TableData);
             return new Table\Columns();
         }
-        public function Insert () {
+        public function Insert ($if_not_exists=true) {
+            self::$InsertSetting["if_not_exists"] = $if_not_exists;
             return new Table\Insert();
         }
     }
@@ -67,13 +69,21 @@ namespace Azad\Database\Table {
             return $this;
         }
         public function Value ($Value) {
-            $this->Insert["value"][] = $Value;
+            $this->Insert["value"][] = "'$Value'";
             return $this;
         }
         public function End() {
-            $Table = parent::$TableData['table_name'];
-            $Data = $this->Insert;
-            return $this->Query(\Azad\Query::Insert ($Table,$Data));
+            try {
+                $Table = parent::$TableData['table_name'];
+                $Data = $this->Insert;
+                return $this->Query(\Azad\Query::Insert ($Table,$Data));
+            } catch (\Azad\SqlException $e) {
+                if (parent::$InsertSetting["if_not_exists"] == true) {
+                    return false;
+                } else {
+                    throw new \Azad\SqlException($e->getMessage());
+                }
+            }
         }
     }
     class Columns extends \Azad\Database\Table {
@@ -99,6 +109,9 @@ namespace Azad\Database\Table {
             $data = $this->Fetch($this->Query(parent::$Query));
             parent::$TableData['table_data'] = $data;
             return $data;
+        }
+        public function FirstRow () {
+            return $this->Get()[0];
         }
         public function Manage () {
             $QueryResult = $this->Get();

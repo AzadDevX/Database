@@ -3,6 +3,8 @@
 namespace Azad {
     class Query {
         public static function MakeTable($table_name,$data) {
+            $GetPrp = new $table_name();
+
             $Query = "CREATE TABLE IF NOT EXISTS ";
             $Query .= $table_name;
             $Query .= " (";
@@ -14,6 +16,9 @@ namespace Azad {
                 $Query .= "(".$ColumnData["size"].")";
                 $Query .= ($EndColumn == $ColumnName) ? "":",";
             });
+            if (isset($GetPrp->PRIMARY_KEY)) {
+                $Query .= ", PRIMARY KEY (".$GetPrp->PRIMARY_KEY.")";
+            }
             $Query .= " )";
             return $Query;
         }

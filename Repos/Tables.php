@@ -41,6 +41,7 @@ namespace Azad\Database {
 
 
     class Table extends \Azad\Sql {
+        public $Insert;
         public function __construct($Table_Name) {
             parent::$TableData['table_name'] = $Table_Name;
         }
@@ -49,12 +50,31 @@ namespace Azad\Database {
             parent::$Query = \Azad\Query::SelectQuery(parent::$TableData);
             return new Table\Columns();
         }
+        public function Insert () {
+            return new Table\Insert();
+        }
     }
 }
 
 namespace Azad\Database\Table {
     class AzadException extends \Exception {
 
+    }
+    class Insert extends \Azad\Database\Table {
+        public function __construct() { }
+        public function Key ($Key) {
+            $this->Insert["key"][] = $Key;
+            return $this;
+        }
+        public function Value ($Value) {
+            $this->Insert["value"][] = $Value;
+            return $this;
+        }
+        public function End() {
+            $Table = parent::$TableData['table_name'];
+            $Data = $this->Insert;
+            return $this->Query(\Azad\Query::Insert ($Table,$Data));
+        }
     }
     class Columns extends \Azad\Database\Table {
         public $IFResult=true;

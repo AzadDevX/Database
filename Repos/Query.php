@@ -52,5 +52,12 @@ namespace Azad {
             });
             return $Query;
         }
+        public static function Insert ($table_name,$data) {
+            $query = "INSERT INTO ".$table_name." ";
+            $query .= "(".implode(",",$data["key"]).")";
+            $query .= " VALUES ";
+            $query .= "(".implode(",",$data["value"]).")";
+            return $query;
+        }
     }
 }

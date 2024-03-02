@@ -4,10 +4,17 @@ include_once("Repos/Load.php");
 
 $Sql = new Azad\Sql('127.0.0.1','root','',"AzadSql");
 
-$Wallet = $Sql->Table("Wallet")->Select("*");
+$Wallet = $Sql->Table("Wallet");
 
 try {
-
+/*
+    $Wallet->Insert()
+        ->Key("ID")->Value('100')
+        ->Key("IRT")->Value('25000')
+        ->Key("USD")->Value('300')
+    ->End();
+*/
+    $Wallet = $Wallet->Select("*");
     $ManageWallet = $Wallet->WHERE("ID",13)->Manage ();
 
     $ManageWallet->Update(400,"USD");

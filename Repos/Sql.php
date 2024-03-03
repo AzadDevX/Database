@@ -10,9 +10,10 @@ class Sql {
 
     public function __construct($host, $username, $password, $database) {
         self::$DataBase = new Database($host, $username, $password, $database);
-        $this->MakeFolders();
-        $this->LoadTables();
-        $this->LoadPlugins();
+        $this->MakeFolders ();
+        $this->LoadTables ();
+        $this->LoadPlugins ();
+        $this->LoadRebuilder ();
     }
     public function Table($table_name) {
         return new Database\Table($table_name);
@@ -35,7 +36,9 @@ class Sql {
     }
     private function LoadPlugins () {
         array_map(fn($filename) => include_once($filename),glob("Sql\Plugins\*.php"));
-        array_map(fn($x) => $this->Query($x['query']),\Azad\Database\MakeTableData::MakeTables());
+    }
+    private function LoadRebuilder () {
+        array_map(fn($filename) => include_once($filename),glob("Sql\Rebuilders\*.php"));
     }
     protected function Query($command) {
         try {
@@ -49,5 +52,8 @@ class Sql {
     }
     public function LoadPlugin ($class,$data) {
         return new $class($this,$data);
+    }
+    public function RebuilderResult ($RebuilderName,$Data) {
+        return $RebuilderName::Rebuild ($Data);
     }
 }

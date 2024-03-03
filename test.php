@@ -9,7 +9,7 @@ $Users = $Sql->Table("Users");
 try {
 
     $Users->Insert()
-        ->Key("ID")->Value('1')
+        ->Key("ID")->Value('2')
         ->Key("first_name")->Value('Mohammad')
         ->Key("last_name")->Value('Azad')
         ->Key("salary")->Value('20000000')

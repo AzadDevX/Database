@@ -2,16 +2,17 @@
 namespace Azad\Database {
 
 
-    class MakeTableData {
-        protected static $TableData=[],$SubClass=[];
+    class MakeTableData extends \Azad\Sql {
+        // public static $TableData=[],$SubClass=[];
+        protected static $SubClass=[];
         public static function MakeTables () {
             self::$SubClass = array_values(array_filter(get_declared_classes(),fn($class_name) => is_subclass_of($class_name,"Azad\Database\MakeTable")));
             array_map(function ($class_name) {
                 new $class_name();
-                $Query = \Azad\Query::MakeTable($class_name,self::$TableData[$class_name]);
-                self::$TableData[$class_name]['query'] = $Query;
+                $Query = \Azad\Query::MakeTable($class_name,parent::$TableData[$class_name]);
+                parent::$TableData[$class_name]['query'] = $Query;
             } ,self::$SubClass);
-            return self::$TableData;
+            return parent::$TableData;
         }
         public static function GetSetting ($class) {
             return get_class_vars($class);
@@ -33,6 +34,11 @@ namespace Azad\Database {
         }
         protected function Size($size) {
             $this->ColumnList[$this->Name]['size'] = $size;
+            return $this;
+        }
+        protected function Rebuilder($name) {
+            $this->ColumnList[$this->Name]['rebuilder'] = $name;
+            return $this;
         }
         public function List () {
             return parent::$TableData;
@@ -63,12 +69,18 @@ namespace Azad\Database\Table {
 
     }
     class Insert extends \Azad\Database\Table {
+        private $key;
         public function __construct() { }
         public function Key ($Key) {
+            $this->key = $Key;
             $this->Insert["key"][] = $Key;
             return $this;
         }
         public function Value ($Value) {
+            $TableName = parent::$TableData['table_name'];
+            if (isset(parent::$TableData[$TableName][$this->key]['rebuilder'])) {
+                $Value = $this->RebuilderResult(parent::$TableData[$TableName][$this->key]['rebuilder'],$Value);
+            }
             $this->Insert["value"][] = "'$Value'";
             return $this;
         }
@@ -174,10 +186,14 @@ namespace Azad\Database\Table\Column {
             $this->Condition = new \Azad\Conditions\Conditions($this->QueryResult[0],$this);
         }
         public function Update($value,$key=null) {
+            $key = ($key == null)?((parent::$TableData['column_name'][0] != "*") ? parent::$TableData['column_name'][0] : throw new \Azad\Database\Table\AzadException("Column not set.")):$key;
+            $TableName = parent::$TableData['table_name'];
+            if (isset(parent::$TableData[$TableName][$key]['rebuilder'])) {
+                $value = $this->RebuilderResult(parent::$TableData[$TableName][$key]['rebuilder'],$value);
+            }
             if ($this->IFResult == false) {
                 return false;
             }
-            $key = ($key == null)?((parent::$TableData['column_name'][0] != "*") ? parent::$TableData['column_name'][0] : throw new \Azad\Database\Table\AzadException("Column not set.")):$key;
             $Result = ($this->Query(\Azad\Query::UpdateQuery(parent::$TableData,$value,$key)) == true)?$this:false;
             $this->QueryResult = $this->Get();
             $this->Condition = new \Azad\Conditions\Conditions($this->QueryResult[0],$this);

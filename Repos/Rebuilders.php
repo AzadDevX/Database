@@ -2,6 +2,6 @@
 
 namespace Azad\Rebuilders {
     abstract class Rebuilder {
-        abstract public function __construct($Data);
+        abstract static public function Rebuild($Data);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-include_once("Repos/Load.php");
+include_once("EarlyEdition/Load.php");
 
 $Sql = new Azad\Sql('127.0.0.1','root','',"AzadSql");
 
@@ -10,8 +10,8 @@ try {
 
     $Users->Insert()
         ->Key("ID")->Value('2')
-        ->Key("first_name")->Value('Mohammad')
-        ->Key("last_name")->Value('Azad')
+        ->Key("first_name")->Value('Mohammad') // Saved as 'mohammad' because the Rebuilder has been used
+        ->Key("last_name")->Value('Azad')  // Saved as 'azad' because the Rebuilder has been used
         ->Key("salary")->Value('20000000')
     ->End();
 

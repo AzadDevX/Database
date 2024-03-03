@@ -45,13 +45,6 @@ class Conditions extends Result {
         parent::$IFResult = ($this->Value != $x);
         return $this;
     }
-    /*public function Date() {
-        parent::$IFResult = new \Azad\Date\Date($this->Value);
-        return $this;
-    }*/
-    public function Percentage($p) {
-        return new Conditions(($p * $this->Value) / 100);
-    }
     public function LessThan ($number) {
         $this->Method = __FUNCTION__;
         $this->CV = $number;

@@ -123,6 +123,14 @@ namespace Azad\Database\Table {
                 return new Column\Rows();
             }
         }
+        public function WorkOn ($Key) {
+            $QueryResult = $this->Get();
+            if(count($QueryResult) == 0) {
+                return false;
+            } else {
+                return new Column\WorkOn($Key);
+            }
+        }
         public function CheckQuery() {
             return parent::$Query;
         }
@@ -137,6 +145,28 @@ namespace Azad\Database\Table {
 }
 
 namespace Azad\Database\Table\Column {
+    class WorkOn extends \Azad\Database\Table\Columns {
+        private $Value;
+        private $Key;
+        public function __construct($Value,$is_key=true) {
+            if ($is_key == true) {
+                $this->Key = $Value;
+                $this->Value = $this->Get()[0][$Value];
+            } else {
+                $this->Value = $Value;
+            }
+        }
+        public function Tool ($Tool) {
+            include_once("DataTools/".$Tool.".php");
+            $Tool = '\\Azad\\DataTools\\'.$Tool;
+            return new $Tool($this->Value,$this);
+        }
+        public function Result () {
+            return $this->Value;
+        }
+
+    }
+
     class Row extends \Azad\Database\Table\Columns {
         public $Condition,$QueryResult;
         public function __construct() {
@@ -158,6 +188,14 @@ namespace Azad\Database\Table\Column {
         }
     }
     class Rows extends \Azad\Database\Table\Columns {
+        public $QueryResult;
+        public function ToArray () {
+            $this->QueryResult = $this->Get();
+            return $this->QueryResult;
+        }
+        public function First () {
+            return new Row();
+        }
     }
 }
 

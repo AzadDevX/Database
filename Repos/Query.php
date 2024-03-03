@@ -52,7 +52,7 @@ namespace Azad {
             $keys=array_keys($table_data["table_data"][0]);
             $EndColumn = array_pop($keys);
             array_walk($table_data["table_data"][0],function($value,$key) use (&$Query,$EndColumn) {
-                $Query .= $key." = ".$value;
+                $Query .= $key." = '".$value."'";
                 $Query .= ($EndColumn == $key) ? "":" AND ";
             });
             return $Query;

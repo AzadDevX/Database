@@ -3,7 +3,6 @@ namespace Azad\Database {
 
 
     class MakeTableData extends \Azad\Sql {
-        // public static $TableData=[],$SubClass=[];
         protected static $SubClass=[];
         public static function MakeTables () {
             self::$SubClass = array_values(array_filter(get_declared_classes(),fn($class_name) => is_subclass_of($class_name,"Azad\Database\MakeTable")));
@@ -38,6 +37,10 @@ namespace Azad\Database {
         }
         protected function Rebuilder($name) {
             $this->ColumnList[$this->Name]['rebuilder'] = $name;
+            return $this;
+        }
+        protected function Encrypter($name) {
+            $this->ColumnList[$this->Name]['encrypter'] = $name;
             return $this;
         }
         public function List () {
@@ -81,6 +84,10 @@ namespace Azad\Database\Table {
             if (isset(parent::$TableData[$TableName][$this->key]['rebuilder'])) {
                 $Value = $this->RebuilderResult(parent::$TableData[$TableName][$this->key]['rebuilder'],$Value);
             }
+            if (isset(parent::$TableData[$TableName][$this->key]['encrypter'])) {
+                $EncrypetName = parent::$TableData[$TableName][$this->key]['encrypter'];
+                $Value = $EncrypetName::Encrypt($Value);
+            }
             $this->Insert["value"][] = "'$Value'";
             return $this;
         }
@@ -118,9 +125,19 @@ namespace Azad\Database\Table {
             return new $this;
         }
         public function Get() {
-            $data = $this->Fetch($this->Query(parent::$Query));
-            parent::$TableData['table_data'] = $data;
-            return $data;
+            $Rows = $this->Fetch($this->Query(parent::$Query));
+            $TableName = parent::$TableData['table_name'];
+            foreach ($Rows as $Row => $Data) {
+                foreach ($Data as $key=>$value) {
+                    if (isset(parent::$TableData[$TableName][$key]['encrypter'])) {
+                        $EncrypetName = parent::$TableData[$TableName][$key]['encrypter'];
+                        $value = $EncrypetName::Decrypt($value);
+                        $Rows[$Row][$key] = $value;
+                    }
+                }
+            }
+            parent::$TableData['table_data'] = $Rows;
+            return $Rows;
         }
         public function FirstRow () {
             return $this->Get()[0];
@@ -147,13 +164,6 @@ namespace Azad\Database\Table {
             return parent::$Query;
         }
     }
-    /*class LogicalOperators extends Columns {
-        private $data = [];
-        public function __get($Logical) {
-            parent::$Query .= " $Logical ";
-            return $this;
-        }
-    }*/
 }
 
 namespace Azad\Database\Table\Column {
@@ -190,6 +200,11 @@ namespace Azad\Database\Table\Column {
             $TableName = parent::$TableData['table_name'];
             if (isset(parent::$TableData[$TableName][$key]['rebuilder'])) {
                 $value = $this->RebuilderResult(parent::$TableData[$TableName][$key]['rebuilder'],$value);
+            }
+            if (isset(parent::$TableData[$TableName][$key]['encrypter'])) {
+                $EncrypetName = parent::$TableData[$TableName][$key]['encrypter'];
+                $value = $EncrypetName::Encrypt($value);
+                parent::$TableData["table_data"][0][$key] = $EncrypetName::Encrypt(parent::$TableData["table_data"][0][$key]);
             }
             if ($this->IFResult == false) {
                 return false;

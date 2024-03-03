@@ -13,7 +13,8 @@ class Sql {
         $this->MakeFolders ();
         $this->LoadTables ();
         $this->LoadPlugins ();
-        $this->LoadRebuilder ();
+        $this->LoadRebuilders ();
+        $this->LoadEncrypters ();
     }
     public function Table($table_name) {
         return new Database\Table($table_name);
@@ -37,8 +38,11 @@ class Sql {
     private function LoadPlugins () {
         array_map(fn($filename) => include_once($filename),glob("Sql\Plugins\*.php"));
     }
-    private function LoadRebuilder () {
+    private function LoadRebuilders () {
         array_map(fn($filename) => include_once($filename),glob("Sql\Rebuilders\*.php"));
+    }
+    private function LoadEncrypters () {
+        array_map(fn($filename) => include_once($filename),glob("Sql\Encrypters\*.php"));
     }
     protected function Query($command) {
         try {

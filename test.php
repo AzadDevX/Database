@@ -9,7 +9,7 @@ $Users = $Sql->Table("Users");
 try {
 
     $Users->Insert()
-        ->Key("ID")->Value('1212')
+        ->Key("ID")->Value('1')
         ->Key("first_name")->Value('Mohammad')
         ->Key("last_name")->Value('Azad')
         ->Key("salary")->Value('20000000')
@@ -17,7 +17,7 @@ try {
 
     $Users = $Users->Select("*");
 
-    $User = $Users->WHERE("ID",1212);
+    $User = $Users->WHERE("ID",1);
 
     // 10% increase to salary.
     $NewSalary = $User->WorkOn("salary")->
@@ -31,7 +31,15 @@ try {
 
     // Get Salary
     echo $User->FirstRow ()['salary'];
-    // Result: 22 000 000
+    // Result: 22000000
+
+    # ------------------------------------------------------------------- #
+
+    echo PHP_EOL."Load Plugin:".PHP_EOL;
+
+    // Increase salary through plugins
+    $Sql->LoadPlugin ("IncreaseSalary",["ID"=>"1"])->Increase(10);
+    echo $User->FirstRow ()['salary']; // 24200000
 
 } catch (\Azad\Conditions\Exception $e) {
     var_dump($e->Debug);

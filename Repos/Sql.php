@@ -12,7 +12,7 @@ class Sql {
         self::$DataBase = new Database($host, $username, $password, $database);
         $this->MakeFolders();
         $this->LoadTables();
-        
+        $this->LoadPlugins();
     }
     public function Table($table_name) {
         return new Database\Table($table_name);
@@ -33,6 +33,10 @@ class Sql {
         array_map(fn($filename) => include_once($filename),glob("Sql\Tables\*.php"));
         array_map(fn($x) => $this->Query($x['query']),\Azad\Database\MakeTableData::MakeTables());
     }
+    private function LoadPlugins () {
+        array_map(fn($filename) => include_once($filename),glob("Sql\Plugins\*.php"));
+        array_map(fn($x) => $this->Query($x['query']),\Azad\Database\MakeTableData::MakeTables());
+    }
     protected function Query($command) {
         try {
             return self::$DataBase->QueryRun($command);
@@ -42,5 +46,8 @@ class Sql {
     }
     protected function Fetch($queryResult) {
         return self::$DataBase->FetchQuery($queryResult);
+    }
+    public function LoadPlugin ($class,$data) {
+        return new $class($this,$data);
     }
 }

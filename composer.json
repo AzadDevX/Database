@@ -11,5 +11,11 @@
             "name": "Azad"
         }
     ],
+    "repositories": [
+        {
+        "type": "vcs",
+        "url": "https://github.com/Azad1324/Sql.git"
+        }
+    ],
     "require": {}
 }

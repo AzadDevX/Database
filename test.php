@@ -1,8 +1,8 @@
 <?php
+require 'vendor/autoload.php';
 
-include_once("EarlyEdition/Load.php");
+$Sql = new Azad\Database\Connect('127.0.0.1','root','',"AzadSql");
 
-$Sql = new Azad\Sql('127.0.0.1','root','',"AzadSql");
 
 $Users = $Sql->Table("Users");
 
@@ -18,6 +18,8 @@ try {
     $Users = $Users->Select("*");
 
     $User = $Users->WHERE("ID",2);
+
+    echo $User->FirstRow ()['salary'];
 
     // 10% increase to salary.
     $NewSalary = $User->WorkOn("salary")->
@@ -45,7 +47,6 @@ try {
     var_dump($e->Debug);
     // The value of [USD] is equal to 400 - but you have defined (350) in the EqualTo
 }
-
 
 /*
 INSERT DATA :

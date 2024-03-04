@@ -1,15 +1,14 @@
 <?php
 
-namespace Azad;
-class SqlException extends \Exception { }
+namespace Azad\Database;
 
-class Sql {
+class Connect {
     protected static $DataBase;
     protected static $TableData=[];
     protected static $Query;
 
     public function __construct($host, $username, $password, $database) {
-        self::$DataBase = new Database($host, $username, $password, $database);
+        self::$DataBase = new Mysql($host, $username, $password, $database);
         $this->MakeFolders ();
         $this->LoadTables ();
         $this->LoadPlugins ();
@@ -17,7 +16,7 @@ class Sql {
         $this->LoadEncrypters ();
     }
     public function Table($table_name) {
-        return new Database\Table($table_name);
+        return new Table\Init($table_name);
     }
     private function MakeDir($address) {
         return !file_exists($address)?mkdir($address):false;
@@ -33,7 +32,7 @@ class Sql {
     }
     private function LoadTables () {
         array_map(fn($filename) => include_once($filename),glob("Sql\Tables\*.php"));
-        array_map(fn($x) => $this->Query($x['query']),\Azad\Database\MakeTableData::MakeTables());
+        array_map(fn($x) => $this->Query($x['query']),\Azad\Database\Table\MakeINIT::MakeTables());
     }
     private function LoadPlugins () {
         array_map(fn($filename) => include_once($filename),glob("Sql\Plugins\*.php"));
@@ -48,7 +47,7 @@ class Sql {
         try {
             return self::$DataBase->QueryRun($command);
         } catch (\mysqli_sql_exception $E) {
-            throw new SqlException($E->getMessage());
+            throw new Exception($E->getMessage());
         }
     }
     protected function Fetch($queryResult) {

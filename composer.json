@@ -1,0 +1,15 @@
+{
+    "name": "azad/database",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Azad\\Database\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Azad"
+        }
+    ],
+    "require": {}
+}

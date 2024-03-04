@@ -160,9 +160,6 @@ namespace Azad\Database\Table {
                 return new Column\WorkOn($Key);
             }
         }
-        public function CheckQuery() {
-            return parent::$Query;
-        }
     }
 }
 

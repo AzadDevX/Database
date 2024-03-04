@@ -1,10 +1,10 @@
 <?php
 
-class Wallet extends Azad\Database\MakeTable {
+class Wallet extends Azad\Database\Table\Make {
     public function __construct() {
-        $this->Name("ID")->Type(Azad\DataType\Integer::class)->Size(255);
-        $this->Name("USD")->Type(Azad\DataType\Integer::class)->Size(255);
-        $this->Name("IRT")->Type(Azad\DataType\Integer::class)->Size(255);
+        $this->Name("ID")->Type(Azad\Database\Types\Integer::class)->Size(255);
+        $this->Name("USD")->Type(Azad\Database\Types\Integer::class)->Size(255);
+        $this->Name("IRT")->Type(Azad\Database\Types\Integer::class)->Size(255);
         $this->Save ();
     }
 }

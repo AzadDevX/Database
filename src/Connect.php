@@ -7,6 +7,8 @@ class Connect {
     protected static $TableData=[];
     protected static $Query;
 
+    public static $TablePrefix = null;
+
     public function __construct($host, $username, $password, $database) {
         self::$DataBase = new Mysql($host, $username, $password, $database);
         $this->MakeFolders ();
@@ -16,7 +18,8 @@ class Connect {
         $this->LoadEncrypters ();
     }
     public function Table($table_name) {
-        return new Table\Init($table_name);
+        $prefix = isset($this->TablePrefix)?$this->TablePrefix."_":"";
+        return new Table\Init($prefix.$table_name);
     }
     private function MakeDir($address) {
         return !file_exists($address)?mkdir($address):false;

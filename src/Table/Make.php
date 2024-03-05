@@ -4,6 +4,7 @@ namespace Azad\Database\Table;
 
 class Make extends MakeINIT {
         private $ColumnList = [],$Name;
+        public $PRIMARY_KEY = null;
         final protected function Save () {
             parent::$TableData[get_class($this)] = $this->ColumnList;
         }

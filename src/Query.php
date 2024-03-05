@@ -10,9 +10,14 @@ class Query {
         $Query .= " (";
         $keys=array_keys($data);
         $EndColumn = array_pop($keys);
-        array_walk($data,function($ColumnData,$ColumnName) use (&$Query,$EndColumn) {
+        array_walk($data,function($ColumnData,$ColumnName) use (&$Query,$EndColumn,&$GetPrp) {
             $Query .= "`".$ColumnName."` ";
-            $Query .= $ColumnData["type"]->SqlType;
+            if ($ColumnData["type"]->SqlType == "UserID") {
+                $Query .= "BIGINT";
+                $GetPrp->PRIMARY_KEY = $ColumnName;
+            } else {
+                $Query .= $ColumnData["type"]->SqlType;
+            }
             $Query .= "(".$ColumnData["size"].")";
             $Query .= ($EndColumn == $ColumnName) ? "":",";
         });

@@ -9,7 +9,7 @@ $Users = $Sql->Table("Users");
 try {
 
     $Users->Insert()
-        ->Key("ID")->Value('2')
+        ->Key("user_id")->Value('1')
         ->Key("first_name")->Value('Mohammad') // Saved as 'mohammad' because the Rebuilder has been used
         ->Key("last_name")->Value('Azad')  // Saved as 'azad' because the Rebuilder has been used
         ->Key("salary")->Value('20000000') // Base64 encryption
@@ -17,9 +17,7 @@ try {
 
     $Users = $Users->Select("*");
 
-    $User = $Users->WHERE("ID",2);
-
-    echo $User->FirstRow ()['salary'];
+    $User = $Users->WHERE("user_id",1);
 
     // 10% increase to salary.
     $NewSalary = $User->WorkOn("salary")->
@@ -40,7 +38,7 @@ try {
     echo PHP_EOL."Load Plugin:".PHP_EOL;
 
     // Increase salary through plugins
-    $Sql->LoadPlugin ("IncreaseSalary",["ID"=>"2"])->Increase(10);
+    $Sql->LoadPlugin ("IncreaseSalary",["user_id"=>"1"])->Increase(10);
     echo $User->FirstRow ()['salary']; // 24200000
 
 } catch (\Azad\Conditions\Exception $e) {

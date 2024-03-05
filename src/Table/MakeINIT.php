@@ -2,12 +2,11 @@
 namespace Azad\Database\Table;
 class MakeINIT extends \Azad\Database\Connect {
     protected static $SubClass=[];
-    public static function MakeTables () {
+    public static function MakeTables ($prefix=null) {
         self::$SubClass = array_values(array_filter(get_declared_classes(),fn($class_name) => is_subclass_of($class_name,"Azad\Database\Table\Make")));
-        array_map(function ($class_name) {
+        array_map(function ($class_name) use ($prefix) {
             new $class_name();
-            $table_name = isset(parent::$TablePrefix)?parent::$TablePrefix."_".$class_name:$class_name;
-            $Query = \Azad\Database\Query::MakeTable($table_name,parent::$TableData[$class_name]);
+            $Query = \Azad\Database\Query::MakeTable($class_name,parent::$TableData[$class_name],$prefix);
             parent::$TableData[$class_name]['query'] = $Query;
         } ,self::$SubClass);
         return parent::$TableData;

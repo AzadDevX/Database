@@ -2,7 +2,9 @@
 require 'vendor/autoload.php';
 
 $Sql = new Azad\Database\Connect('127.0.0.1','root','',"AzadSql");
-$Sql::$TablePrefix = "Azad";
+$Sql->TablePrefix("Azad");
+$Sql->LoadTables ();
+
 
 $Users = $Sql->Table("Users");
 

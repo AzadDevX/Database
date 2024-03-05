@@ -2,10 +2,10 @@
 
 namespace Azad\Database;
 class Query {
-    public static function MakeTable($table_name,$data) {
+    public static function MakeTable($table_name,$data,$prefix=null) {
         $GetPrp = new $table_name();
-
         $Query = "CREATE TABLE IF NOT EXISTS ";
+        $table_name = isset($prefix)?$prefix."_".$table_name:$table_name;
         $Query .= $table_name;
         $Query .= " (";
         $keys=array_keys($data);

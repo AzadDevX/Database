@@ -6,20 +6,20 @@ class Connect {
     protected static $DataBase;
     protected static $TableData=[];
     protected static $Query;
-
-    public static $TablePrefix = null;
+    protected $TablePrefix;
 
     public function __construct($host, $username, $password, $database) {
         self::$DataBase = new Mysql($host, $username, $password, $database);
         $this->MakeFolders ();
-        $this->LoadTables ();
         $this->LoadPlugins ();
         $this->LoadRebuilders ();
         $this->LoadEncrypters ();
     }
+    public function TablePrefix ($name) {
+        $this->TablePrefix = $name;
+    }
     public function Table($table_name) {
-        $prefix = isset($this->TablePrefix)?$this->TablePrefix."_":"";
-        return new Table\Init($prefix.$table_name);
+        return new Table\Init(isset($this->TablePrefix)?$this->TablePrefix."_".$table_name:$table_name);
     }
     private function MakeDir($address) {
         return !file_exists($address)?mkdir($address):false;
@@ -33,9 +33,9 @@ class Connect {
         $this->MakeDir("Sql/Plugins");
         $this->MakeDir("Sql/Exceptions");
     }
-    private function LoadTables () {
+    public function LoadTables () {
         array_map(fn($filename) => include_once($filename),glob("Sql\Tables\*.php"));
-        array_map(fn($x) => $this->Query($x['query']),\Azad\Database\Table\MakeINIT::MakeTables());
+        array_map(fn($x) => $this->Query($x['query']),\Azad\Database\Table\MakeINIT::MakeTables($this->TablePrefix));
     }
     private function LoadPlugins () {
         array_map(fn($filename) => include_once($filename),glob("Sql\Plugins\*.php"));

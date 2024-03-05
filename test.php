@@ -7,19 +7,20 @@ $Sql->LoadTables ();
 
 
 $Users = $Sql->Table("Users");
+$Users = $Users->Select("*");
+$User = $Users->WHERE("chat_id",123456789);
 
 try {
 
-    $Users->Insert()
-        ->Key("user_id")->Value('1')
-        ->Key("first_name")->Value('Mohammad') // Saved as 'mohammad' because the Rebuilder has been used
-        ->Key("last_name")->Value('Azad')  // Saved as 'azad' because the Rebuilder has been used
-        ->Key("salary")->Value('20000000') // Base64 encryption
-    ->End();
+    if (!$User->FirstRow ()) {
+        $Users->Insert()
+            ->Key("chat_id")->Value('123456789')
+            ->Key("first_name")->Value('Mohammad') // Saved as 'mohammad' because the Rebuilder has been used
+            ->Key("last_name")->Value('Azad')  // Saved as 'azad' because the Rebuilder has been used
+            ->Key("salary")->Value('20000000') // Base64 encryption
+        ->End();
+    }
 
-    $Users = $Users->Select("*");
-
-    $User = $Users->WHERE("user_id",1);
 
     // 10% increase to salary.
     $NewSalary = $User->WorkOn("salary")->
@@ -31,6 +32,7 @@ try {
     // Update salary
     $User->Manage()->Update($NewSalary,"salary");
 
+
     // Get Salary
     echo $User->FirstRow ()['salary'];
     // Result: 22000000
@@ -40,7 +42,7 @@ try {
     echo PHP_EOL."Load Plugin:".PHP_EOL;
 
     // Increase salary through plugins
-    $Sql->LoadPlugin ("IncreaseSalary",["user_id"=>"1"])->Increase(10);
+    $Sql->LoadPlugin ("IncreaseSalary",["chat_id"=>"123456789"])->Increase(10);
     echo $User->FirstRow ()['salary']; // 24200000
 
 } catch (\Azad\Conditions\Exception $e) {

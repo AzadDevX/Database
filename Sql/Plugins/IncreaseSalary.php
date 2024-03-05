@@ -9,7 +9,7 @@ class IncreaseSalary extends Azad\Database\Magick\Plugin {
     public function Increase ($percentage) {
         $Users = $this->Database->Table("Users");
         $Users = $Users->Select("*");
-        $User = $Users->WHERE("user_id",$this->Data["user_id"]);
+        $User = $Users->WHERE("chat_id",$this->Data["chat_id"]);
         $NewSalary = $User->WorkOn("salary")->
             Tool("Percentage")
                 -> Append($percentage)

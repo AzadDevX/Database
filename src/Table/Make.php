@@ -3,18 +3,23 @@
 namespace Azad\Database\Table;
 
 class Make extends MakeINIT {
-        private $ColumnList = [],$Name;
+        private $ColumnList = [],$Name,$ShortKeyType;
         public $PRIMARY_KEY = null;
         final protected function Save () {
-            parent::$TableData[get_class($this)] = $this->ColumnList;
+            $table_name = isset(self::$TablePrefix)?self::$TablePrefix."_".get_class($this):get_class($this);
+            parent::$TableData[$table_name]['data'] = $this->ColumnList;
+            parent::$TableData[$table_name]['short'] = $this->ShortKeyType;
+
         }
         protected function Name($name) {
             $this->Name = $name;
             $this->ColumnList[$name] = [];
+            $this->ShortKeyType[$name] = null;
             return $this;
         }
         protected function Type($type) {
             $this->ColumnList[$this->Name]['type'] = new $type();
+            $this->ShortKeyType[$this->Name] = new $type();
             return $this;
         }
         protected function Size($size) {

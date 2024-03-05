@@ -26,8 +26,8 @@ class Init extends \Azad\Database\Table\Init {
         $TableName = parent::$TableData['table_name'];
         foreach ($Rows as $Row => $Data) {
             foreach ($Data as $key=>$value) {
-                if (isset(parent::$TableData[$TableName][$key]['encrypter'])) {
-                    $EncrypetName = parent::$TableData[$TableName][$key]['encrypter'];
+                if (isset(parent::$TableData[$TableName]['data'][$key]['encrypter'])) {
+                    $EncrypetName = parent::$TableData[$TableName]['data'][$key]['encrypter'];
                     $value = $EncrypetName::Decrypt($value);
                     $Rows[$Row][$key] = $value;
                 }
@@ -37,7 +37,7 @@ class Init extends \Azad\Database\Table\Init {
         return $Rows;
     }
     public function FirstRow () {
-        return $this->Get()[0];
+        return $this->Get()[0] ?? false;
     }
     public function Manage () {
         $QueryResult = $this->Get();

@@ -32,9 +32,19 @@ class Row extends Init {
 
         return $this->FixedWhere;
     }
+    public function Increase ($number,$key=null) {
+        $key = ($key == null)?((parent::$TableData['column_name'][0] != "*") ? parent::$TableData['column_name'][0] : throw new \Azad\Database\Table\Exception("Column not set.")):$key;
+        $value = $number + parent::$TableData["table_data"][0][$key];
+        $this->Update($value,$key);
+    }
+    public function Decrease($number,$key=null) {
+        $key = ($key == null)?((parent::$TableData['column_name'][0] != "*") ? parent::$TableData['column_name'][0] : throw new \Azad\Database\Table\Exception("Column not set.")):$key;
+        $value = parent::$TableData["table_data"][0][$key] - $number;
+        $this->Update($value,$key);
+    }
     public function Update($value,$key=null) {
         $TableName = parent::$TableData['table_name'];
-        $key = ($key == null)?((parent::$TableData['column_name'][0] != "*") ? parent::$TableData['column_name'][0] : throw new \Azad\Database\Table\AzadException("Column not set.")):$key;
+        $key = ($key == null)?((parent::$TableData['column_name'][0] != "*") ? parent::$TableData['column_name'][0] : throw new \Azad\Database\Table\Exception("Column not set.")):$key;
         if (isset(parent::$TableData[$TableName]['data'][$key]['rebuilder'])) {
             $value = $this->RebuilderResult(parent::$TableData[$TableName]['data'][$key]['rebuilder'],$value);
         }
@@ -42,6 +52,12 @@ class Row extends Init {
             $EncrypetName = parent::$TableData[$TableName]['data'][$key]['encrypter'];
             $value = $EncrypetName::Encrypt($value);
         }
+
+        if(method_exists(new parent::$TableData[$TableName]['data'][$key]['type'],"Set")) {
+            $DB = new parent::$TableData[$TableName]['data'][$key]['type']();
+            $value = $DB->Set($value);
+        }
+
         if ($this->IFResult == false) {
             return false;
         }

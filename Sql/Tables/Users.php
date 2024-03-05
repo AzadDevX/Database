@@ -10,6 +10,7 @@ class Users extends Azad\Database\Table\Make {
         $this->Name("updated_time")->Type(Azad\Database\Types\UpdateAt::class);
         $this->Name("Random")->Type(Azad\Database\Types\Random::class);
         $this->Name("Random2")->Type(Azad\Database\Types\Random::class);
+        $this->Name("OneLess")->Type(Azad\Database\Types\AutoLess::class);
         $this->Save ();
     }
 }

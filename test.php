@@ -45,6 +45,21 @@ try {
     $Sql->LoadPlugin ("IncreaseSalary",["chat_id"=>"123456789"])->Increase(10);
     echo $User->FirstRow ()['salary']; // 24200000
 
+    echo PHP_EOL;
+
+    $User->Manage()->Update(9000,"OneLess");
+    echo $User->FirstRow ()['OneLess']; // in database: 8999 - result: 8999 - 
+    // The reason for -1 from the original number is the type of data type defined for example.
+    echo PHP_EOL;
+
+    $User->Manage()->Increase(150,"OneLess");
+    echo $User->FirstRow ()['OneLess']; // 9148 (8999 + 150 - 1 = 9148)
+    echo PHP_EOL;
+
+    $User->Manage()->Decrease(100,"OneLess");
+    echo $User->FirstRow ()['OneLess']; // 9047 (9148 - 100 - 1 = 9048)
+    echo PHP_EOL;
+
 } catch (\Azad\Conditions\Exception $e) {
     var_dump($e->Debug);
     // The value of [USD] is equal to 400 - but you have defined (350) in the EqualTo

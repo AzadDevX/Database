@@ -106,3 +106,57 @@ class Users extends \Azad\Database\Table\Make {
 In the example above, we are going to create a table with the name of ``Users``.
 > [!TIP]
 > If you set a value in the config file for ``prefix``, the table name will be set automatically, **don't do it manually**
+
+Now, we're going to set up the database columns through ``__construct``.
+```php
+<?php
+namespace AzadSql\Tables;
+class Users extends \Azad\Database\Table\Make {
+    public function __construct() {
+        $this->Name("user_id")->Type(\Azad\Database\Types\ID::class)->Size(255);
+        $this->Name("first_name")->Type(\Azad\Database\Types\Varchar::class)->Size(255);
+        $this->Name("last_name")->Type(\Azad\Database\Types\Varchar::class)->Size(255);
+        $this->Name("created_at")->Type(\Azad\Database\Types\CreatedAt::class);
+        $this->Name("updated_time")->Type(\Azad\Database\Types\UpdateAt::class);
+        $this->Save ();
+    }
+}
+```
+## Methods:
+```php
+Name(column_name)
+```
+
+``column_name`` : Set the column name with this method. First of all، you need to specify the column name otherwise you will encounter an error.
+> [!CAUTION]
+> **PHP Fatal error:  ``Uncaught Azad\Database\Table\Exception``: You need to specify the column name first.**
+
+```php
+Type(class_type)
+```
+``class_type``: Class of data type. Classes of data types are defined in the main project (``src/Types``)
+
+Types:
+
+> **AutoLess**: ``Custom Datatype Sample, for Data Handling Guide``
+
+> **BigINT**: ``No need for explanation.!``
+
+> **CreatedAt**: ``When you insert a new record, it automatically saves the time of the record``
+
+> **ID**: ``Automatically increments numbers and is chosen as the primary key``
+
+> **Integer**: ``No need for explanation.!``
+
+> **Random**: ``Custom Datatype Sample, for Data Handling Guide``
+
+> **UpdateAt**: ``When you update your record, it saves the time of the last change``
+
+> **Varchar**: ``No need for explanation.!``
+
+> **timestamp**: ``No need for explanation.!``
+
+> [!CAUTION]
+> If the set data type does not exist، you will encounter such an error.
+> 
+> **PHP Fatal error:  ``Uncaught Azad\Database\Table\Exception``: The 'type' value entered is not valid**

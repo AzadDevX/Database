@@ -1,6 +1,7 @@
 {
-    "name": "azad/database",
+    "name": "azad/sql",
     "type": "library",
+    "keywords": ["mysqli","mysql","database"],
     "autoload": {
         "psr-4": {
             "Azad\\Database\\": "src/"
@@ -8,8 +9,11 @@
     },
     "authors": [
         {
-            "name": "Azad"
+            "name": "Azad",
+            "role": "Developer"
         }
     ],
-    "require": {}
+    "require": {
+        "php": ">=8.0.0"
+    }
 }

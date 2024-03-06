@@ -2,17 +2,6 @@
 
 namespace Azad\Database;
 
-/*
-
-include 'plugin/main.php';
-
-$newNamespaces = get_current_namespaces(); 
-*/
-
-/*
-$ini = 
-*/
-
 class Connect {
     protected static $DataBase,$TablePrefix, $ProjectName, $Query, $TableData=[],$is_have_prefix;
     private $config,$ProjectDir,$MagickList,$db_name;

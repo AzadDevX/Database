@@ -72,3 +72,37 @@ The database configuration is located in the `.ASql.ini` file.
 > [!CAUTION]
 > The config file is made with permission 0600, but still requires security measures.
 
+```INI
+[Database]
+    host = 127.0.0.1
+    port =
+    username = root
+    password =
+[Table]
+    prefix =
+[Project]
+    name = AzadSql
+```
+
+Make changes to this file and then save.
+
+# 6. How to create a table
+To do this, enter the project folder (`AzadSql\`) and create a php file in the Tables folder (`Tables\`).
+> [!TIP]
+> The name you choose for the file is considered as the table name.
+
+After creating the PHP file, you need to create a namespace.
+
+```php
+<?php
+namespace AzadSql\Tables;
+```
+After creating namespace, create a class **named with the file** and inherit from the ``\Azad\Database\Table\Make`` class. for example:
+```php
+class Users extends \Azad\Database\Table\Make {
+
+}
+```
+In the example above, we are going to create a table with the name of ``Users``.
+> [!TIP]
+> If you set a value in the config file for ``prefix``, the table name will be set automatically, **don't do it manually**

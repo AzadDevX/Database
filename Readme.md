@@ -244,3 +244,85 @@ Value(data)
 ```php
 End(); # After completing the list of columns and their values, call this method
 ```
+
+# 6. How to get a value
+After you have saved your table to a variable (in the previous example ``$Users``), select your data using the ``WHERE`` method
+
+```php
+$User = $Users->WHERE("first_name","Mohammad")
+            ->AND("last_name","azad");
+```
+## Methods:
+
+```php
+WHERE(column_name,value)
+```
+
+``column_name`` : The name of the column you want to get your data with its value.
+
+``value`` : Column value.
+
+```php
+AND(column_name,value) # Logical Operators (and - &&)
+```
+
+``column_name`` : The name of the column you want to get your data with its value.
+
+``value`` : Column value.
+
+```php
+OR(column_name,value) # Logical Operators (or - ||)
+```
+
+``column_name`` : The name of the column you want to get your data with its value.
+
+``value`` : Column value.
+
+After setting up the where، you can get your data list in two ways.
+
+## First Solution:
+```php
+$User->Get ();
+```
+
+This method displays the list of all found data. for example:
+
+```php
+array(1) {
+  [0]=>
+  array(5) {
+    ["user_id"]=>
+    string(1) "1"
+    ["first_name"]=>
+    string(8) "mohammad"
+    ["last_name"]=>
+    string(4) "azad"
+    ["created_at"]=>
+    string(19) "2024-03-06 17:49:10"
+    ["updated_time"]=>
+    string(19) "2024-03-06 17:51:20"
+  }
+}
+```
+
+## Second Solution:
+```php
+$User->FirstRow ();
+```
+
+This method get the first data found.
+
+```php
+array(5) {
+  ["user_id"]=>
+  string(1) "1"
+  ["first_name"]=>
+  string(8) "mohammad"
+  ["last_name"]=>
+  string(4) "azad"
+  ["created_at"]=>
+  string(19) "2024-03-06 17:49:10"
+  ["updated_time"]=>
+  string(19) "2024-03-06 17:51:20"
+}
+```

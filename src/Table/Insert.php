@@ -25,6 +25,10 @@ class Insert extends \Azad\Database\Table\Init {
         }
         if (isset(parent::$TableData[$TableName]['data'][$this->key]['encrypter'])) {
             $EncrypetName = parent::$TableData[$TableName]['data'][$this->key]['encrypter'];
+            $EncrypetName = parent::$ProjectName."\\Encrypters\\".$EncrypetName;
+            if (!class_exists($EncrypetName)) {
+                throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
+            }
             $Value = $EncrypetName::Encrypt($Value);
         }
         $this->Insert["value"][] = "'$Value'";

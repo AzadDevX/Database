@@ -1,5 +1,5 @@
 {
-    "name": "azad/sql",
+    "name": "azad1324/sql",
     "type": "library",
     "keywords": ["mysqli","mysql","database"],
     "autoload": {

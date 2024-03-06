@@ -204,3 +204,43 @@ class Users extends \Azad\Database\Table\Make {
     }
 }
 ```
+
+# 6. How to insert a data
+After you have created your table, you will need to select your table, which is done using the ``Table`` method.
+for example:
+```php
+$Database = new Azad\Database\Connect("AzadSql");
+$Users = $Database->Table("Users");
+```
+Now, it is time to select a row, of course, to insert a data, you don't need to select a column
+```php
+$Database = new Azad\Database\Connect("AzadSql");
+$Users = $Database->Table("Users")->Select("*");
+```
+After selecting the row, insert your data into the table using the ``Insert`` method
+```php
+$Database = new Azad\Database\Connect("AzadSql");
+$Users = $Database->Table("Users")->Select("*");
+
+$Users->Insert()
+    ->Key("first_name")->Value('Mohammad') // Saved as 'mohammad' because the Rebuilder has been used
+    ->Key("last_name")->Value('Azad')  // Saved as 'azad' because the Rebuilder has been used
+->End();
+```
+## Methods:
+
+```php
+Key(column_name)
+```
+
+``column_name`` : Set the name of the table column in this field.
+
+```php
+Value(data)
+```
+
+``data`` : The data you want to consider for this column.
+
+```php
+End(); # After completing the list of columns and their values, call this method
+```

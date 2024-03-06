@@ -24,6 +24,10 @@ class Row extends Init {
         array_walk(parent::$TableData[$TableName]['short'],function ($value,$key) use ($TableName) {
             if (isset(parent::$TableData[$TableName]['data'][$key]['encrypter'])) {
                 $EncrypetName = parent::$TableData[$TableName]['data'][$key]['encrypter'];
+                $EncrypetName = parent::$ProjectName."\\Encrypters\\".$EncrypetName;
+                if (!class_exists($EncrypetName)) {
+                    throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
+                }
                 $this->FixedWhere[$key] = $EncrypetName::Encrypt(parent::$TableData["table_data"][0][$key]);
             } else {
                 $this->FixedWhere[$key] = parent::$TableData["table_data"][0][$key];
@@ -50,6 +54,10 @@ class Row extends Init {
         }
         if (isset(parent::$TableData[$TableName]['data'][$key]['encrypter'])) {
             $EncrypetName = parent::$TableData[$TableName]['data'][$key]['encrypter'];
+            $EncrypetName = parent::$ProjectName."\\Encrypters\\".$EncrypetName;
+            if (!class_exists($EncrypetName)) {
+                throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
+            }
             $value = $EncrypetName::Encrypt($value);
         }
 

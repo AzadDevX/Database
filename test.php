@@ -1,10 +1,8 @@
 <?php
+
 require 'vendor/autoload.php';
 
-$Sql = new Azad\Database\Connect('127.0.0.1','root','',"AzadSql");
-$Sql->TablePrefix("Azad");
-$Sql->LoadTables ();
-
+$Sql = new Azad\Database\Connect("AzadSql");
 
 $Users = $Sql->Table("Users");
 $Users = $Users->Select("*");

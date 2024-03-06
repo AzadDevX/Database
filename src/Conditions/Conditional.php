@@ -115,7 +115,6 @@ class Conditional extends Init {
             if (parent::$IFResult == false) {
                 $Value = (is_array($this->Value))?json_encode($this->Value):$this->Value;
                 $CV = (is_array($this->CV))?json_encode($this->CV):$this->CV;
-                //The amount of USD  300, .
                 throw new Exception("The value of [".$this->Key."] is equal to ".$Value." - but you have defined (".$CV.") in the ".$this->Method);
             }
             return $Data;

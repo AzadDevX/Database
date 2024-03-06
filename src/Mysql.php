@@ -5,7 +5,11 @@ namespace Azad\Database;
 class Mysql {
     public $Database;
     public function __construct($host, $username, $password, $database) {
-        $this->Database = new \mysqli($host, $username, $password, $database);
+        try {
+            $this->Database = new \mysqli($host, $username, $password, $database);
+        } catch (\mysqli_sql_exception $e) {
+            throw new Exception\Connection("Failed to connect to database: ".$e->getMessage());
+        }
     }
     public function QueryRun ($command) {
         return $this->Database->query($command);

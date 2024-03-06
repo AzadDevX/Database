@@ -28,6 +28,10 @@ class Init extends \Azad\Database\Table\Init {
             foreach ($Data as $key=>$value) {
                 if (isset(parent::$TableData[$TableName]['data'][$key]['encrypter'])) {
                     $EncrypetName = parent::$TableData[$TableName]['data'][$key]['encrypter'];
+                    $EncrypetName = parent::$ProjectName."\\Encrypters\\".$EncrypetName;
+                    if (!class_exists($EncrypetName)) {
+                        throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
+                    }
                     $value = $EncrypetName::Decrypt($value);
                     $Rows[$Row][$key] = $value;
                 }

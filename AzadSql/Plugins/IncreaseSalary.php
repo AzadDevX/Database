@@ -1,6 +1,7 @@
 <?php
 
-class IncreaseSalary extends Azad\Database\Magick\Plugin {
+namespace AzadSql\Plugins;
+class IncreaseSalary extends \Azad\Database\Magick\Plugin {
     private $Database,$Data;
     public function __construct ($Database,$Data) {
         $this->Database = $Database;

@@ -20,23 +20,24 @@ class Query {
         }
         return $Query;
     }
-    public static function MakeTable($table_name,$data,$prefix=null) {
-        $GetPrp = new $table_name();
+    public static function MakeTable($table_name,$data,$class_name) {
         $Query = "CREATE TABLE IF NOT EXISTS ";
-        $table_name = isset($prefix)?$prefix."_".$table_name:$table_name;
         $Query .= $table_name;
         $Query .= " (";
         $keys=array_keys($data['data']);
         $EndColumn = array_pop($keys);
-        array_walk($data['data'],function($ColumnData,$ColumnName) use (&$Query,$EndColumn,&$GetPrp) {
+        array_walk($data['data'],function($ColumnData,$ColumnName) use (&$Query,$EndColumn,&$class_name) {
             if ($ColumnData['type']->Primary == true) {
-                $GetPrp->PRIMARY_KEY = $ColumnName;
+                $class_name->PRIMARY_KEY = $ColumnName;
             }
             $Query .= self::DataTypeTable ($ColumnName,$ColumnData);
             $Query .= ($EndColumn == $ColumnName) ? "":",";
         });
-        if (isset($GetPrp->PRIMARY_KEY)) {
-            $Query .= ", PRIMARY KEY (".$GetPrp->PRIMARY_KEY.")";
+        if (isset($class_name->PRIMARY_KEY)) {
+            $Query .= ", PRIMARY KEY (".$class_name->PRIMARY_KEY.")";
+        }
+        if (is_array($class_name->Unique) and count($class_name->Unique) > 0) {
+            $Query .= ", UNIQUE (".implode(",",$class_name->Unique).")";
         }
         $Query .= " )";
         return $Query;

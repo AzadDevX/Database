@@ -15,6 +15,9 @@ class WorkOn extends Init {
     }
     public function Tool ($Tool) {
         $Tool = '\\Azad\\Database\\Functional\\'.$Tool;
+        if(!class_exists($Tool)) {
+            throw new \Azad\Database\Exception\Load("Functional [$Tool] does not exist");
+        }
         return new $Tool($this->Value,$this);
     }
     public function Result () {

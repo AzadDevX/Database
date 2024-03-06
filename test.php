@@ -6,8 +6,22 @@ $Sql = new Azad\Database\Connect("AzadSql");
 
 $Users = $Sql->Table("Users");
 $Users = $Users->Select("*");
-$User = $Users->WHERE("chat_id",123456789);
 
+$User = $Users->WHERE("user_id",5);
+
+$UserManage = $User->Manage();
+
+$UserManage->Update("md","first_name")
+    ->Update("az","last_name");
+
+var_dump($User->FirstRow());
+
+$UserManage->Update("mohammad","first_name")
+    ->Update("azad","last_name");
+
+var_dump($User->FirstRow());
+
+/*
 if (!$User->FirstRow ()) {
     $Users->Insert()
         ->Key("chat_id")->Value('123456789')

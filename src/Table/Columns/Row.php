@@ -15,12 +15,11 @@ class Row extends Init {
             if(method_exists(new $value(),"UpdateMe")) {
                 $DB = new $value();
                 $this->Update($DB->UpdateMe(),$key);
-                $this->UpdateWhere ();
             }
         });
     }
     private function UpdateWhere () {
-        $TableName = parent::$TableData['table_name'];
+        $TableName = (string) parent::$TableData['table_name'];
         array_walk(parent::$TableData[$TableName]['short'],function ($value,$key) use ($TableName) {
             if (isset(parent::$TableData[$TableName]['data'][$key]['encrypter'])) {
                 $EncrypetName = parent::$TableData[$TableName]['data'][$key]['encrypter'];
@@ -47,7 +46,7 @@ class Row extends Init {
         $this->Update($value,$key);
     }
     public function Update($value,$key=null) {
-        $TableName = parent::$TableData['table_name'];
+        $TableName = (string) parent::$TableData['table_name'];
         $key = ($key == null)?((parent::$TableData['column_name'][0] != "*") ? parent::$TableData['column_name'][0] : throw new \Azad\Database\Table\Exception("Column not set.")):$key;
         if (isset(parent::$TableData[$TableName]['data'][$key]['rebuilder'])) {
             $value = $this->RebuilderResult(parent::$TableData[$TableName]['data'][$key]['rebuilder'],$value);
@@ -69,11 +68,10 @@ class Row extends Init {
         if ($this->IFResult == false) {
             return false;
         }
-        $Result = ($this->Query(\Azad\Database\Query::UpdateQuery(parent::$TableData,$value,$key,$this->FixedWhere)) == true)?$this:false;
         $this->QueryResult = $this->Get();
+        $this->UpdateWhere ();
+        $Result = ($this->Query(\Azad\Database\Query::UpdateQuery(parent::$TableData,$value,$key,$this->FixedWhere)) == true)?$this:false;
         $this->Condition = new \Azad\Database\Conditions\Conditional($this->QueryResult[0],$this);
         return $Result;
     }
 }
-
-?>

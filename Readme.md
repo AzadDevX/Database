@@ -157,6 +157,22 @@ Types:
 > **timestamp**: ``No need for explanation.!``
 
 > [!CAUTION]
-> If the set data type does not exist، you will encounter such an error.
+> If the set data type does not exist, you will encounter such an error.
 > 
 > **PHP Fatal error:  ``Uncaught Azad\Database\Table\Exception``: The 'type' value entered is not valid**
+
+```php
+Size(size)
+```
+``size``: Data Type Size
+
+```php
+Rebuilder(rebuilder_name) # Set a Rebuilder for Column
+```
+``rebuilder_name`` ``(string)`` : Rebuilder Name (The Rebuilder description is in the Magick section.)
+
+
+```php
+Encrypter(encrypter_name) # Set a Encrypter for Column
+```
+``encrypter_name`` ``(string)`` : Encrypter Name (The Encrypter description is in the Magick section.)

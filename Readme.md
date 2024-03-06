@@ -245,7 +245,7 @@ Value(data)
 End(); # After completing the list of columns and their values, call this method
 ```
 
-# 6. How to get a value
+# 7. How to get a value
 After you have saved your table to a variable (in the previous example ``$Users``), select your data using the ``WHERE`` method
 
 ```php
@@ -326,3 +326,73 @@ array(5) {
   string(19) "2024-03-06 17:51:20"
 }
 ```
+
+# 8. How to Update a row
+To update a column, use the ``Manage`` method after you have used ``Where``
+```php
+$User->Manage()
+```
+This method has other methods within itself.
+> [!IMPORTANT]
+> if the output of where is more than one value, you need to use the ``First()`` method.
+> ```php
+> $User->First()->Manage()
+> ```
+> Otherwise, use the Manage directly.
+> ```php
+> $User->Manage()
+> ```
+
+> [!NOTE]
+> To clarify the description, we put the Manage method in another variable
+```php
+$UserManage = $User->Manage();
+```
+Now, to update the value of a column we have three methods:
+## Methods:
+```php
+Update(new_value,column_name)
+```
+
+``new_value`` : Set a new value in this parameter
+
+``column_name`` : The name of the column you want to update
+
+**Example**
+
+```php
+$UserManage->Update("md","first_name")
+           ->Update("az","last_name");
+$User->FirstRow ();
+```
+Result:
+```php
+array(5) {
+  ["user_id"]=>
+  string(1) "1"
+  ["first_name"]=>
+  string(2) "md"
+  ["last_name"]=>
+  string(2) "az"
+  ["created_at"]=>
+  string(19) "2024-03-07 02:30:18"
+  ["updated_time"]=>
+  string(19) "2024-03-07 02:53:40"
+}
+```
+
+```php
+Increase(number,column_name)
+```
+
+``number`` : The number you want to **add to the previous value**. ``(value + number = new_value)``
+
+``column_name`` : The name of the column you want to update
+
+```php
+Decrease(number,column_name)
+```
+
+``number`` : The number you want to **add to the previous value**. ``(number - value = new_value)``
+
+``column_name`` : The name of the column you want to update

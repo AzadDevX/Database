@@ -47,3 +47,28 @@ $Database = new Azad\Database\Connect("AzadSql");
 ```
 > [!NOTE]
 > In the example above, the project name and database name is `AzadSql`.
+
+# 5. Project Configuration
+
+After successfully executing the code, a project root has created a folder named with the project name that contains these folders:
+
+    AzadSql/
+  
+      Constants/
+    
+      Encrypters/
+  
+      Exceptions/
+    
+      Plugins/
+  
+      Rebuilders/
+    
+      Tables/
+    
+      .ASql.ini
+
+The database configuration is located in the `.ASql.ini` file.
+> [!CAUTION]
+> The config file is made with permission 0600, but still requires security measures.
+

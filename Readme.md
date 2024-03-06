@@ -176,3 +176,31 @@ Rebuilder(rebuilder_name) # Set a Rebuilder for Column
 Encrypter(encrypter_name) # Set a Encrypter for Column
 ```
 ``encrypter_name`` ``(string)`` : Encrypter Name (The Encrypter description is in the Magick section.)
+
+```php
+Save() # After setting all columns, call this method
+```
+
+## Properties:
+You can also make adjustments to the data table through Properties.
+
+```php
+$Unique = [Column names];
+```
+
+for example:
+```php
+<?php
+namespace AzadSql\Tables;
+class Users extends \Azad\Database\Table\Make {
+    public $Unique = ["first_name","last_name"];
+    public function __construct() {
+        $this->Name("user_id")->Type(\Azad\Database\Types\ID::class)->Size(255);
+        $this->Name("first_name")->Type(\Azad\Database\Types\Varchar::class)->Size(255)->Rebuilder("Names");
+        $this->Name("last_name")->Type(\Azad\Database\Types\Varchar::class)->Size(255)->Rebuilder("Names");
+        $this->Name("created_at")->Type(\Azad\Database\Types\CreatedAt::class);
+        $this->Name("updated_time")->Type(\Azad\Database\Types\UpdateAt::class);
+        $this->Save ();
+    }
+}
+```

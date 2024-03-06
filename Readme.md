@@ -212,12 +212,12 @@ for example:
 $Database = new Azad\Database\Connect("AzadSql");
 $Users = $Database->Table("Users");
 ```
-Now, it is time to select a row, of course, to insert a data, you don't need to select a column
+Now, it is time to select a columns(!), of course, to insert a data, you don't need to select a column
 ```php
 $Database = new Azad\Database\Connect("AzadSql");
 $Users = $Database->Table("Users")->Select("*");
 ```
-After selecting the row, insert your data into the table using the ``Insert`` method
+After selecting the columns(!), insert your data into the table using the ``Insert`` method
 ```php
 $Database = new Azad\Database\Connect("AzadSql");
 $Users = $Database->Table("Users")->Select("*");

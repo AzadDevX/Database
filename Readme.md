@@ -87,11 +87,11 @@ The database configuration is located in the `.ASql.ini` file.
 Make changes to this file and then save.
 
 # 6. How to create a table
-To do this, enter the project folder (`AzadSql\`) and create a php file in the Tables folder (`Tables\`).
+To do this, enter the project folder and create a php file in the Tables folder (`AzadSql\Tables\`).
 > [!TIP]
 > The name you choose for the file is considered as the table name.
 
-After creating the PHP file, you need to create a namespace.
+After creating the PHP file, you need to create a namespace. ``ProjectName\Tables``
 
 ```php
 <?php

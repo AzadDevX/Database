@@ -396,3 +396,57 @@ Decrease(number,column_name)
 ``number`` : The number you want to **add to the previous value**. ``(number - value = new_value)``
 
 ``column_name`` : The name of the column you want to update
+
+## Condition
+You can also use conditional commands to update your data.
+Examples:
+```php
+try {
+    $UserManage
+        ->Condition
+            ->IF("first_name")->EqualTo("Mohammad2")
+        ->End()
+    ->Update("Mohammad","first_name");
+} catch (Azad\Database\Conditions\Exception $E) {
+    var_dump($E->Debug);
+}
+
+#Result: The value of [first_name] is equal to mohammad - but you have defined (Mohammad2) in the EqualTo
+```
+
+> [!IMPORTANT]
+> Make sure to place the Conditional in ``TRY``
+
+### Methods:
+```php
+IF (column_name)
+```
+
+``column_name`` : Column name
+
+```php
+And (column_name) # Logical Operators (and - &&)
+```
+
+``column_name`` : Column name
+
+```php
+Or (column_name) # Logical Operators (or - ||)
+```
+
+``column_name`` : Column name
+
+### Conditional Methods:
+```php
+EqualTo(x) # The defined column is equal to the value of x
+ISNot(x) # The defined column does not equal the value of x
+LessThan(x) # The column is defined as less than x.
+MoreThan(x) # The column is defined as more than x.
+LessOrEqualThan(x) # If the value of the column is less than or equal to the value of x.
+MoreOrEqualThan(x) # If the value of the column is greater than or equal to the value of x.
+Between(x , y) # The value of the column is between x and y - ( x <= value && y >= value)
+Have(x) # If there is x in the column value - (Used for arrays and strings)
+NotHave(x) # If there is no x in the column value - (Used for arrays and strings)
+IN(array x) # If x exists in the data of a column.
+NotIN(array x) # If there is no x in the data of a column،
+```

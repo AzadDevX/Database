@@ -478,7 +478,10 @@ The data is sent to rebuilders before being saved, then the rebuilder stores it 
 ### How to make new Rebuilder:
 
 To do this, enter the project folder and create a php file in the Rebuilders folder (``AzadSql\Rebuilders\x.php``)
-In this example, we use the name Names, using Rebuilder Names to store the user's names as case lower (``x.php -> Names.php``)
+In this example, we use the name "Names", using Rebuilder "Names" to store the user's names as case lower 
+
+(``x.php -> Names.php``)
+
 **Rules:**
 1. Similar to the table structure, the file name needs to be the same as the class name.
 2. Use the namespace. ``ProjectName\Rebuilders``

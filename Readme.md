@@ -655,14 +655,14 @@ array(5) {
 Data types are created as object-oriented, this helps us to set specific features for each of the data types.
 The folder for data types is in ``/src/types``. 
 
-** Rules **
+**Rules**
 1. The file name is equal to the class name.
 2. use the namespace ``Azad\Database\Types``
 3. Inheriting from Init
 
 Class components are divided into two sets of properties and methods.
 
-### properties
+### Properties
 ``$SqlType`` : A required properties that needs to be defined as public.
 The value of these properties is sent to sql as a data type.
 BIGInt example:
@@ -689,7 +689,7 @@ class ID extends Init {
 }
 ```
 
-### methods
+### Methods
 ```php
 AddToQueryTable ()
 ```

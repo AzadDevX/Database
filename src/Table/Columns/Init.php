@@ -35,7 +35,6 @@ class Init extends \Azad\Database\Table\Init {
                     $value = $EncrypetName::Decrypt($value);
                 }
                 if(method_exists(new parent::$TableData[$TableName]['data'][$key]['type'],"Get")) {
-                    echo $key.PHP_EOL;
                     $DB = new parent::$TableData[$TableName]['data'][$key]['type']();
                     $value = $DB->Get($value);
                 }

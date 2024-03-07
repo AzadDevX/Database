@@ -25,9 +25,9 @@ class Insert extends \Azad\Database\Table\Init {
                 $Value = $this->RebuilderResult(parent::$TableData[$TableName]['data'][$this->key]['rebuilder'],$Value);
             } else {
                 $Rebuilder = parent::$TableData[$TableName]['data'][$this->key]['rebuilder'];
-                foreach ($Value as $Column=>$Data) {
-                    $Value[$Column] = $this->RebuilderResult($Rebuilder,$Data);
-                }
+                $Value = \Azad\Database\Arrays::Value($Value,function ($data) use ($Rebuilder) {
+                    return $this->RebuilderResult($Rebuilder,$data);
+                });
             }
         }
         if (isset(parent::$TableData[$TableName]['data'][$this->key]['encrypter'])) {
@@ -38,11 +38,11 @@ class Insert extends \Azad\Database\Table\Init {
             }
             $Value = $EncrypetName::Encrypt($Value);
         }
-        $Value = self::$DataBase->EscapeString ($Value);
         if(method_exists(new parent::$TableData[$TableName]['data'][$this->key]['type'],"Set")) {
             $DB = new parent::$TableData[$TableName]['data'][$this->key]['type']();
             $Value = $DB->Set($Value);
         }
+        $Value = self::$DataBase->EscapeString ($Value);
         $this->Insert["value"][] = "'$Value'";
         return $this;
     }

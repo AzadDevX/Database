@@ -14,5 +14,3 @@ class Arrays {
         return $data;
     }
 }
-
-?>

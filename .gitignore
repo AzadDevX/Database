@@ -1,4 +1,6 @@
 test/
 vendor/
-composer.json
+composer.lock
 Readme.md
+AzadSql/
+test.php

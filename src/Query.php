@@ -75,6 +75,7 @@ class Query {
             $Query .= $key." = '".$value."'";
             $Query .= ($EndColumn == $key) ? "":" AND ";
         });
+        echo $Query;
         return $Query;
     }
     public static function Insert ($table_name,$data) {

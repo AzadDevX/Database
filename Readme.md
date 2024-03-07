@@ -648,3 +648,103 @@ array(5) {
 }
 
 ```
+
+# Library Developers Guide :fist_right:  :fist_left:
+
+## How to make new data types
+Data types are created as object-oriented, this helps us to set specific features for each of the data types.
+The folder for data types is in ``/src/types``. 
+** Rules **
+1. The file name is equal to the class name.
+2. use the namespace ``Azad\Database\Types``
+3. Inheriting from Init
+
+Class components are divided into two sets of properties and methods.
+
+### properties
+``$SqlType`` : A required properties that needs to be defined as public.
+The value of these properties is sent to sql as a data type.
+BIGInt example:
+```php
+<?php
+namespace Azad\Database\Types;
+class BigINT extends Init {
+    public $SqlType = "BIGINT";
+}
+# CREATE TABLE table_name ( column [$SqlType] );
+```
+
+``$Primary`` : A boolean value، if true is defined، this column is automatically treated as primary key
+ID example:
+```php
+<?php
+namespace Azad\Database\Types;
+class ID extends Init {
+    public $SqlType = "BIGINT";
+    public $Primary = true;
+    public function AddToQueryTable () {
+        return "AUTO_INCREMENT";
+    }
+}
+```
+
+### methods
+```php
+AddToQueryTable ()
+```
+Adds a new value in SQL after the data type
+CreatedAt example:
+```php
+<?php
+namespace Azad\Database\Types;
+class CreatedAt extends Init {
+    public $SqlType = "timestamp";
+    public function AddToQueryTable () {
+        return "DEFAULT CURRENT_TIMESTAMP";
+    }
+}
+# CREATE TABLE table_name ( column [$SqlType] [AddToQueryTable ()] );
+```
+
+```php
+InsertMe()
+```
+After the user uses Insert for the first, this value is considered for the column.
+```php
+UpdateMe()
+```
+After the user updates **one of their columns**, the column defined by this method changes to the output of this method.
+
+Random example:
+```php
+<?php
+namespace Azad\Database\Types;
+class Random extends Init {
+    public $SqlType = "INT";
+    public function InsertMe() {
+        return 12345;
+    }
+    public function UpdateMe() {
+        return rand(1,100);
+    }
+}
+```
+```php
+Set($value)
+```
+After the user intends to store a data, the data is sent to this method and its output is replaced as new data.
+``$value`` : The value that is being stored in the database
+AutoLess example:
+```php
+<?php
+namespace Azad\Database\Types;
+class AutoLess extends Init {
+    public $SqlType = "INT";
+    public function InsertMe() {
+        return 9999;
+    }
+    public function Set($value) {
+        return $value - 1;
+    }
+}
+```

@@ -516,8 +516,6 @@ And in the table you want to do for the column you want:
 
 ## Encrypters
 
-Encrypter
-
 If you intend to store vital data, use this method!
 
 Data encryption is done automatically and you don't need to decrypt and encrypt continuously.
@@ -552,8 +550,8 @@ class Base64 extends \Azad\Database\Magic\Encrypter {
 }
 ```
 
-```
 And in the table you want to do for the column you want:
+
 ```php
     ...
         $this->Name("password")

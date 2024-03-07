@@ -15,9 +15,6 @@ class Connect {
         $this->config = $this->Config ();
         $this->ProjectDir = $this->config['Project']['name'];
         self::$ProjectName = $this->config['Project']['name'];
-        if (!filter_var($this->config['Database']['host'],FILTER_VALIDATE_IP)) {
-            throw new Exception\DataType("The value entered for the host must be an IP");
-        }
         $host = ($this->config['Database']['port'] != '')?$this->config['Database']['host'].":".$this->config['Database']['port']:$this->config['Database']['host'];
         $username = $this->config['Database']['username'];
         $password = $this->config['Database']['password'];

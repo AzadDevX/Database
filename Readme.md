@@ -450,3 +450,16 @@ NotHave(x) # If there is no x in the column value - (Used for arrays and strings
 IN(array x) # If x exists in the data of a column.
 NotIN(array x) # If there is no x in the data of a column،
 ```
+
+# Functionals
+Functional functions, (which are located in the main project) to expedite work. This part is still developing. (``src\Functional``)
+Example:
+```php
+// score = 100
+$NewSalary = $User->WorkOn("score")->
+    Tool("Percentage")
+        -> Append(10)
+    ->Close()
+->Result();
+// result: 110
+```

@@ -393,7 +393,7 @@ Increase(number,column_name)
 Decrease(number,column_name)
 ```
 
-``number`` : The number you want to **add to the previous value**. ``(number - value = new_value)``
+``number`` : The number you want to **subtract to the previous value**. ``(number - value = new_value)``
 
 ``column_name`` : The name of the column you want to update
 
@@ -478,7 +478,10 @@ The data is sent to rebuilders before being saved, then the rebuilder stores it 
 ### How to make new Rebuilder:
 
 To do this, enter the project folder and create a php file in the Rebuilders folder (``AzadSql\Rebuilders\x.php``)
-In this example, we use the name Names, using Rebuilder Names to store the user's names as case lower (``x.php -> Names.php``)
+In this example, we use the name "Names", using Rebuilder "Names" to store the user's names as case lower 
+
+(``x.php -> Names.php``)
+
 **Rules:**
 1. Similar to the table structure, the file name needs to be the same as the class name.
 2. Use the namespace. ``ProjectName\Rebuilders``
@@ -509,4 +512,271 @@ And in the table you want to do for the column you want:
             ->Size(255)
             ->Rebuilder("Names"); # <------
     ...
+```
+
+## Encrypters
+
+If you intend to store vital data, use this method!
+
+Data encryption is done automatically and you don't need to decrypt and encrypt continuously.
+
+Data is encrypted before it is stored and decrypted after it is received.
+
+Data -> Encrypt -> Save
+
+Get -> Decrypt -> Data
+
+### How to make new Encrypter:
+
+To do this, enter the project folder and create a php file in the Encrypters folder (``AzadSql\Encrypters\x.php``)
+In this example, we use the name "Base64", Using Base64 Encrypter، encrypts your data to base64 before storing it and decrypts when receives it.
+
+(``x.php -> Base64.php``)
+
+**Rules:**
+1. Similar to the table structure, the file name needs to be the same as the class name.
+2. Use the namespace. ``ProjectName\Encrypters``
+3. Inherit from ``\Azad\Database\Magic\Encrypter``
+4. Create a method called ``Encrypt`` as **static** and set only one parameter for its input. ``Encrypt($Data)``
+5. Create a method called ``Decrypt`` as **static** and set only one parameter for its input. ``Decrypt($Data)``
+6. The end.
+
+Example:
+
+```php
+<?php
+
+namespace AzadSql\Encrypters;
+class Base64 extends \Azad\Database\Magic\Encrypter {
+    public static function Encrypt($Data) {
+        return base64_encode($Data);
+    }
+    public static function Decrypt($Data) {
+        return base64_decode($Data);
+    }
+}
+```
+
+And in the table you want to do for the column you want:
+
+```php
+    ...
+        $this->Name("password")
+            ->Type(\Azad\Database\Types\Varchar::class)
+            ->Size(255)
+            ->Encrypter("Base64"); # <------
+    ...
+```
+
+## Plugins
+
+The plugin has access to all database data. It can receive data and change them. The processes are done inside the plug-in class.
+Plugins help you improve your teamwork and also publish plugins on the web
+Plugins help you process the data in another folder and access its defined methods in the main file.
+
+### How to make Plugin:
+To do this, enter the project folder and create a php file in the Plugins folder (``AzadSql\Plugins\x.php``)
+
+**Rules:**
+1. Similar to the table structure, the file name needs to be the same as the class name.
+2. Use the namespace. ``ProjectName\Plugins``
+3. Inherit from ``\Azad\Database\Magic\Plugin``
+4. Create a constructor with ``$Database`` and ``$Data`` parameters
+5. The end.
+``$Database`` : This value is **passed by the library**, you can access the database through this parameter.
+``$Data`` : This value is **set during coding**, the data needed for the plugin is placed in this section
+
+Example of making a plugin:
+```php
+<?php
+
+# AzadSql/Plugins/UserManagment.php
+
+namespace AzadSql\Plugins;
+
+class UserManagment extends \Azad\Database\Magic\Plugin {
+    private $Database,$Data;
+    public function __construct ($Database,$Data) {
+        $this->Database = $Database;
+        $this->Data = $Data;
+    }
+    # Rename User
+    public function ChangeFirstName ($new_first_name) {
+        $Users = $this->Database->Table("Users");
+        $Users = $Users->Select("*");
+        $User = $Users->WHERE("user_id",$this->Data);
+        $User->Manage()->Update($new_first_name,"first_name");
+    }
+}
+
+```
+Example of loading a plugin:
+```php
+<?php
+#  index.php
+
+require 'vendor/autoload.php'; // load librarys
+
+$Sql = new Azad\Database\Connect("AzadSql"); // load AzadSql
+
+$Users = $Sql->Table("Users"); // Select table
+$Users = $Users->Select("*"); //Select Columns
+
+$User = $Users->WHERE("first_name","Mohammad")
+            ->And("last_name","azad"); // Find User
+
+$UserID = $User->FirstRow()['user_id']; // Get userID
+
+$UserManagment = $Sql->LoadPlugin ("UserManagment",$UserID); // Load Plugin
+
+$UserManagment->ChangeFirstName("Mohammad2"); // Use plugin methods
+
+var_dump($User->FirstRow()); // Get new data
+```
+```php
+array(5) {
+  ["user_id"]=>
+  string(1) "5"
+  ["first_name"]=>
+  string(9) "mohammad2"
+  ["last_name"]=>
+  string(4) "azad"
+  ["created_at"]=>
+  string(19) "2024-03-07 02:30:18"
+  ["updated_time"]=>
+  string(19) "2024-03-07 13:05:13"
+}
+
+```
+
+# Library Developers Guide :fist_right:  :fist_left:
+
+## How to make a new data types
+Data types are created as object-oriented, this helps us to set specific features for each of the data types.
+The folder for data types is in ``/src/types``. 
+
+**Rules**
+1. The file name is equal to the class name.
+2. use the namespace ``Azad\Database\Types``
+3. Inheriting from Init
+
+Class components are divided into two sets of properties and methods.
+
+### Properties
+``$SqlType`` : A required properties that needs to be defined as public.
+The value of these properties is sent to sql as a data type.
+BIGInt example:
+```php
+<?php
+namespace Azad\Database\Types;
+class BigINT extends Init {
+    public $SqlType = "BIGINT";
+}
+# CREATE TABLE table_name ( column [$SqlType] );
+```
+
+``$Primary`` : A boolean value، if true is defined، this column is automatically treated as primary key
+ID example:
+```php
+<?php
+namespace Azad\Database\Types;
+class ID extends Init {
+    public $SqlType = "BIGINT";
+    public $Primary = true;
+    public function AddToQueryTable () {
+        return "AUTO_INCREMENT";
+    }
+}
+```
+
+### Methods
+```php
+AddToQueryTable ()
+```
+Adds a new value in SQL after the data type
+CreatedAt example:
+```php
+<?php
+namespace Azad\Database\Types;
+class CreatedAt extends Init {
+    public $SqlType = "timestamp";
+    public function AddToQueryTable () {
+        return "DEFAULT CURRENT_TIMESTAMP";
+    }
+}
+# CREATE TABLE table_name ( column [$SqlType] [AddToQueryTable ()] );
+```
+
+-------------------
+
+```php
+InsertMe()
+```
+After the user uses Insert for the first, this value is considered for the column.
+```php
+UpdateMe()
+```
+After the user updates **one of their columns**, the column defined by this method changes to the output of this method.
+
+Random example:
+```php
+<?php
+namespace Azad\Database\Types;
+class Random extends Init {
+    public $SqlType = "INT";
+    public function InsertMe() {
+        return 12345;
+    }
+    public function UpdateMe() {
+        return rand(1,100);
+    }
+}
+```
+
+-------------------
+
+```php
+Set($value)
+```
+After the user intends to store a data, the data is sent to this method and its output is replaced as new data.
+
+``$value`` : The value that is being stored in the database
+
+AutoLess example:
+```php
+<?php
+namespace Azad\Database\Types;
+class AutoLess extends Init {
+    public $SqlType = "INT";
+    public function InsertMe() {
+        return 9999;
+    }
+    public function Set($value) {
+        return $value - 1;
+    }
+}
+```
+
+-------------------
+
+```php
+Get($value)
+```
+After the programmer intended to get his data from the table column, the table column data was first sent to this method and its output was set as output data.
+
+``$value`` : The value that is being stored in the database
+
+ArrayData example:
+```php
+<?php
+namespace Azad\Database\Types;
+class ArrayData extends Init {
+    public $SqlType = "JSON";
+    public function Set($value) {
+        return json_encode($value);
+    }
+    public function Get($value) {
+        return json_decode($value,1);
+    }
+}
 ```

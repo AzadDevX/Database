@@ -61,17 +61,17 @@ class Connect {
         $this->MakeDir($this->ProjectDir."/Exceptions");
     }
     private function LoadTables () {
-        array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."\Tables\*.php"));
+        array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."/Tables/*.php"));
         array_map(fn($x) => $this->Query($x['query']),\Azad\Database\Table\MakeINIT::MakeTables(self::$TablePrefix));
     }
     private function LoadPlugins () {
-        array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."\Plugins\*.php"));
+        array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."/Plugins/*.php"));
     }
     private function LoadRebuilders () {
-        array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."\Rebuilders\*.php"));
+        array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."/Rebuilders/*.php"));
     }
     private function LoadEncrypters () {
-        array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."\Encrypters\*.php"));
+        array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."/Encrypters/*.php"));
     }
     protected function Query($command) {
         try {

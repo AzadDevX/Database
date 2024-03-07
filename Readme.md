@@ -393,7 +393,7 @@ Increase(number,column_name)
 Decrease(number,column_name)
 ```
 
-``number`` : The number you want to **add to the previous value**. ``(number - value = new_value)``
+``number`` : The number you want to **subtract to the previous value**. ``(number - value = new_value)``
 
 ``column_name`` : The name of the column you want to update
 

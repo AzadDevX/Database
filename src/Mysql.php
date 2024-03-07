@@ -11,6 +11,9 @@ class Mysql {
             throw new Exception\Connection("Failed to connect to database: ".$e->getMessage());
         }
     }
+    public function EscapeString ($string) {
+        return $this->Database->real_escape_string($string);
+    }
     public function QueryRun ($command) {
         return $this->Database->query($command);
     }

@@ -36,11 +36,13 @@ class Row extends Init {
         return $this->FixedWhere;
     }
     public function Increase ($number,$key=null) {
+        $number = self::$DataBase->EscapeString ($number);
         $key = ($key == null)?((parent::$TableData['column_name'][0] != "*") ? parent::$TableData['column_name'][0] : throw new \Azad\Database\Table\Exception("Column not set.")):$key;
         $value = $number + parent::$TableData["table_data"][0][$key];
         $this->Update($value,$key);
     }
     public function Decrease($number,$key=null) {
+        $number = self::$DataBase->EscapeString ($number);
         $key = ($key == null)?((parent::$TableData['column_name'][0] != "*") ? parent::$TableData['column_name'][0] : throw new \Azad\Database\Table\Exception("Column not set.")):$key;
         $value = parent::$TableData["table_data"][0][$key] - $number;
         $this->Update($value,$key);
@@ -63,6 +65,7 @@ class Row extends Init {
             $DB = new parent::$TableData[$TableName]['data'][$key]['type']();
             $value = $DB->Set($value);
         }
+        $value = self::$DataBase->EscapeString ($value);
 
         if ($this->IFResult == false) {
             return false;

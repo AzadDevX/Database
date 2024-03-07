@@ -38,6 +38,7 @@ class Insert extends \Azad\Database\Table\Init {
             }
             $Value = $EncrypetName::Encrypt($Value);
         }
+        $Value = self::$DataBase->EscapeString ($Value);
         if(method_exists(new parent::$TableData[$TableName]['data'][$this->key]['type'],"Set")) {
             $DB = new parent::$TableData[$TableName]['data'][$this->key]['type']();
             $Value = $DB->Set($Value);

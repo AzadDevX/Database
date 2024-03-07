@@ -1,7 +1,7 @@
 <?php
 
 namespace AzadSql\Encrypters;
-class Base64 extends \Azad\Database\Magick\Encrypter {
+class Base64 extends \Azad\Database\Magic\Encrypter {
     public static function Encrypt($Data) {
         return base64_encode($Data);
     }

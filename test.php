@@ -9,15 +9,24 @@ $Users = $Users->Select("*");
 
 $User = $Users->WHERE("user_id",5);
 
+$NewSalary = $User->WorkOn("score")->
+    Tool("Percentage")
+        -> Append(10)
+    ->Close()
+->Result();
+
 $UserManage = $User->Manage();
 
-$UserManage->Update("md","first_name")
-    ->Update("az","last_name");
+try {
+    $UserManage
+        ->Condition
+            ->IF("first_name")->EqualTo("Mohammad2")
+        ->End()
+    ->Update("Mohammad","first_name");
+} catch (Azad\Database\Conditions\Exception $E) {
+    var_dump($E->Debug);
+}
 
-var_dump($User->FirstRow());
-
-$UserManage->Update("mohammad","first_name")
-    ->Update("azad","last_name");
 
 var_dump($User->FirstRow());
 

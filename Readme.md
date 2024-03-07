@@ -12,7 +12,7 @@ AzadSql library uses Mysqli PHP library to categorize the commands and send them
 
 using this library you don't need to encrypt the columns manually, you don't need to write repeated commands to apply changes before storing data and receiving them, and you don't even need to evaluate the data of several different columns separately and update after receiving the result; All these processes can be done automatically.
 
-the ability of the library in the defined function (called Magick) can wonderfully summarize your index file and developers can process data on different parts of the columns.
+the ability of the library in the defined function (called Magic) can wonderfully summarize your index file and developers can process data on different parts of the columns.
 
 AzadSql developers can also develop different data types and make them available for public use. All these things will help you to ensure that your index file is in absolute order and that team members can apply their method to different parts of the project with open access.
 
@@ -24,7 +24,7 @@ for example:
 ```php
 namespace MyProject\Plugins;
 ```
-Also, each of the Magick has specific rules in design and you need to follow the rules (it will be explained later)
+Also, each of the Magic has specific rules in design and you need to follow the rules (it will be explained later)
 
 # 4. Initial Setup
 
@@ -169,13 +169,13 @@ Size(size)
 ```php
 Rebuilder(rebuilder_name) # Set a Rebuilder for Column
 ```
-``rebuilder_name`` ``(string)`` : Rebuilder Name (The Rebuilder description is in the Magick section.)
+``rebuilder_name`` ``(string)`` : Rebuilder Name (The Rebuilder description is in the Magic section.)
 
 
 ```php
 Encrypter(encrypter_name) # Set a Encrypter for Column
 ```
-``encrypter_name`` ``(string)`` : Encrypter Name (The Encrypter description is in the Magick section.)
+``encrypter_name`` ``(string)`` : Encrypter Name (The Encrypter description is in the Magic section.)
 
 ```php
 Save() # After setting all columns, call this method
@@ -462,4 +462,51 @@ $NewSalary = $User->WorkOn("score")->
     ->Close()
 ->Result();
 // result: 110
+```
+
+# Magic
+
+## Rebuilders
+In a simple sense, it means sorting data. Use Rebuilder when you plan to store data regularly in the database.
+
+``tEhRAn -> Tehran``
+
+The data is sent to rebuilders before being saved, then the rebuilder stores it in the database after the changes are made.
+
+< **Data -> Rebuilder -> New Data -> Save** >
+
+### How to make new Rebuilder:
+
+To do this, enter the project folder and create a php file in the Rebuilders folder (``AzadSql\Rebuilders\x.php``)
+In this example, we use the name Names, using Rebuilder Names to store the user's names as case lower (``x.php -> Names.php``)
+**Rules:**
+1. Similar to the table structure, the file name needs to be the same as the class name.
+2. Use the namespace. ``ProjectName\Rebuilders``
+3. Inherit from ``\Azad\Database\Magic\Rebuilder``
+4. Create a method called ``Rebuild`` as **static** and set only one parameter for its input. ``Rebuild ($Data)``
+5. The end. The output of ``Rebuild`` is stored in the table and ``$Data`` is the data that is intended to be stored in the table
+
+$Data -> Names::Rebuild($Data) -> Save
+```php
+<?php
+# Names.php
+namespace AzadSql\Rebuilders;
+class Names extends \Azad\Database\Magic\Rebuilder {
+    public static function Rebuild ($Data) {
+        return strtolower($Data);
+    }
+}
+```
+And in the table you want to do for the column you want:
+```php
+    ...
+        $this->Name("first_name")
+            ->Type(\Azad\Database\Types\Varchar::class)
+            ->Size(255)
+            ->Rebuilder("Names"); # <------
+        $this->Name("last_name")
+            ->Type(\Azad\Database\Types\Varchar::class)
+            ->Size(255)
+            ->Rebuilder("Names"); # <------
+    ...
 ```

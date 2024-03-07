@@ -651,9 +651,10 @@ array(5) {
 
 # Library Developers Guide :fist_right:  :fist_left:
 
-## How to make new data types
+## How to make a new data types
 Data types are created as object-oriented, this helps us to set specific features for each of the data types.
 The folder for data types is in ``/src/types``. 
+
 ** Rules **
 1. The file name is equal to the class name.
 2. use the namespace ``Azad\Database\Types``

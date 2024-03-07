@@ -749,3 +749,22 @@ class AutoLess extends Init {
     }
 }
 ```
+```php
+Get($value)
+```
+After the programmer intended to get his data from the table column, the table column data was first sent to this method and its output was set as output data.
+``$value`` : The value that is being stored in the database
+ArrayData example:
+```php
+<?php
+namespace Azad\Database\Types;
+class ArrayData extends Init {
+    public $SqlType = "JSON";
+    public function Set($value) {
+        return json_encode($value);
+    }
+    public function Get($value) {
+        return json_decode($value,1);
+    }
+}
+```

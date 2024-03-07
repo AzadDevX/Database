@@ -15,9 +15,6 @@ class Connect {
         $this->config = $this->Config ();
         $this->ProjectDir = $this->config['Project']['name'];
         self::$ProjectName = $this->config['Project']['name'];
-        if (!filter_var($this->config['Database']['host'],FILTER_VALIDATE_IP)) {
-            throw new Exception\DataType("The value entered for the host must be an IP");
-        }
         $host = ($this->config['Database']['port'] != '')?$this->config['Database']['host'].":".$this->config['Database']['port']:$this->config['Database']['host'];
         $username = $this->config['Database']['username'];
         $password = $this->config['Database']['password'];
@@ -64,17 +61,17 @@ class Connect {
         $this->MakeDir($this->ProjectDir."/Exceptions");
     }
     private function LoadTables () {
-        array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."\Tables\*.php"));
+        array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."/Tables/*.php"));
         array_map(fn($x) => $this->Query($x['query']),\Azad\Database\Table\MakeINIT::MakeTables(self::$TablePrefix));
     }
     private function LoadPlugins () {
-        array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."\Plugins\*.php"));
+        array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."/Plugins/*.php"));
     }
     private function LoadRebuilders () {
-        array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."\Rebuilders\*.php"));
+        array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."/Rebuilders/*.php"));
     }
     private function LoadEncrypters () {
-        array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."\Encrypters\*.php"));
+        array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."/Encrypters/*.php"));
     }
     protected function Query($command) {
         try {

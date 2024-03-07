@@ -633,3 +633,18 @@ $UserManagment->ChangeFirstName("Mohammad2"); // Use plugin methods
 
 var_dump($User->FirstRow()); // Get new data
 ```
+```php
+array(5) {
+  ["user_id"]=>
+  string(1) "5"
+  ["first_name"]=>
+  string(9) "mohammad2"
+  ["last_name"]=>
+  string(4) "azad"
+  ["created_at"]=>
+  string(19) "2024-03-07 02:30:18"
+  ["updated_time"]=>
+  string(19) "2024-03-07 13:05:13"
+}
+
+```

@@ -4,8 +4,10 @@ namespace Azad\Database\Table;
 
 class Insert extends \Azad\Database\Table\Init {
     private $key;
-    public function __construct() {
-        $TableName = (string) parent::$TableData['table_name'];
+    private $TableName;
+
+    public function __construct($TableName) {
+        $this->TableName = $TableName;
         array_walk(parent::$TableData[$TableName]['short'],function ($value,$key) {
             if(method_exists(new $value(),"InsertMe")) {
                 $DB = new $value();
@@ -19,7 +21,7 @@ class Insert extends \Azad\Database\Table\Init {
         return $this;
     }
     public function Value ($Value) {
-        $TableName = (string) parent::$TableData['table_name'];
+        $TableName = $this->TableName;
         if (isset(parent::$TableData[$TableName]['data'][$this->key]['rebuilder'])) {
             if (!is_array($Value)) {
                 $Value = $this->RebuilderResult(parent::$TableData[$TableName]['data'][$this->key]['rebuilder'],$Value);
@@ -48,7 +50,7 @@ class Insert extends \Azad\Database\Table\Init {
     }
     public function End() {
         try {
-            $Table = parent::$TableData['table_name'];
+            $Table = (string) $this->TableName;
             $Data = $this->Insert;
             return $this->Query(\Azad\Database\Query::Insert ($Table,$Data));
         } catch (\Azad\Database\Exception\SqlQuery $e) {

@@ -5,11 +5,12 @@ namespace Azad\Database\Table\Columns;
 class Row extends Init {
     public $Condition,$QueryResult;
     private $FixedWhere;
+    private $TableName;
 
-    public function __construct() {
-        $this->QueryResult = $this->Get();
+    public function __construct($TableName,$Query) {
+        $this->TableName = $TableName;
+        $this->QueryResult = $Query;
         $this->Condition = new \Azad\Database\Conditions\Conditional($this->QueryResult[0],$this);
-        $TableName = (string) parent::$TableData['table_name'];
         $this->UpdateWhere ();
         array_walk(parent::$TableData[$TableName]['short'],function ($value,$key) {
             if(method_exists(new $value(),"UpdateMe")) {
@@ -19,7 +20,7 @@ class Row extends Init {
         });
     }
     private function UpdateWhere () {
-        $TableName = (string) parent::$TableData['table_name'];
+        $TableName = $this->TableName;
         array_walk(parent::$TableData[$TableName]['short'],function ($value,$key) use ($TableName) {
             $value = parent::$TableData["table_data"][0][$key];
             if(method_exists(new parent::$TableData[$TableName]['data'][$key]['type'],"Set")) {
@@ -41,11 +42,8 @@ class Row extends Init {
                 }
                 $value = $EncrypetName::Encrypt(parent::$TableData["table_data"][0][$key]);
             }
-
-
             $this->FixedWhere[$key] = $value;
         });
-
         return $this->FixedWhere;
     }
     public function Increase ($number,$key=null) {
@@ -59,8 +57,9 @@ class Row extends Init {
         $this->Update($value,$key);
     }
     public function Update($value,$key=null) {
-        $TableName = (string) parent::$TableData['table_name'];
+        $TableName = $this->TableName;
         $key = ($key == null)?((parent::$TableData['column_name'][0] != "*") ? parent::$TableData['column_name'][0] : throw new \Azad\Database\Table\Exception("Column not set.")):$key;
+
         if (isset(parent::$TableData[$TableName]['data'][$key]['rebuilder'])) {
             if (!is_array($value)) {
                 $value = $this->RebuilderResult(parent::$TableData[$TableName]['data'][$key]['rebuilder'],$value);
@@ -88,10 +87,10 @@ class Row extends Init {
         if ($this->IFResult == false) {
             return false;
         }
-        $this->QueryResult = $this->Get();
+        $this->QueryResult = $this->Get($this->TableName);
         $this->UpdateWhere ();
-        $Result = ($this->Query(\Azad\Database\Query::UpdateQuery(parent::$TableData,$value,$key,$this->FixedWhere)) == true)?$this:false;
+        $Result = ($this->Query(\Azad\Database\Query::UpdateQuery($this->TableName,$value,$key,$this->FixedWhere)) == true)?$this:false;
         $this->Condition = new \Azad\Database\Conditions\Conditional($this->QueryResult[0],$this);
-        return $Result;
+        return "check";
     }
 }

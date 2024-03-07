@@ -43,19 +43,19 @@ class Query {
         return $Query;
     }
 
-    public static function SelectQuery($data) {
+    public static function SelectQuery($column_name,$table_name) {
         $Query = "SELECT ";
-        if ($data["column_name"] != "*") {
-            $keys=array_values($data["column_name"]);
+        if ($column_name != "*") {
+            $keys=array_values($column_name);
             $EndColumn = array_pop($keys);
             array_map(function($ColumnName) use (&$Query,$EndColumn) {
                 $Query .= $ColumnName." ";
                 $Query .= ($EndColumn == $ColumnName) ? "":",";
-            },$data["column_name"]);
+            },$column_name);
         } else {
             $Query .= "* ";
         }
-        $Query .= "FROM `".$data["table_name"]."`";
+        $Query .= "FROM `".$table_name."`";
         return $Query;
     }
 
@@ -63,9 +63,9 @@ class Query {
         return $key." $Conditions '".$value."'";
     }
     
-    public static function UpdateQuery($table_data,$value,$key,$where) {
+    public static function UpdateQuery($table_name,$value,$key,$where) {
         $Query = "UPDATE ";
-        $Query .= $table_data['table_name'];
+        $Query .= $table_name;
         $Query .= " SET ";
         $Query .= $key."='".$value."'";
         $Query .= " WHERE ";

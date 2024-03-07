@@ -4,17 +4,17 @@ namespace Azad\Database\Table;
 
 class Init extends \Azad\Database\Connect {
     public $Insert;
+    private $TableName;
     protected static $InsertSetting=[];
     public function __construct($Table_Name) {
-        parent::$TableData['table_name'] = $Table_Name;
+        $this->TableName = $Table_Name;
     }
     public function Select (...$Column) {
-        parent::$TableData['column_name'] = $Column;
-        parent::$Query = \Azad\Database\Query::SelectQuery(parent::$TableData);
-        return new Columns\Init();
+        $Query = \Azad\Database\Query::SelectQuery($Column,$this->TableName);
+        return new Columns\Init($this->TableName,$Query);
     }
     public function Insert ($if_not_exists=true) {
         self::$InsertSetting["if_not_exists"] = $if_not_exists;
-        return new Insert();
+        return new Insert($this->TableName);
     }
 }

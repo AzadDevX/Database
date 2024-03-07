@@ -5,25 +5,31 @@ namespace Azad\Database\Table\Columns;
 class Init extends \Azad\Database\Table\Init {
     public $IFResult=true;
     public $IF;
-    public function __construct() { }
+    private $TableName;
+    private static $query=[];
+    public function __construct($table_name,$query) {
+        $this->TableName = $table_name;
+        self::$query[$this->TableName] = $query;
+    }
     public function WHERE ($key,$value,$Conditions="=") {
-        parent::$Query .= (strpos(parent::$Query, "WHERE") === false)?" WHERE ":throw new Exception("You are allowed to use the WHERE method only once here.");
-        parent::$Query .= \Azad\Database\Query::MakeWhere($key,$value,$Conditions);
-        return new $this;
+        self::$query[$this->TableName] .= (strpos(self::$query[$this->TableName], "WHERE") === false)?" WHERE ":throw new Exception("You are allowed to use the WHERE method only once here.");
+        self::$query[$this->TableName] .= \Azad\Database\Query::MakeWhere($key,$value,$Conditions);
+        return new $this($this->TableName,self::$query[$this->TableName]);
     }
     public function AND ($key,$value,$Conditions="=") {
-        parent::$Query .= (strpos(parent::$Query, "WHERE") === false)?throw new Exception("First, you need to use the WHERE method."):" AND ";
-        parent::$Query .= \Azad\Database\Query::MakeWhere($key,$value,$Conditions);
-        return new $this;
+        self::$query[$this->TableName] .= (strpos(self::$query[$this->TableName], "WHERE") === false)?throw new Exception("First, you need to use the WHERE method."):" AND ";
+        self::$query[$this->TableName] .= \Azad\Database\Query::MakeWhere($key,$value,$Conditions);
+        return new $this($this->TableName,self::$query[$this->TableName]);
     }
     public function OR ($key,$value,$Conditions="=") {
-        parent::$Query .= (strpos(parent::$Query, "WHERE") === false)?throw new Exception("First, you need to use the WHERE method."):" OR ";
-        parent::$Query .= \Azad\Database\Query::MakeWhere($key,$value,$Conditions);
-        return new $this;
+        self::$query[$this->TableName] .= (strpos(self::$query[$this->TableName], "WHERE") === false)?throw new Exception("First, you need to use the WHERE method."):" OR ";
+        self::$query[$this->TableName] .= \Azad\Database\Query::MakeWhere($key,$value,$Conditions);
+        return new $this($this->TableName,self::$query[$this->TableName]);
     }
-    public function Get() {
-        $Rows = $this->Fetch($this->Query(parent::$Query));
-        $TableName = (string) parent::$TableData['table_name'];
+    public function Get($table_name=null) {
+        $TableName = (isset($table_name)) ? $table_name : $this->TableName;
+        $Rows = $this->Fetch($this->Query(self::$query[$TableName]));
+        $TableName = (string) $this->TableName;
         foreach ($Rows as $Row => $Data) {
             foreach ($Data as $key=>$value) {
                 if (isset(parent::$TableData[$TableName]['data'][$key]['encrypter'])) {
@@ -52,9 +58,9 @@ class Init extends \Azad\Database\Table\Init {
         if(count($QueryResult) == 0) {
             return false;
         } elseif (count($QueryResult) == 1) {
-            return new Row();
+            return new Row($this->TableName,self::$query[$this->TableName]);
         } else {
-            return new Rows();
+            return new Rows($this->TableName,self::$query[$this->TableName]);
         }
     }
     public function WorkOn ($Key) {

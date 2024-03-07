@@ -532,5 +532,33 @@ Get -> Decrypt -> Data
 1. Similar to the table structure, the file name needs to be the same as the class name.
 2. Use the namespace. ``ProjectName\Encrypters``
 3. Inherit from ``\Azad\Database\Magic\Encrypter``
-4. 
-5. The end.
+4. Create a method called ``Encrypt`` as **static** and set only one parameter for its input. ``Encrypt($Data)``
+5. Create a method called ``Decrypt`` as **static** and set only one parameter for its input. ``Decrypt($Data)``
+6. The end.
+
+Example:
+
+```php
+<?php
+
+namespace AzadSql\Encrypters;
+class Base64 extends \Azad\Database\Magic\Encrypter {
+    public static function Encrypt($Data) {
+        return base64_encode($Data);
+    }
+    public static function Decrypt($Data) {
+        return base64_decode($Data);
+    }
+}
+```
+
+```
+And in the table you want to do for the column you want:
+```php
+    ...
+        $this->Name("password")
+            ->Type(\Azad\Database\Types\Varchar::class)
+            ->Size(255)
+            ->Encrypter("Base64"); # <------
+    ...
+```

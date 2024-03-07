@@ -570,9 +570,66 @@ And in the table you want to do for the column you want:
 
 ## Plugins
 
-The plugin has access to all database data. It can receive data and change them. The processes are done inside the plug-in class and the plug-in has no output.
-Plugins help you process the data in another folder and access its defined methods in the main file (processing only includes: receiving data, making changes and saving it).
-> [!NOTE]
-> You can't export the final data through plugins
+The plugin has access to all database data. It can receive data and change them. The processes are done inside the plug-in class.
+Plugins help you improve your teamwork and also publish plugins on the web
+Plugins help you process the data in another folder and access its defined methods in the main file.
+
 ### How to make Plugin:
 To do this, enter the project folder and create a php file in the Plugins folder (``AzadSql\Plugins\x.php``)
+
+**Rules:**
+1. Similar to the table structure, the file name needs to be the same as the class name.
+2. Use the namespace. ``ProjectName\Plugins``
+3. Inherit from ``\Azad\Database\Magic\Plugin``
+4. Create a constructor with ``$Database`` and ``$Data`` parameters
+5. The end.
+``$Database`` : This value is **passed by the library**, you can access the database through this parameter.
+``$Data`` : This value is **set during coding**, the data needed for the plugin is placed in this section
+
+Example of making a plugin:
+```php
+<?php
+
+# AzadSql/Plugins/UserManagment.php
+
+namespace AzadSql\Plugins;
+
+class UserManagment extends \Azad\Database\Magic\Plugin {
+    private $Database,$Data;
+    public function __construct ($Database,$Data) {
+        $this->Database = $Database;
+        $this->Data = $Data;
+    }
+    # Rename User
+    public function ChangeFirstName ($new_first_name) {
+        $Users = $this->Database->Table("Users");
+        $Users = $Users->Select("*");
+        $User = $Users->WHERE("user_id",$this->Data);
+        $User->Manage()->Update($new_first_name,"first_name");
+    }
+}
+
+```
+Example of loading a plugin:
+```php
+<?php
+#  index.php
+
+require 'vendor/autoload.php'; // load librarys
+
+$Sql = new Azad\Database\Connect("AzadSql"); // load AzadSql
+
+$Users = $Sql->Table("Users"); // Select table
+$Users = $Users->Select("*"); //Select Columns
+
+$User = $Users->WHERE("first_name","Mohammad")
+            ->And("last_name","azad"); // Find User
+
+$UserID = $User->FirstRow()['user_id']; // Get userID
+
+$UserManagment = $Sql->LoadPlugin ("UserManagment",$UserID); // Load Plugin
+
+$UserManagment->ChangeFirstName("Mohammad2"); // Use plugin methods
+
+var_dump($User->FirstRow()); // Get new data
+```

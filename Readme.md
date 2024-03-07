@@ -526,6 +526,13 @@ Data -> Encrypt -> Save
 
 Get -> Decrypt -> Data
 
+### How to make new Encrypter:
+
+To do this, enter the project folder and create a php file in the Encrypters folder (``AzadSql\Encrypters\x.php``)
+In this example, we use the name "Base64", Using Base64 Encrypter، encrypts your data to base64 before storing it and decrypts when receives it.
+
+(``x.php -> Base64.php``)
+
 **Rules:**
 1. Similar to the table structure, the file name needs to be the same as the class name.
 2. Use the namespace. ``ProjectName\Encrypters``
@@ -560,3 +567,12 @@ And in the table you want to do for the column you want:
             ->Encrypter("Base64"); # <------
     ...
 ```
+
+## Plugins
+
+The plugin has access to all database data. It can receive data and change them. The processes are done inside the plug-in class and the plug-in has no output.
+Plugins help you process the data in another folder and access its defined methods in the main file (processing only includes: receiving data, making changes and saving it).
+> [!NOTE]
+> You can't export the final data through plugins
+### How to make Plugin:
+To do this, enter the project folder and create a php file in the Plugins folder (``AzadSql\Plugins\x.php``)

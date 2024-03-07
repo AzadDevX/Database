@@ -707,6 +707,8 @@ class CreatedAt extends Init {
 # CREATE TABLE table_name ( column [$SqlType] [AddToQueryTable ()] );
 ```
 
+-------------------
+
 ```php
 InsertMe()
 ```
@@ -730,11 +732,16 @@ class Random extends Init {
     }
 }
 ```
+
+-------------------
+
 ```php
 Set($value)
 ```
 After the user intends to store a data, the data is sent to this method and its output is replaced as new data.
+
 ``$value`` : The value that is being stored in the database
+
 AutoLess example:
 ```php
 <?php
@@ -749,11 +756,16 @@ class AutoLess extends Init {
     }
 }
 ```
+
+-------------------
+
 ```php
 Get($value)
 ```
 After the programmer intended to get his data from the table column, the table column data was first sent to this method and its output was set as output data.
+
 ``$value`` : The value that is being stored in the database
+
 ArrayData example:
 ```php
 <?php

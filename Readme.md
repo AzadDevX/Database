@@ -513,3 +513,24 @@ And in the table you want to do for the column you want:
             ->Rebuilder("Names"); # <------
     ...
 ```
+
+## Encrypters
+
+Encrypter
+
+If you intend to store vital data, use this method!
+
+Data encryption is done automatically and you don't need to decrypt and encrypt continuously.
+
+Data is encrypted before it is stored and decrypted after it is received.
+
+Data -> Encrypt -> Save
+
+Get -> Decrypt -> Data
+
+**Rules:**
+1. Similar to the table structure, the file name needs to be the same as the class name.
+2. Use the namespace. ``ProjectName\Encrypters``
+3. Inherit from ``\Azad\Database\Magic\Encrypter``
+4. 
+5. The end.

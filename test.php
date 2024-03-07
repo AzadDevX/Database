@@ -6,31 +6,35 @@ $Sql = new Azad\Database\Connect("AzadSql");
 
 $Users = $Sql->Table("Users");
 $Users = $Users->Select("*");
+$Users->Insert()
+    ->Key("first_name")->Value('Mohammad') // Saved as 'mohammad' because the Rebuilder has been used
+    ->Key("last_name")->Value('Azad')  // Saved as 'azad' because the Rebuilder has been used
+    ->Key("address")->Value([
+        "country" => "Iran",
+        "city" => "Tehran",
+        "Address" => "-"
+    ])
+->End();
 
-$User = $Users->WHERE("user_id",5);
-
-$NewSalary = $User->WorkOn("score")->
-    Tool("Percentage")
-        -> Append(10)
-    ->Close()
-->Result();
-
-$UserManage = $User->Manage();
-
-try {
-    $UserManage
-        ->Condition
-            ->IF("first_name")->EqualTo("Mohammad2")
-        ->End()
-    ->Update("Mohammad","first_name");
-} catch (Azad\Database\Conditions\Exception $E) {
-    var_dump($E->Debug);
-}
-
+$User = $Users->WHERE("first_name","Mohammad")
+            ->And("last_name","Azad");
 
 var_dump($User->FirstRow());
 
+
 /*
+$User = $Users->WHERE("first_name","Mohammad2")
+            ->And("last_name","azad");
+
+$UserID = $User->FirstRow()['user_id'];
+
+$UserManagment = $Sql->LoadPlugin ("UserManagment",$UserID);
+
+var_dump($UserManagment->ChangeFirstName("Mohammad2")); #OK
+
+var_dump($User->FirstRow());
+
+
 if (!$User->FirstRow ()) {
     $Users->Insert()
         ->Key("chat_id")->Value('123456789')

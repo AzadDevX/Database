@@ -21,7 +21,14 @@ class Insert extends \Azad\Database\Table\Init {
     public function Value ($Value) {
         $TableName = (string) parent::$TableData['table_name'];
         if (isset(parent::$TableData[$TableName]['data'][$this->key]['rebuilder'])) {
-            $Value = $this->RebuilderResult(parent::$TableData[$TableName]['data'][$this->key]['rebuilder'],$Value);
+            if (!is_array($Value)) {
+                $Value = $this->RebuilderResult(parent::$TableData[$TableName]['data'][$this->key]['rebuilder'],$Value);
+            } else {
+                $Rebuilder = parent::$TableData[$TableName]['data'][$this->key]['rebuilder'];
+                foreach ($Value as $Column=>$Data) {
+                    $Value[$Column] = $this->RebuilderResult($Rebuilder,$Data);
+                }
+            }
         }
         if (isset(parent::$TableData[$TableName]['data'][$this->key]['encrypter'])) {
             $EncrypetName = parent::$TableData[$TableName]['data'][$this->key]['encrypter'];
@@ -30,6 +37,10 @@ class Insert extends \Azad\Database\Table\Init {
                 throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
             }
             $Value = $EncrypetName::Encrypt($Value);
+        }
+        if(method_exists(new parent::$TableData[$TableName]['data'][$this->key]['type'],"Set")) {
+            $DB = new parent::$TableData[$TableName]['data'][$this->key]['type']();
+            $Value = $DB->Set($Value);
         }
         $this->Insert["value"][] = "'$Value'";
         return $this;

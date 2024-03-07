@@ -23,7 +23,7 @@ class Init extends \Azad\Database\Table\Init {
     }
     public function Get() {
         $Rows = $this->Fetch($this->Query(parent::$Query));
-        $TableName = parent::$TableData['table_name'];
+        $TableName = (string) parent::$TableData['table_name'];
         foreach ($Rows as $Row => $Data) {
             foreach ($Data as $key=>$value) {
                 if (isset(parent::$TableData[$TableName]['data'][$key]['encrypter'])) {
@@ -33,8 +33,13 @@ class Init extends \Azad\Database\Table\Init {
                         throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
                     }
                     $value = $EncrypetName::Decrypt($value);
-                    $Rows[$Row][$key] = $value;
                 }
+                if(method_exists(new parent::$TableData[$TableName]['data'][$key]['type'],"Get")) {
+                    echo $key.PHP_EOL;
+                    $DB = new parent::$TableData[$TableName]['data'][$key]['type']();
+                    $value = $DB->Get($value);
+                }
+                $Rows[$Row][$key] = $value;
             }
         }
         parent::$TableData['table_data'] = $Rows;

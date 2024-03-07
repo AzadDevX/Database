@@ -59,7 +59,6 @@ class Row extends Init {
             }
             $value = $EncrypetName::Encrypt($value);
         }
-
         if(method_exists(new parent::$TableData[$TableName]['data'][$key]['type'],"Set")) {
             $DB = new parent::$TableData[$TableName]['data'][$key]['type']();
             $value = $DB->Set($value);

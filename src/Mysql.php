@@ -12,12 +12,7 @@ class Mysql {
         }
     }
     public function EscapeString ($string) {
-        if (is_array($string)) {
-            foreach ($string as $key => $value) {
-                $string[$key] = $this->Database->real_escape_string($string);
-            }
-        }
-        return $this->Database->real_escape_string($string);
+        return $string != ''?$this->Database->real_escape_string($string):'';
     }
     public function QueryRun ($command) {
         return $this->Database->query($command);

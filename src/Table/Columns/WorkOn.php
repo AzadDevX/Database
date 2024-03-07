@@ -2,7 +2,7 @@
 
 namespace Azad\Database\Table\Columns;
 
-class WorkOn extends Init {
+class WorkOn extends Get {
     private $Value;
     private $Key;
     public function __construct($Value,$is_key=true) {

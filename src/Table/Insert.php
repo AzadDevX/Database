@@ -2,7 +2,7 @@
 
 namespace Azad\Database\Table;
 
-class Insert extends \Azad\Database\Table\Init {
+class Insert extends \Azad\Database\Database {
     private $key;
     private $TableName;
 
@@ -15,9 +15,16 @@ class Insert extends \Azad\Database\Table\Init {
             }
         });
     }
+    private function RebuilderResult($Rebuilder,$data) {
+        $RebuilderName = parent::$ProjectName."\\Rebuilders\\".$Rebuilder;
+        if (!class_exists($RebuilderName)) {
+            throw new \Azad\Database\Exception\Load("Rebuilder [$RebuilderName] does not exist");
+        }
+        return $RebuilderName::Rebuild ($data);
+    }
     public function Key ($Key) {
         $this->key = $Key;
-        $this->Insert["key"][] = $Key;
+        parent::$InsertData['columns']["key"][] = $Key;
         return $this;
     }
     public function Value ($Value) {
@@ -45,20 +52,23 @@ class Insert extends \Azad\Database\Table\Init {
             $Value = $DB->Set($Value);
         }
         $Value = self::$DataBase->EscapeString ($Value);
-        $this->Insert["value"][] = "'$Value'";
+        parent::$InsertData['columns']["value"][] = "'$Value'";
         return $this;
     }
     public function End() {
+        $Result = false;
         try {
             $Table = (string) $this->TableName;
-            $Data = $this->Insert;
-            return $this->Query(\Azad\Database\Query::Insert ($Table,$Data));
+            $Data = parent::$InsertData;
+            $Result = $this->Query(\Azad\Database\Query::Insert ($Table,$Data));
         } catch (\Azad\Database\Exception\SqlQuery $e) {
-            if (parent::$InsertSetting["if_not_exists"] == true) {
-                return false;
+            if (parent::$InsertData['settings']["if_not_exists"] == true) {
+                $Result = false;
             } else {
                 throw new Exception($e->getMessage());
             }
         }
+        parent::$InsertData = null;
+        return $Result;
     }
 }

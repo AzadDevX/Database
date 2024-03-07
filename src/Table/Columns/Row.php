@@ -2,10 +2,10 @@
 
 namespace Azad\Database\Table\Columns;
 
-class Row extends Init {
+class Row extends Get {
     public $Condition,$QueryResult;
     private $FixedWhere;
-    private $TableName;
+    public $IFResult=true;
 
     public function __construct($TableName,$Query) {
         $this->TableName = $TableName;
@@ -18,6 +18,13 @@ class Row extends Init {
                 $this->Update($DB->UpdateMe(),$key);
             }
         });
+    }
+    private function RebuilderResult($Rebuilder,$data) {
+        $RebuilderName = parent::$ProjectName."\\Rebuilders\\".$Rebuilder;
+        if (!class_exists($RebuilderName)) {
+            throw new \Azad\Database\Exception\Load("Rebuilder [$RebuilderName] does not exist");
+        }
+        return $RebuilderName::Rebuild ($data);
     }
     private function UpdateWhere () {
         $TableName = $this->TableName;
@@ -91,6 +98,6 @@ class Row extends Init {
         $this->UpdateWhere ();
         $Result = ($this->Query(\Azad\Database\Query::UpdateQuery($this->TableName,$value,$key,$this->FixedWhere)) == true)?$this:false;
         $this->Condition = new \Azad\Database\Conditions\Conditional($this->QueryResult[0],$this);
-        return "check";
+        return $Result;
     }
 }

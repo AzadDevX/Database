@@ -79,9 +79,9 @@ class Query {
     }
     public static function Insert ($table_name,$data) {
         $query = "INSERT INTO ".$table_name." ";
-        $query .= "(".implode(",",$data["key"]).")";
+        $query .= "(".implode(",",$data['columns']["key"]).")";
         $query .= " VALUES ";
-        $query .= "(".implode(",",$data["value"]).")";
+        $query .= "(".implode(",",$data['columns']["value"]).")";
         return $query;
     }
 }

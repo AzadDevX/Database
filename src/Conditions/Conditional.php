@@ -10,7 +10,7 @@ class Conditional extends Init {
         $this->ReturnToClass = $ReturnToClass;
         $this->Arr = $Arr;
     }
-    public function AndOr() {
+    private function AndOr() {
         if (isset(parent::$OldResut)) {
             parent::$IFResult = (parent::$Logical == "and") ? parent::$IFResult && parent::$OldResut : parent::$IFResult || parent::$OldResut;
         }

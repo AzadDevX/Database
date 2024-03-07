@@ -2,7 +2,7 @@
 
 namespace Azad\Database\Table;
 
-class Make extends MakeINIT {
+class Make extends \Azad\Database\Database {
         private $ColumnList = [],$Name,$ShortKeyType;
         public $PRIMARY_KEY = null;
         public $Unique = [];

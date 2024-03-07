@@ -1,6 +1,6 @@
 <?php
 namespace Azad\Database\Table;
-class MakeINIT extends \Azad\Database\Connect {
+class MakeINIT extends \Azad\Database\Database {
     protected static $SubClass=[];
     public static function MakeTables () {
         self::$SubClass = array_values(array_filter(get_declared_classes(),fn($class_name) => is_subclass_of($class_name,"Azad\Database\Table\Make") && strpos( $class_name, parent::$ProjectName."\Tables" ) !== false));

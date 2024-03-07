@@ -2,9 +2,8 @@
 
 namespace Azad\Database;
 
-class Connect {
-    protected static $DataBase,$TablePrefix, $ProjectName, $Query, $TableData=[],$is_have_prefix;
-    private $config,$ProjectDir,$MagickList,$db_name;
+class Connect extends Database {
+    private $config,$ProjectDir,$db_name;
 
     public function __construct($db_name) {
         $this->ProjectDir = $db_name;
@@ -72,16 +71,6 @@ class Connect {
     }
     private function LoadEncrypters () {
         array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."/Encrypters/*.php"));
-    }
-    protected function Query($command) {
-        try {
-            return self::$DataBase->QueryRun($command);
-        } catch (\mysqli_sql_exception $E) {
-            throw new Exception\SQLQuery($E->getMessage());
-        }
-    }
-    protected function Fetch($queryResult) {
-        return self::$DataBase->FetchQuery($queryResult);
     }
     public function LoadPlugin ($class,$data) {
         $class = self::$ProjectName."\\Plugins\\".$class;

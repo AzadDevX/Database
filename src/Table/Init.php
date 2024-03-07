@@ -2,7 +2,7 @@
 
 namespace Azad\Database\Table;
 
-class Init extends \Azad\Database\Connect {
+class Init extends \Azad\Database\Database {
     public $Insert;
     private $TableName;
     protected static $InsertSetting=[];
@@ -14,7 +14,7 @@ class Init extends \Azad\Database\Connect {
         return new Columns\Init($this->TableName,$Query);
     }
     public function Insert ($if_not_exists=true) {
-        self::$InsertSetting["if_not_exists"] = $if_not_exists;
+        self::$InsertData['settings']["if_not_exists"] = $if_not_exists;
         return new Insert($this->TableName);
     }
 }

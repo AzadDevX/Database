@@ -11,6 +11,7 @@ class Row extends Get {
         $this->TableName = $TableName;
         $this->QueryResult = $Query;
         $this->Condition = new \Azad\Database\Conditions\Conditional($this->QueryResult[0],$this);
+        parent::$query[$this->TableName] = $Query;
         $this->UpdateWhere ();
         array_walk(parent::$TableData[$TableName]['short'],function ($value,$key) {
             if(method_exists(new $value(),"UpdateMe")) {
@@ -30,26 +31,28 @@ class Row extends Get {
         $TableName = $this->TableName;
         array_walk(parent::$TableData[$TableName]['short'],function ($value,$key) use ($TableName) {
             $value = parent::$TableData["table_data"][0][$key];
-            if(method_exists(new parent::$TableData[$TableName]['data'][$key]['type'],"Set")) {
-                $DB = new parent::$TableData[$TableName]['data'][$key]['type']();
-                $value = $DB->Set($value);
-            }
-            if (is_array($value)) {
-                $Value = \Azad\Database\Arrays::Value($value,function ($data) {
-                    return self::$DataBase->EscapeString ($data);
-                });
-            } else {
-                $value = self::$DataBase->EscapeString ($value);
-            }
-            if (isset(parent::$TableData[$TableName]['data'][$key]['encrypter'])) {
-                $EncrypetName = parent::$TableData[$TableName]['data'][$key]['encrypter'];
-                $EncrypetName = parent::$ProjectName."\\Encrypters\\".$EncrypetName;
-                if (!class_exists($EncrypetName)) {
-                    throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
+            if ($value != null) {
+                if(method_exists(new parent::$TableData[$TableName]['data'][$key]['type'],"Set")) {
+                    $DB = new parent::$TableData[$TableName]['data'][$key]['type']();
+                    $value = $DB->Set($value);
                 }
-                $value = $EncrypetName::Encrypt(parent::$TableData["table_data"][0][$key]);
+                if (is_array($value)) {
+                    $value = \Azad\Database\Arrays::Value($value,function ($data) {
+                        return self::$DataBase->EscapeString ($data);
+                    });
+                } else {
+                    $value = self::$DataBase->EscapeString ($value);
+                }
+                if (isset(parent::$TableData[$TableName]['data'][$key]['encrypter'])) {
+                    $EncrypetName = parent::$TableData[$TableName]['data'][$key]['encrypter'];
+                    $EncrypetName = parent::$ProjectName."\\Encrypters\\".$EncrypetName;
+                    if (!class_exists($EncrypetName)) {
+                        throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
+                    }
+                    $value = $EncrypetName::Encrypt(parent::$TableData["table_data"][0][$key]);
+                }
+                $this->FixedWhere[$key] = $value;
             }
-            $this->FixedWhere[$key] = $value;
         });
         return $this->FixedWhere;
     }
@@ -94,6 +97,7 @@ class Row extends Get {
         if ($this->IFResult == false) {
             return false;
         }
+        parent::$query[$this->TableName] = $this->QueryResult;
         $this->QueryResult = $this->Get($this->TableName);
         $this->UpdateWhere ();
         $Result = ($this->Query(\Azad\Database\Query::UpdateQuery($this->TableName,$value,$key,$this->FixedWhere)) == true)?$this:false;

@@ -4,19 +4,31 @@ require 'vendor/autoload.php';
 
 $Sql = new Azad\Database\Connect("AzadSql");
 
-$Wallet = $Sql->Table("Wallet");
-$Users = $Sql->Table("Users");
-
+/*
 $Wallet->Insert()
-    ->Key("user_id")->Value(1) // Saved as 'mohammad' because the Rebuilder has been used
-    ->Key("USD")->Value(10000)  // Saved as 'azad' because the Rebuilder has been used
+    ->Key("user_id")->Value(1)
+    ->Key("USD")->Value(10000)
     ->Key("IRT")->Value(800000)
 ->End();
 
-$User = $Users->Select("*")->WHERE("first_name","Mohammad");
+$Users->Insert()
+    ->Key("first_name")->Value("Mohammad") 
+    ->Key("last_name")->Value("Azad")
+->End();
 
-$User->Manage()->Update("azad2","last_name");
+$Users->Insert()
+    ->Key("first_name")->Value("Mohammad2") 
+    ->Key("last_name")->Value("AzadKrde")
+->End();
+*/
 
-$User = $Users->Select("*")->WHERE("last_name","azad2");
+$User = $Sql->Table("Users")->Select("*")->WHERE("first_name","Mohammad")->And('user_id',1);
+$User2 = $Sql->Table("Users")->Select("*")->WHERE("first_name","Mohammad2")->And('user_id',3);
 
-?>
+var_dump($User->Data());
+$User->Manage()->Update("azad_M1232","last_name");
+var_dump($User->Data());
+
+var_dump($User2->Data());
+$User2->Manage()->Update("azad_MR213","last_name");
+var_dump($User2->Data());

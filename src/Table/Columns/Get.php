@@ -5,12 +5,17 @@ namespace Azad\Database\Table\Columns;
 class Get extends \Azad\Database\Database {
     protected $TableName;
     protected static $query=[];
-    public function Get($table_name=null) {
+    protected static $WhereQuery;
+
+    protected function Get($table_name=null) {
         $TableName = (isset($table_name)) ? $table_name : $this->TableName;
         $Rows = $this->Fetch($this->Query(self::$query[$TableName]));
         $TableName = (string) $this->TableName;
         foreach ($Rows as $Row => $Data) {
             foreach ($Data as $key=>$value) {
+                if ($value == null) {
+                    continue;
+                }
                 if (isset(parent::$TableData[$TableName]['data'][$key]['encrypter'])) {
                     $EncrypetName = parent::$TableData[$TableName]['data'][$key]['encrypter'];
                     $EncrypetName = parent::$ProjectName."\\Encrypters\\".$EncrypetName;
@@ -23,7 +28,6 @@ class Get extends \Azad\Database\Database {
                     $DB = new parent::$TableData[$TableName]['data'][$key]['type']();
                     $value = $DB->Get($value);
                 }
-                $Rows[$Row][$key] = $value;
             }
         }
         parent::$TableData['table_data'] = $Rows;

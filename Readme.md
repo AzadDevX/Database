@@ -1,7 +1,7 @@
 ![AzadSqlBanner](https://github.com/Azad1324/Sql/assets/158297225/23f131f0-c061-47e3-bee9-24efae6c0e7e)
 # 1. Introduction
 
-Code readability is one of the most important components of teamwork. Basic coding should be readable and understandable so that other developers (teammates or open source) have the ability to understand faster and as a result develop faster.
+Code readability is one of the most important components of teamwork. Basic coding should be readable and understandable so that other. developers (teammates or open source) have the ability to understand faster and as a result develop faster.
 
 Azad-Sql library has certain rules and regulations so that different projects can be written in the same way. Also, using the object-oriented method helps other members to master different parts of the project and develop without disturbing the main flow of the code.
 
@@ -17,7 +17,8 @@ the ability of the library in the defined function (called Magic) can wonderfull
 AzadSql developers can also develop different data types and make them available for public use. All these things will help you to ensure that your index file is in absolute order and that team members can apply their method to different parts of the project with open access.
 
 # 3. Basic rules
-After setting up library configuration, folder for keeping plugins, encrypters and rebuilders and etc is created.
+The name of your database is considered as the name of your project.
+At the beginning, after the initial execution, a folder with the same name as the database name (or the project name) is created.
 In this folder you can define plugins, rebuilders and encoders. To create any of these items, you must use the object-oriented method, the file name and class name must match, and you must use the namespace of the project path.
 for example:
 ```php
@@ -42,59 +43,79 @@ require 'vendor/autoload.php';
 Load the Connect class to start using the library:
 
 ```php
-$Database = new Azad\Database\Connect("AzadSql");
+$Database = new Azad\Database\Connect();
 ```
-> [!NOTE]
-> In the example above, the project name and database name is `AzadSql`.
 
-# 5. Project Configuration
+After loading the class, you need to create a **config class** and pass it to the library.
+The configuration class consists of three main properties, namely Database, Project, and Table.
+These properties are based on the array.
 
-After successfully executing the code, a project root has created a folder named with the project name that contains these folders:
+**Database** property values: ``host`` - ``username`` - ``password`` - ``port`` - ``name``
 
-    AzadSql/
+**Project** property values: ``directory`` - ``name``
+
+**Table** property values: ``prefix``
+
+Below is a sample of the configuration class:
+
+```php
+<?php
+class MyConfig {
+    public $Database;
+    public $Project;
+    public $Table;
+    public function __construct() {
+        # -------- Database config
+        $this->Database['host'] = '127.0.0.1';
+        $this->Database['username'] = 'root';
+        $this->Database['password'] = '';
+        $this->Database['port'] = '';
+        $this->Database['name'] = 'AzadSql';
+        # -------- Project config
+        $this->Project['directory'] = "MyProject"; # Project folder path
+        # Note: this folder is not created automatically.
+        $this->Project['name'] = "MyProject"; # Project name (namespace must be set to this name)
+        if (!file_exists($this->Project['directory'])) { mkdir($this->Project['directory']); }
+        # -------- Table config
+        $this->Table['prefix'] = "mp"; # table prefixes
+    }
+}
+```
+After creating the configuration class, connect it to the main class via the ``config`` method.
+```php
+$Sql->Config(MyConfig::class);
+```
+
+# 5. Project folder path
+
+After configuring the project, folders are created in the introduced folder.
+
+```php
+    MyProject/
   
-      Constants/
+      Constants/ # Soon
     
       Encrypters/
   
-      Exceptions/
+      Exceptions/ # Soon
     
       Plugins/
   
       Rebuilders/
     
       Tables/
-    
-      .ASql.ini
-
-The database configuration is located in the `.ASql.ini` file.
-> [!CAUTION]
-> The config file is made with permission 0600, but still requires security measures.
-
-```INI
-[Database]
-    host = 127.0.0.1
-    port =
-    username = root
-    password =
-[Table]
-    prefix =
-[Project]
-    name = AzadSql
 ```
 
-Make changes to this file and then save.
-
 # 6. How to create a table
-To do this, enter the project folder and create a php file in the Tables folder (`AzadSql\Tables\`).
+To do this, enter the project folder and create a php file in the Tables folder (`MyProject\Tables\`).
 > [!TIP]
 > The name you choose for the file is considered as the table name.
 
-After creating the PHP file, you need to create a namespace. ``ProjectName\Tables``
+After creating the PHP file, you need to create a namespace. ``PROJECT-NAME\Tables``
 
 ```php
 <?php
-namespace AzadSql\Tables;
+namespace MyProject\Tables;
 ```
 After creating namespace, create a class **named with the file** and inherit from the ``\Azad\Database\Table\Make`` class. for example:
 ```php
@@ -104,12 +125,12 @@ class Users extends \Azad\Database\Table\Make {
 ```
 In the example above, we are going to create a table with the name of ``Users``.
 > [!TIP]
-> If you set a value in the config file for ``prefix``, the table name will be set automatically, **don't do it manually**
+> If you set a value in the config file for ``prefix``, the table name will be set automatically prefix, **don't do it manually**
 
 Now, we're going to set up the database columns through ``__construct``.
 ```php
 <?php
-namespace AzadSql\Tables;
+namespace MyProject\Tables;
 class Users extends \Azad\Database\Table\Make {
     public function __construct() {
         $this->Name("user_id")->Type(\Azad\Database\Types\ID::class)->Size(255);
@@ -155,6 +176,12 @@ Types:
 
 > **timestamp**: ``No need for explanation.!``
 
+> **Decimal**: ``No need for explanation.!``
+
+> **ArrayData**: ``Storing an array in a table (based on JSON)``
+
+> **Token**: ``Automatic Token Generation (Based on SHA1)``
+
 > [!CAUTION]
 > If the set data type does not exist, you will encounter such an error.
 > 
@@ -190,7 +217,7 @@ $Unique = [Column names];
 for example:
 ```php
 <?php
-namespace AzadSql\Tables;
+namespace MyProject\Tables;
 class Users extends \Azad\Database\Table\Make {
     public $Unique = ["first_name","last_name"];
     public function __construct() {
@@ -211,15 +238,11 @@ for example:
 $Database = new Azad\Database\Connect("AzadSql");
 $Users = $Database->Table("Users");
 ```
-Now, it is time to select a columns(!), of course, to insert a data, you don't need to select a column
+
+After selecting the table, insert your data into the table using the ``Insert`` method
 ```php
 $Database = new Azad\Database\Connect("AzadSql");
-$Users = $Database->Table("Users")->Select("*");
-```
-After selecting the columns(!), insert your data into the table using the ``Insert`` method
-```php
-$Database = new Azad\Database\Connect("AzadSql");
-$Users = $Database->Table("Users")->Select("*");
+$Users = $Database->Table("Users");
 
 $Users->Insert()
     ->Key("first_name")->Value('Mohammad') // Saved as 'mohammad' because the Rebuilder has been used
@@ -248,7 +271,8 @@ End(); # After completing the list of columns and their values, call this method
 After you have saved your table to a variable (in the previous example ``$Users``), select your data using the ``WHERE`` method
 
 ```php
-$User = $Users->WHERE("first_name","Mohammad")
+$User = $Users->Select("*");
+$User = $User->WHERE("first_name","Mohammad")
             ->AND("last_name","azad");
 ```
 ## Methods:
@@ -281,7 +305,7 @@ After setting up the where، you can get your data list in two ways.
 
 ## First Solution:
 ```php
-$User->Get ();
+$User->Data ();
 ```
 
 This method displays the list of all found data. for example:
@@ -492,7 +516,7 @@ $Data -> Names::Rebuild($Data) -> Save
 ```php
 <?php
 # Names.php
-namespace AzadSql\Rebuilders;
+namespace MyProject\Rebuilders;
 class Names extends \Azad\Database\Magic\Rebuilder {
     public static function Rebuild ($Data) {
         return strtolower($Data);
@@ -545,7 +569,7 @@ Example:
 ```php
 <?php
 
-namespace AzadSql\Encrypters;
+namespace MyProject\Encrypters;
 class Base64 extends \Azad\Database\Magic\Encrypter {
     public static function Encrypt($Data) {
         return base64_encode($Data);
@@ -574,41 +598,50 @@ Plugins help you improve your teamwork and also publish plugins on the web
 Plugins help you process the data in another folder and access its defined methods in the main file.
 
 ### How to make Plugin:
-To do this, enter the project folder and create a php file in the Plugins folder (``AzadSql\Plugins\x.php``)
+To do this, enter the project folder and create a php file in the Plugins folder (``MyProject\Plugins\x.php``)
 
 **Rules:**
 1. Similar to the table structure, the file name needs to be the same as the class name.
 2. Use the namespace. ``ProjectName\Plugins``
 3. Inherit from ``\Azad\Database\Magic\Plugin``
-4. Create a constructor with ``$Database`` and ``$Data`` parameters
-5. The end.
-``$Database`` : This value is **passed by the library**, you can access the database through this parameter.
-``$Data`` : This value is **set during coding**, the data needed for the plugin is placed in this section
+
+``self::Table(X)`` : Select a table to work on data.
+
+``$this->Data`` : This value is **set during coding**, the data needed for the plugin is placed in this section
 
 Example of making a plugin:
 ```php
 <?php
 
-# AzadSql/Plugins/UserManagment.php
-
-namespace AzadSql\Plugins;
+namespace MyProject\Plugins;
 
 class UserManagment extends \Azad\Database\Magic\Plugin {
-    private $Database,$Data;
-    public function __construct ($Database,$Data) {
-        $this->Database = $Database;
-        $this->Data = $Data;
-    }
-    # Rename User
     public function ChangeFirstName ($new_first_name) {
-        $Users = $this->Database->Table("Users");
+        $Users = self::Table("Users");
         $Users = $Users->Select("*");
-        $User = $Users->WHERE("user_id",$this->Data);
+        $User = $Users->WHERE("user_id",$this->Data['user_id']);
         $User->Manage()->Update($new_first_name,"first_name");
     }
 }
 
+?>
 ```
+You can also import another plugin through the ``IncludePlugin`` method.
+
+```php
+<?php
+
+namespace MyProject\Plugins;
+class ChangeName extends \Azad\Database\Magic\Plugin {
+    public function ChangeName ($new_first_name) {
+        $UserManagment = $this->IncludePlugin("UserManagment",$this->Data);
+        $UserManagment->ChangeFirstName ($new_first_name);
+    }
+}
+
+?>
+```
+
 Example of loading a plugin:
 ```php
 <?php
@@ -624,9 +657,7 @@ $Users = $Users->Select("*"); //Select Columns
 $User = $Users->WHERE("first_name","Mohammad")
             ->And("last_name","azad"); // Find User
 
-$UserID = $User->FirstRow()['user_id']; // Get userID
-
-$UserManagment = $Sql->LoadPlugin ("UserManagment",$UserID); // Load Plugin
+$UserManagment = $Sql->LoadPlugin ("UserManagment",$User->FirstRow()); // Load Plugin
 
 $UserManagment->ChangeFirstName("Mohammad2"); // Use plugin methods
 

@@ -12,7 +12,7 @@ class Mysql {
         }
     }
     public function EscapeString ($string) {
-        return $string != ''?$this->Database->real_escape_string($string):'';
+        return ($string != '' and $string != null)?$this->Database->real_escape_string($string):'';
     }
     public function QueryRun ($command) {
         return $this->Database->query($command);

@@ -64,8 +64,7 @@ class Query {
     }
     
     public static function UpdateQuery($table_name,$value,$key,$where) {
-        $Query = "UPDATE ".$table_name." SET ".$key."='".$value."'";
-        $Query .= " WHERE ";
+        $Query = "UPDATE ".$table_name." SET ".$key."='".$value."' WHERE ";
         array_walk($where,function($value,$key) use (&$Query) {
             $Query .= ($value != null and $value != '')?$key." = '".$value."' AND ":"";
         });

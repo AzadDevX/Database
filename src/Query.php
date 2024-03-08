@@ -63,18 +63,17 @@ class Query {
         return $key." $Conditions '".$value."'";
     }
     
-    public static function UpdateQuery($table_name,$value,$key,$where) {
-        $Query = "UPDATE ";
-        $Query .= $table_name;
-        $Query .= " SET ";
-        $Query .= $key."='".$value."'";
-        $Query .= " WHERE ";
-        $keys=array_keys($where);
-        $EndColumn = array_pop($keys);
-        array_walk($where,function($value,$key) use (&$Query,$EndColumn) {
-            $Query .= $key." = '".$value."'";
-            $Query .= ($EndColumn == $key) ? "":" AND ";
-        });
+    public static function UpdateQuery($table_name, $value, $key, $where) {
+        $Query = "UPDATE $table_name SET $key = '$value' WHERE ";
+        foreach ($where as $column => $columnValue) {
+            if (isset($columnValue) && $columnValue !== "") {
+                $Query .= "$column = '$columnValue' AND ";
+            }
+        }
+        if (strpos($Query, '=') === false) {
+            return false;
+        }
+        $Query = rtrim($Query, " AND ");
         return $Query;
     }
     public static function Insert ($table_name,$data) {

@@ -70,7 +70,6 @@ class Query {
             $Query .= ($value != null and $value != '')?$key." = '".$value."' AND ":"";
         });
         $Query = rtrim($Query," AND ");
-        var_dump($Query);
         return $Query;
     }
     public static function Insert ($table_name,$data) {

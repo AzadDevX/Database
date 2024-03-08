@@ -21,7 +21,7 @@ class Row extends Get {
         });
     }
     private function RebuilderResult($Rebuilder,$data) {
-        $RebuilderName = parent::$ProjectName."\\Rebuilders\\".$Rebuilder;
+        $RebuilderName = parent::$name_prj."\\Rebuilders\\".$Rebuilder;
         if (!class_exists($RebuilderName)) {
             throw new \Azad\Database\Exception\Load("Rebuilder [$RebuilderName] does not exist");
         }
@@ -45,7 +45,7 @@ class Row extends Get {
                 }
                 if (isset(parent::$TableData[$TableName]['data'][$key]['encrypter'])) {
                     $EncrypetName = parent::$TableData[$TableName]['data'][$key]['encrypter'];
-                    $EncrypetName = parent::$ProjectName."\\Encrypters\\".$EncrypetName;
+                    $EncrypetName = parent::$name_prj."\\Encrypters\\".$EncrypetName;
                     if (!class_exists($EncrypetName)) {
                         throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
                     }
@@ -82,7 +82,7 @@ class Row extends Get {
         }
         if (isset(parent::$TableData[$TableName]['data'][$key]['encrypter'])) {
             $EncrypetName = parent::$TableData[$TableName]['data'][$key]['encrypter'];
-            $EncrypetName = parent::$ProjectName."\\Encrypters\\".$EncrypetName;
+            $EncrypetName = parent::$name_prj."\\Encrypters\\".$EncrypetName;
             if (!class_exists($EncrypetName)) {
                 throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
             }

@@ -16,7 +16,7 @@ class Insert extends \Azad\Database\Database {
         });
     }
     private function RebuilderResult($Rebuilder,$data) {
-        $RebuilderName = parent::$ProjectName."\\Rebuilders\\".$Rebuilder;
+        $RebuilderName = parent::$name_prj."\\Rebuilders\\".$Rebuilder;
         if (!class_exists($RebuilderName)) {
             throw new \Azad\Database\Exception\Load("Rebuilder [$RebuilderName] does not exist");
         }
@@ -41,7 +41,7 @@ class Insert extends \Azad\Database\Database {
         }
         if (isset(parent::$TableData[$TableName]['data'][$this->key]['encrypter'])) {
             $EncrypetName = parent::$TableData[$TableName]['data'][$this->key]['encrypter'];
-            $EncrypetName = parent::$ProjectName."\\Encrypters\\".$EncrypetName;
+            $EncrypetName = parent::$name_prj."\\Encrypters\\".$EncrypetName;
             if (!class_exists($EncrypetName)) {
                 throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
             }

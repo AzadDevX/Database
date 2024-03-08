@@ -18,7 +18,7 @@ class Get extends \Azad\Database\Database {
                 }
                 if (isset(parent::$TableData[$TableName]['data'][$key]['encrypter'])) {
                     $EncrypetName = parent::$TableData[$TableName]['data'][$key]['encrypter'];
-                    $EncrypetName = parent::$ProjectName."\\Encrypters\\".$EncrypetName;
+                    $EncrypetName = parent::$name_prj."\\Encrypters\\".$EncrypetName;
                     if (!class_exists($EncrypetName)) {
                         throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
                     }

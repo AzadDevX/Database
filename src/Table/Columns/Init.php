@@ -41,12 +41,18 @@ class Init extends Get {
     }
 
     public function FirstRow () {
+        if ($this->Where) {
+            parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");
+        }
         parent::$query[$this->TableName] .= $this->Where;
         $Result = $this->Get()[0] ?? false;
         parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");
         return $Result;
     }
     public function Manage () {
+        if ($this->Where) {
+            parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");
+        }
         parent::$query[$this->TableName] .= $this->Where;
         $QueryResult = $this->Get();
         $Query = parent::$query[$this->TableName];
@@ -62,12 +68,18 @@ class Init extends Get {
         return $Result;
     }
     public function WorkOn ($Key) { 
+        if ($this->Where) {
+            parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");
+        }
         parent::$query[$this->TableName] .= $this->Where;
         $QueryResult = $this->Get();
+        $Query = parent::$query[$this->TableName];
+        parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");
+
         if(count($QueryResult) == 0) {
             return false;
         } else {
-            return new WorkOn($Key);
+            return new WorkOn($Key,null,$Query);
         }
     }
 }

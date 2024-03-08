@@ -7,7 +7,7 @@ class Make extends \Azad\Database\Database {
         public $PRIMARY_KEY = null;
         public $Unique = [];
         final protected function Save () {
-            $table_name = str_replace(parent::$ProjectName."\\Tables\\",'',get_class($this));
+            $table_name = str_replace(parent::$name_prj."\\Tables\\",'',get_class($this));
             $table_name = parent::$is_have_prefix?parent::$TablePrefix."_".$table_name:$table_name;
             parent::$TableData[$table_name]['data'] = $this->ColumnList;
             parent::$TableData[$table_name]['short'] = $this->ShortKeyType;

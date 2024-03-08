@@ -5,7 +5,10 @@ namespace Azad\Database\Table\Columns;
 class WorkOn extends Get {
     private $Value;
     private $Key;
-    public function __construct($Value,$is_key=true) {
+    public function __construct($Value,$is_key=true,$query=null) {
+        if ($query != null) {
+            parent::$query[$this->TableName] = $query;
+        }
         if ($is_key == true) {
             $this->Key = $Value;
             $this->Value = $this->Get()[0][$Value];

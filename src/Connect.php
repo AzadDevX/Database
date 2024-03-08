@@ -3,84 +3,64 @@
 namespace Azad\Database;
 
 class Connect extends Database {
-    private $config,$ProjectDir,$db_name;
-
-    public function __construct($db_name) {
-        $this->ProjectDir = $db_name;
-        self::$ProjectName = $db_name;
-        $this->db_name = $db_name;
-        $this->MakeFolders ();
-        $this->MakeConfig ();
-        $this->config = $this->Config ();
-        $this->ProjectDir = $this->config['Project']['name'];
-        self::$ProjectName = $this->config['Project']['name'];
-        $host = ($this->config['Database']['port'] != '')?$this->config['Database']['host'].":".$this->config['Database']['port']:$this->config['Database']['host'];
-        $username = $this->config['Database']['username'];
-        $password = $this->config['Database']['password'];
-        self::$DataBase = new Mysql($host, $username, $password, $db_name);
-        self::$TablePrefix = $this->config['Table']['prefix'];
-        self::$is_have_prefix = self::$TablePrefix != '';
+    public function __construct() { }
+    public function Config ($class) {
+        if (!class_exists($class)) {
+            throw new Exception\Load("Config [$class] does not exist");
+        }
+        $ConfigData = new $class();
+        $host = ($ConfigData->Database['port'] != '')?$ConfigData->Database['host'].":".$ConfigData->Database['port']:$ConfigData->Database['host'];
+        $username = $ConfigData->Database["username"];
+        $password = $ConfigData->Database["password"];
+        $db_name = $ConfigData->Database["name"];
+        parent::$DataBase = new Mysql($host, $username, $password, $db_name);
+        parent::$dir_prj = $ConfigData->Project["directory"];
+        parent::$name_prj = $ConfigData->Project["name"];
+        parent::$TablePrefix = $ConfigData->Table['prefix'];
+        parent::$is_have_prefix = parent::$TablePrefix != '';
         $this->LoadPlugins ();
         $this->LoadRebuilders ();
         $this->LoadEncrypters ();
         $this->LoadTables ();
     }
-    private function WriteINI($config, $section, $file) {
-        $content = "[$section] \n";
-        foreach ($config as $key => $value) {
-            $content .= "$key = $value \n";
-        }
-        file_put_contents($file, $content, FILE_APPEND) !== false;
-        chmod($file,0600);
-    }
-    private function MakeConfig () {
-        $filename = $this->ProjectDir."/.ASql.ini";
-        if (!file_exists($filename)) {
-            $this->WriteINI(["host" => '127.0.0.1',"port" => '',"username" => 'root',"password" => ''],"Database",$filename);
-            $this->WriteINI(["prefix" => ''],"Table",$filename);
-            $this->WriteINI(["name" => $this->db_name],"Project",$filename);
-        }
-    }
-    private function Config () {
-        return parse_ini_file($this->ProjectDir.'/.ASql.ini',true);
-    }
     public function Table($table_name) {
-        return new Table\Init(self::$is_have_prefix?self::$TablePrefix."_".$table_name:$table_name);
+        return new Table\Init(parent::$is_have_prefix?parent::$TablePrefix."_".$table_name:$table_name);
     }
     private function MakeDir($address) {
         return !file_exists($address)?mkdir($address):false;
     }
     private function MakeFolders() {
-        $this->MakeDir($this->ProjectDir);
-        $this->MakeDir($this->ProjectDir."/Tables");
-        $this->MakeDir($this->ProjectDir."/Constants");
-        $this->MakeDir($this->ProjectDir."/Encrypters");
-        $this->MakeDir($this->ProjectDir."/Rebuilders");
-        $this->MakeDir($this->ProjectDir."/Plugins");
-        $this->MakeDir($this->ProjectDir."/Exceptions");
+        $dir = parent::$dir_prj;
+        $this->MakeDir($dir);
+        $this->MakeDir($dir."/Tables");
+        $this->MakeDir($dir."/Constants");
+        $this->MakeDir($dir."/Encrypters");
+        $this->MakeDir($dir."/Rebuilders");
+        $this->MakeDir($dir."/Plugins");
+        $this->MakeDir($dir."/Exceptions");
     }
     private function LoadTables () {
-        array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."/Tables/*.php"));
-        array_map(fn($x) => $this->Query($x['query']),\Azad\Database\Table\MakeINIT::MakeTables(self::$TablePrefix));
+        array_map(fn($filename) => include_once($filename),glob(parent::$dir_prj."/Tables/*.php"));
+        array_map(fn($x) => $this->Query($x['query']),\Azad\Database\Table\MakeINIT::MakeTables());
     }
     private function LoadPlugins () {
-        array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."/Plugins/*.php"));
+        array_map(fn($filename) => include_once($filename),glob(parent::$dir_prj."/Plugins/*.php"));
     }
     private function LoadRebuilders () {
-        array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."/Rebuilders/*.php"));
+        array_map(fn($filename) => include_once($filename),glob(parent::$dir_prj."/Rebuilders/*.php"));
     }
     private function LoadEncrypters () {
-        array_map(fn($filename) => include_once($filename),glob($this->ProjectDir."/Encrypters/*.php"));
+        array_map(fn($filename) => include_once($filename),glob(parent::$dir_prj."/Encrypters/*.php"));
     }
     public function LoadPlugin ($class,$data) {
-        $class = self::$ProjectName."\\Plugins\\".$class;
+        $class = parent::$name_prj."\\Plugins\\".$class;
         if (!class_exists($class)) {
             throw new Exception\Load("Plugin [$class] does not exist");
         }
-        return new $class($this,$data);
+        return new $class($data);
     }
     protected function RebuilderResult ($RebuilderName,$Data) {
-        $RebuilderName = self::$ProjectName."\\Rebuilders\\".$RebuilderName;
+        $RebuilderName = parent::$name_prj."\\Rebuilders\\".$RebuilderName;
         if (!class_exists($RebuilderName)) {
             throw new Exception\Load("Rebuilder [$RebuilderName] does not exist");
         }

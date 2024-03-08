@@ -17,9 +17,7 @@ the ability of the library in the defined function (called Magic) can wonderfull
 AzadSql developers can also develop different data types and make them available for public use. All these things will help you to ensure that your index file is in absolute order and that team members can apply their method to different parts of the project with open access.
 
 # 3. Basic rules
-The name of your database is considered as the name of your project.
-At the beginning, after the initial execution, a folder with the same name as the database name (or the project name) is created.
-In this folder you can define plugins, rebuilders and encoders. To create any of these items, you must use the object-oriented method, the file name and class name must match, and you must use the namespace of the project path.
+you must use the object-oriented method, the file name and class name must match, and you must use the namespace of the project path.
 for example:
 ```php
 namespace MyProject\Plugins;

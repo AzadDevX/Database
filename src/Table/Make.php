@@ -6,6 +6,7 @@ class Make extends \Azad\Database\Database {
         private $ColumnList = [],$Name,$ShortKeyType;
         public $PRIMARY_KEY = null;
         public $Unique = [];
+        public $Foreign = [];
         final protected function Save () {
             $table_name = str_replace(parent::$name_prj."\\Tables\\",'',get_class($this));
             $table_name = parent::$is_have_prefix?parent::$TablePrefix."_".$table_name:$table_name;

@@ -33,6 +33,12 @@ class Query {
             $Query .= self::DataTypeTable ($ColumnName,$ColumnData);
             $Query .= ($EndColumn == $ColumnName) ? "":",";
         });
+        if (is_array($class_name->Foreign) and count($class_name->Foreign) > 0) {
+            $Foreign = $class_name->Foreign;
+            $Foreign_Key = array_keys($Foreign)[0];
+            $Foreign_Data = $Foreign[$Foreign_Key];
+            $Query .= ", FOREIGN KEY (".$Foreign_Key.") REFERENCES ".$Foreign_Data["table"]."(".$Foreign_Data["column"].")";
+        }
         if (isset($class_name->PRIMARY_KEY)) {
             $Query .= ", PRIMARY KEY (".$class_name->PRIMARY_KEY.")";
         }

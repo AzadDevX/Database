@@ -17,7 +17,7 @@ the ability of the library in the defined function (called Magic) can wonderfull
 AzadSql developers can also develop different data types and make them available for public use. All these things will help you to ensure that your index file is in absolute order and that team members can apply their method to different parts of the project with open access.
 
 # 3. Basic rules
-you must use the object-oriented method, the file name and class name must match, and you must use the namespace of the project path.
+you must use the object-oriented method, the file name and class name must match, and you must use the namespace of the project name.
 for example:
 ```php
 namespace MyProject\Plugins;

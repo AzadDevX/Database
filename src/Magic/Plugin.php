@@ -8,7 +8,7 @@ abstract class Plugin extends \Azad\Database\Database {
         $this->Data = $Data;
     }
     final protected static function Table($table_name) {
-        return new \Azad\Database\Table\Init(self::$is_have_prefix?self::$TablePrefix."_".$table_name:$table_name);
+        return new \Azad\Database\Table\Init($table_name);
     }
     final protected function IncludePlugin ($PluginName,$Data) {
         $PluginName = parent::$name_prj."\\Plugins\\".$PluginName;

@@ -24,7 +24,7 @@ class Connect extends Database {
         $this->LoadTables ();
     }
     public function Table($table_name) {
-        return new Table\Init(parent::$is_have_prefix?parent::$TablePrefix."_".$table_name:$table_name);
+        return new Table\Init($table_name);
     }
     private function MakeDir($address) {
         return !file_exists($address)?mkdir($address):false;
@@ -41,7 +41,8 @@ class Connect extends Database {
     }
     private function LoadTables () {
         array_map(fn($filename) => include_once($filename),glob(parent::$dir_prj."/Tables/*.php"));
-        array_map(fn($x) => $this->Query($x['query']),\Azad\Database\Table\MakeINIT::MakeTables());
+        $TableList = \Azad\Database\Sort::TableForeign(\Azad\Database\Table\MakeINIT::MakeTables());
+        array_map(fn($x) => $this->Query($x['query']),$TableList);
     }
     private function LoadPlugins () {
         array_map(fn($filename) => include_once($filename),glob(parent::$dir_prj."/Plugins/*.php"));

@@ -44,12 +44,16 @@ class Row extends Get {
                     $value = self::$DataBase->EscapeString ($value);
                 }
                 if (isset(parent::$TableData[$TableName]['data'][$key]['encrypter'])) {
-                    $EncrypetName = parent::$TableData[$TableName]['data'][$key]['encrypter'];
-                    $EncrypetName = parent::$name_prj."\\Encrypters\\".$EncrypetName;
-                    if (!class_exists($EncrypetName)) {
-                        throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
+                    if (!isset(self::$EncrypterStatus[$key]['status']) or self::$EncrypterStatus[$key]['status'] != "encrypted") {
+                        $EncrypetName = parent::$TableData[$TableName]['data'][$key]['encrypter'];
+                        $EncrypetName = parent::$name_prj."\\Encrypters\\".$EncrypetName;
+                        if (!class_exists($EncrypetName)) {
+                            throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
+                        }
+                        self::$EncrypterStatus[$key] = ['value'=>$value,'status'=>'encrypting'];
+                        $value = $EncrypetName::Encrypt(parent::$TableData["table_data"][0][$key]);
+                        self::$EncrypterStatus[$key] = ['value'=>$value,'status'=>'encrypted'];
                     }
-                    $value = $EncrypetName::Encrypt(parent::$TableData["table_data"][0][$key]);
                 }
                 $this->FixedWhere[$key] = $value;
             }

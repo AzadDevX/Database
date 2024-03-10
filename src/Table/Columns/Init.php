@@ -19,7 +19,6 @@ class Init extends Get {
         return new $this($this->TableName,parent::$query[$this->TableName],$this->Where);
     }
     public function AND ($key,$value,$Conditions="=") {
-        echo $this->Where;
         $this->Where .= (strpos($this->Where ?? "", "WHERE") === false)?throw new Exception("First, you need to use the WHERE method."):" AND ";
         $this->Where .= \Azad\Database\Query::MakeWhere($key,$value,$Conditions);
         return new $this($this->TableName,parent::$query[$this->TableName],$this->Where);

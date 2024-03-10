@@ -5,15 +5,16 @@ class Query {
 
     private static function DataTypeTable ($ColumnName,$ColumnData) {
         $Query = "`".$ColumnName."` ";
-        $SqlType = $ColumnData["type"]->SqlType;
-        if ($SqlType == "ID") {
-            $Query .= "BIGINT";
+        $Query .= $ColumnData["type"]->SqlType;
+        if (isset($ColumnData["size"])) {
             $Query .= "(".$ColumnData["size"].")";
-        } else {
-            $Query .= $ColumnData["type"]->SqlType;
-            if (isset($ColumnData["size"])) {
-                $Query .= "(".$ColumnData["size"].")";
-            }
+        }
+        if (isset($ColumnData['default'])) {
+            $DefaultValue = ($ColumnData['default'] == 'NULL')?'NULL':"'".$ColumnData['default']."'";
+            $Query .= "DEFAULT ".$DefaultValue;
+        }
+        if (isset($ColumnData['not_null']) and $ColumnData['not_null'] == true) {
+            $Query .= " NOT NULL ";
         }
         if (method_exists($ColumnData["type"],"AddToQueryTable")) {
             $Query .= " ".$ColumnData["type"]->AddToQueryTable();
@@ -26,25 +27,28 @@ class Query {
         $Query .= " (";
         $keys=array_keys($data['data']);
         $EndColumn = array_pop($keys);
-        array_walk($data['data'],function($ColumnData,$ColumnName) use (&$Query,$EndColumn,&$class_name) {
+        $Foreign_Query = null;
+        array_walk($data['data'],function($ColumnData,$ColumnName) use (&$Query,$EndColumn,&$class_name,&$Foreign_Query) {
             if ($ColumnData['type']->Primary == true) {
                 $class_name->PRIMARY_KEY = $ColumnName;
             }
             $Query .= self::DataTypeTable ($ColumnName,$ColumnData);
             $Query .= ($EndColumn == $ColumnName) ? "":",";
+            if (isset($ColumnData["foreign"])) {
+                $Foreign_Data = $ColumnData["foreign"];
+                $Foreign_Query = ", FOREIGN KEY (".$ColumnName.") REFERENCES ".$Foreign_Data["table"]."(".$Foreign_Data["column"].")";
+            }
         });
-        if (is_array($class_name->Foreign) and count($class_name->Foreign) > 0) {
-            $Foreign = $class_name->Foreign;
-            $Foreign_Key = array_keys($Foreign)[0];
-            $Foreign_Data = $Foreign[$Foreign_Key];
-            $Query .= ", FOREIGN KEY (".$Foreign_Key.") REFERENCES ".$Foreign_Data["table"]."(".$Foreign_Data["column"].")";
-        }
         if (isset($class_name->PRIMARY_KEY)) {
             $Query .= ", PRIMARY KEY (".$class_name->PRIMARY_KEY.")";
         }
         if (is_array($class_name->Unique) and count($class_name->Unique) > 0) {
             $Query .= ", UNIQUE (".implode(",",$class_name->Unique).")";
         }
+        if ($Foreign_Query !== null) {
+            $Query .= $Foreign_Query;
+        }
+
         $Query .= " )";
         return $Query;
     }

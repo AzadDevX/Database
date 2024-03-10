@@ -3,15 +3,15 @@
 namespace Azad\Database\Table;
 
 class Make extends \Azad\Database\Database {
-        private $ColumnList = [],$Name,$ShortKeyType;
+        private $ColumnList = [],$Name,$ShortKeyType,$ForeignFrom;
         public $PRIMARY_KEY = null;
         public $Unique = [];
-        public $Foreign = [];
         final protected function Save () {
             $table_name = str_replace(parent::$name_prj."\\Tables\\",'',get_class($this));
             $table_name = parent::$is_have_prefix?parent::$TablePrefix."_".$table_name:$table_name;
             parent::$TableData[$table_name]['data'] = $this->ColumnList;
             parent::$TableData[$table_name]['short'] = $this->ShortKeyType;
+            parent::$TableData[$table_name]['foreign_from'] = $this->ForeignFrom ?? false;
         }
 
         protected function Name($name) {
@@ -52,7 +52,29 @@ class Make extends \Azad\Database\Database {
             $this->ColumnList[$this->Name]['encrypter'] = $name;
             return $this;
         }
+        public function Foreign ($table_name,$column,$prefix=true) {
+            if ($prefix == true) {
+                $table_name = parent::$is_have_prefix?parent::$TablePrefix."_".$table_name:$table_name;
+            }
+            $this->ForeignFrom = $table_name;
+            $this->ColumnList[$this->Name]['foreign'] = ['table'=>$table_name,'column'=>$column];
+        }
+        public function Null () {
+            $this->ColumnList[$this->Name]['default'] = 'NULL';
+            return $this;
+        }
+        public function NotNull () {
+            $this->ColumnList[$this->Name]['not_null'] = true;
+            return $this;
+        }
+        public function Default ($string) {
+            $this->ColumnList[$this->Name]['default'] = $string;
+            return $this;
+        }
         public function List () {
             return parent::$TableData;
+        }
+        final public static function Table($table_name) {
+            return new \Azad\Database\Table\Init($table_name);
         }
     }

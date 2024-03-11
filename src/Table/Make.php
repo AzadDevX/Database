@@ -6,12 +6,15 @@ class Make extends \Azad\Database\Database {
         private $ColumnList = [],$Name,$ShortKeyType,$ForeignFrom;
         public $PRIMARY_KEY = null;
         public $Unique = [];
+
+        private static $TableName;
         final protected function Save () {
             $table_name = str_replace(parent::$name_prj."\\Tables\\",'',get_class($this));
             $table_name = parent::$is_have_prefix?parent::$TablePrefix."_".$table_name:$table_name;
             parent::$TableData[$table_name]['data'] = $this->ColumnList;
             parent::$TableData[$table_name]['short'] = $this->ShortKeyType;
             parent::$TableData[$table_name]['foreign_from'] = $this->ForeignFrom ?? false;
+            self::$TableName = $table_name;
         }
 
         protected function Name($name) {
@@ -76,5 +79,27 @@ class Make extends \Azad\Database\Database {
         }
         final public static function Table($table_name) {
             return new \Azad\Database\Table\Init($table_name);
+        }
+        final public function GlobalME() {
+            parent::$IDListTable[self::$TableName] = [];
+        }
+        final static public function Get($table,$prefix=true) {
+            if ($prefix == true) {
+                $table = parent::$is_have_prefix?parent::$TablePrefix."_".$table:$table;
+            }
+            return json_decode(json_encode(parent::$IDListTable[$table])) ?? false;
+        }
+        final public static function Correlation($OriginColumn,$table_name,$column) {
+            $this_table_name = str_replace(parent::$name_prj."\\Tables\\",'',static::class);
+            $this_table_name = parent::$is_have_prefix?self::$TablePrefix."_".$this_table_name:$this_table_name;
+            $LastUser = self::Get($this_table_name,false);
+            if (isset($LastUser->$OriginColumn)) {
+                $Where = $LastUser->$OriginColumn;
+                $Wallet = self::Table($table_name);
+                $Select = $Wallet->Select("*");
+                $Where = $Select->WHERE($column,$Where);
+                return json_decode(json_encode($Where->FirstRow()));
+            }
+            return false;
         }
     }

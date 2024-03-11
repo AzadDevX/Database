@@ -28,4 +28,7 @@ class Init extends \Azad\Database\Database {
         }
         return $this->ClassName::$method ($args);
     }
+    public function __get($name) {
+        return $this->ClassName::$$name;
+    }
 }

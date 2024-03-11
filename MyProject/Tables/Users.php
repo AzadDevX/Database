@@ -2,6 +2,8 @@
 namespace MyProject\Tables;
 class Users extends \Azad\Database\Table\Make {
     public $Unique = ["first_name","last_name"];
+    public static $Wallet;
+
     public function __construct() {
         $this->Name("user_id")->Type(\Azad\Database\Types\ID::class)->Size(255);
         $this->Name("first_name")->Type(\Azad\Database\Types\Varchar::class)->Size(255)->Rebuilder("Names");
@@ -10,10 +12,10 @@ class Users extends \Azad\Database\Table\Make {
         $this->Name("created_at")->Type(\Azad\Database\Types\CreatedAt::class);
         $this->Name("updated_time")->Type(\Azad\Database\Types\UpdateAt::class);
         $this->Save ();
+        $this->GlobalME();
     }
-    public static function Wallet ($args) {
-        $Wallet = self::Table("Wallet")->Select("*");
-        $Wallet = $Wallet->WHERE("user_id",$args[0]);
-        return($Wallet->FirstRow());
+    public static function Wallet () {
+        self::$Wallet = self::Correlation("user_id","Wallet","user_id");
+        return self::$Wallet;
     }
 }

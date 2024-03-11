@@ -33,6 +33,9 @@ class Get extends \Azad\Database\Database {
                 }
             }
         }
+        if (isset(parent::$IDListTable[$TableName])) {
+            parent::$IDListTable[$TableName] = $Rows[0] ?? [];
+        }
         parent::$TableData['table_data'] = $Rows;
         return $Rows;
     }

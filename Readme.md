@@ -263,10 +263,10 @@ Manual mode:
 ```php
 $Transactions = $Sql->Table("Transactions");
 $Find = $Transactions->Select("*")->WHERE("user_id",2);
-$Transactions_Data = $Find->LastRow();
+$Transactions_Data = $Find->LastRow()->Result;
 $Users = $Sql->Table("Users");
 $Find = $Users->Select("*")->WHERE("user_id",$Transactions_Data['user_id']);
-$UsersData = $Find->LastRow();
+$UsersData = $Find->LastRow()->Result;
 return $UsersData["first_name"];  #mohammad
 ```
 
@@ -274,7 +274,7 @@ Use of Tables Correlation:
 ```php
 $Transactions = $Sql->Table("Transactions");
 $Find = $Transactions->Select("*")->WHERE("user_id",2);
-$Transactions_Data = $Find->LastRow();
+$Transactions_Data = $Find->LastRow()->Result;
 return $Transactions->UserData()->first_name; #mohammad
 ```
 ### How to set up correlation?
@@ -319,7 +319,7 @@ Correlation($OriginColumn,$table_name,$column)
 ```php
 $Transactions = $Sql->Table("Transactions");
 $Find = $Transactions->Select("*")->WHERE("user_id",2);
-$Transactions_Data = $Find->LastRow(); # <------
+$Transactions_Data = $Find->LastRow()->Result; # <------
 return $Transactions->UserData();
 ```
 
@@ -347,7 +347,7 @@ Second example :
 ```php
 $Transactions = $Sql->Table("Transactions");
 $Find = $Transactions->Select("*")->WHERE("user_id",2);
-// $Transactions_Data = $Find->LastRow();
+// $Transactions_Data = $Find->LastRow()->Result;
 return $Transactions->UserData();
 ```
 
@@ -363,7 +363,7 @@ bool(false)
 ```php
 $Transactions = $Sql->Table("Transactions");
 $Find = $Transactions->Select("*")->WHERE("user_id",2);
-$Transactions_Data = $Find->LastRow();
+$Transactions_Data = $Find->LastRow()->Result;
 $Find = $Transactions->Select("*")->WHERE("user_id",3); # <---- user id changed!
 # Although the user ID has changed, but no operation has been carried out on it.
 return $Transactions->UserData();
@@ -393,9 +393,9 @@ Second example (No problem) :
 ```php
 $Transactions = $Sql->Table("Transactions");
 $Find = $Transactions->Select("*")->WHERE("user_id",2);
-$Transactions_Data = $Find->LastRow();
+$Transactions_Data = $Find->LastRow()->Result;
 $Find = $Transactions->Select("*")->WHERE("user_id",3);
-$Transactions_Data = $Find->LastRow(); # Perform operations on the found data, the global variable is updated!!!
+$Transactions_Data = $Find->LastRow()->Result; # Perform operations on the found data, the global variable is updated!!!
 return $Transactions->UserData();
 ```
 
@@ -492,7 +492,7 @@ After setting up the where، you can get your data list in two ways.
 
 ## First Solution:
 ```php
-$User->Data ();
+$User->Data ()->Result;
 ```
 
 This method displays the list of all found data. for example:
@@ -517,9 +517,9 @@ array(1) {
 
 ## Second Solution:
 ```php
-$User->FirstRow ();
+$User->FirstRow ()->Result;
 # OR
-$User->LastRow ();
+$User->LastRow ()->Result;
 ```
 
 This method get the first/last data found.
@@ -540,27 +540,31 @@ array(5) {
 ```
 
 # 8. How to Update a row
-To update a column, use the ``Manage`` method after you have used ``Where``
+To update one or more columns, after selecting Row (via ``FirstRow`` | ``LastRow`` | ``Data``) Use the ``Update`` properties.
 ```php
-$User->Manage()
+$User->LastRow ()
+    ->Update
+        ....
+    ->Push();
 ```
-This method has other methods within itself.
-> [!IMPORTANT]
-> if the output of where is more than one value, you need to use the ``First()`` method.
-> ```php
-> $User->First()->Manage()
-> ```
-> Otherwise, use the Manage directly.
-> ```php
-> $User->Manage()
-> ```
 
-> [!NOTE]
-> To clarify the description, we put the Manage method in another variable
+> [!IMPORTANT]
+> if the output of where is more than one value, All of them will be updated.
+
+**Example:**
+
 ```php
-$UserManage = $User->Manage();
+$Users = $Sql->Table("Users");
+$Find = $Users->Select("*")->WHERE("user_id",2);
+$Data = $Find->LastRow();
+$Data->
+    Update
+        ->Key("first_name")->Value("MohammadA")
+    ->Push();
 ```
+
 Now, to update the value of a column we have three methods:
+
 ## Methods:
 ```php
 Update(new_value,column_name)
@@ -570,28 +574,6 @@ Update(new_value,column_name)
 
 ``column_name`` : The name of the column you want to update
 
-**Example**
-
-```php
-$UserManage->Update("md","first_name")
-           ->Update("az","last_name");
-$User->FirstRow ();
-```
-Result:
-```php
-array(5) {
-  ["user_id"]=>
-  string(1) "1"
-  ["first_name"]=>
-  string(2) "md"
-  ["last_name"]=>
-  string(2) "az"
-  ["created_at"]=>
-  string(19) "2024-03-07 02:30:18"
-  ["updated_time"]=>
-  string(19) "2024-03-07 02:53:40"
-}
-```
 
 ```php
 Increase(number,column_name)
@@ -614,11 +596,15 @@ You can also use conditional commands to update your data.
 Examples:
 ```php
 try {
-    $UserManage
-        ->Condition
-            ->IF("first_name")->EqualTo("Mohammad2")
+    $Users = $Sql->Table("Users");
+    $Find = $Users->Select("*")->WHERE("user_id",2);
+    $Data = $Find->Data();
+    $Data->
+        Condition->
+            IF("USD")->Between(300,600)
         ->End()
-    ->Update("Mohammad","first_name");
+            ->Key("USD")->Increase(50)
+                ->Push();
 } catch (Azad\Database\Conditions\Exception $E) {
     var_dump($E->Debug);
 }
@@ -662,16 +648,6 @@ NotIN(array x) # If there is no x in the data of a column،
 
 # Functionals
 Functional functions, (which are located in the main project) to expedite work. This part is still developing. (``src\Functional``)
-Example:
-```php
-// score = 100
-$NewSalary = $User->WorkOn("score")->
-    Tool("Percentage")
-        -> Append(10)
-    ->Close()
-->Result();
-// result: 110
-```
 
 # Magic
 
@@ -805,8 +781,11 @@ class UserManagment extends \Azad\Database\Magic\Plugin {
     public function ChangeFirstName ($new_first_name) {
         $Users = self::Table("Users");
         $Users = $Users->Select("*");
-        $User = $Users->WHERE("user_id",$this->Data['user_id']);
-        $User->Manage()->Update($new_first_name,"first_name");
+        $User = $Users->WHERE("user_id",$this->Data->Result['user_id']);
+        $User->LastRow()->
+            Update
+                ->Key("first_name")->Value($new_first_name)
+            ->Push();
     }
 }
 
@@ -843,11 +822,11 @@ $Users = $Users->Select("*"); //Select Columns
 $User = $Users->WHERE("first_name","Mohammad")
             ->And("last_name","azad"); // Find User
 
-$UserManagment = $Sql->LoadPlugin ("UserManagment",$User->FirstRow()); // Load Plugin
+$UserManagment = $Sql->LoadPlugin ("UserManagment",$User->LastRow()); // Load Plugin
 
 $UserManagment->ChangeFirstName("Mohammad2"); // Use plugin methods
 
-var_dump($User->FirstRow()); // Get new data
+var_dump($User->LastRow()->Result); // Get new data
 ```
 ```php
 array(5) {

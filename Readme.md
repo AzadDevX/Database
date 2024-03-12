@@ -559,7 +559,7 @@ $Find = $Users->Select("*")->WHERE("user_id",2);
 $Data = $Find->LastRow();
 $Data->
     Update
-        ->Key("first_name")->Value("MohammadA")
+        ->Key("first_name")->Value("Mohammad")
     ->Push();
 ```
 
@@ -593,11 +593,11 @@ Decrease(number,column_name)
 
 ## Condition
 You can also use conditional commands to update your data.
-Examples:
+Examples: (In this example, all columns of USD that range from 300 to 600 are added to 50 values.)
 ```php
 try {
     $Users = $Sql->Table("Users");
-    $Find = $Users->Select("*")->WHERE("user_id",2);
+    $Find = $Users->Select("*");
     $Data = $Find->Data();
     $Data->
         Condition->
@@ -606,10 +606,9 @@ try {
             ->Key("USD")->Increase(50)
                 ->Push();
 } catch (Azad\Database\Conditions\Exception $E) {
-    var_dump($E->Debug);
+    var_dump($E->getMessage());
 }
 
-#Result: throw error: The value of [first_name] is equal to mohammad - but you have defined (Mohammad2) in the EqualTo
 ```
 
 ### Methods:

@@ -156,9 +156,17 @@ Type(class_type)
 
 Types:
 
+> **ArrayData**: ``Storing an array in a table (based on JSON)``
+
 > **AutoLess**: ``Custom Datatype Sample, for Data Handling Guide``
 
 > **BigINT**: ``No need for explanation.!``
+
+> **Boolean**: ``No need for explanation.!``
+
+> **Decimal**: ``No need for explanation.!``
+
+> **Floats**: ``No need for explanation.!``
 
 > **CreatedAt**: ``When you insert a new record, it automatically saves the time of the record``
 
@@ -176,9 +184,9 @@ Types:
 
 > **Decimal**: ``No need for explanation.!``
 
-> **ArrayData**: ``Storing an array in a table (based on JSON)``
-
 > **Token**: ``Automatic Token Generation (Based on SHA1)``
+
+> **UserID**: This column is set to Primary and BigINT.
 
 > [!CAUTION]
 > If the set data type does not exist, you will encounter such an error.

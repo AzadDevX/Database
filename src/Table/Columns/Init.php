@@ -14,16 +14,28 @@ class Init extends Get {
         }
     }
     public function WHERE ($key,$value,$Conditions="=") {
+        if(method_exists(new parent::$TableData[$this->TableName]['data'][$key]['type'],"Set")) {
+            $DB = new parent::$TableData[$this->TableName]['data'][$key]['type']();
+            $value = $DB->Set($value);
+        }
         $this->Where .= (strpos($this->Where ?? "", "WHERE") === false)?" WHERE ":throw new Exception("You are allowed to use the WHERE method only once here.");
         $this->Where .= \Azad\Database\Query::MakeWhere($key,$value,$Conditions);
         return new $this($this->TableName,parent::$query[$this->TableName],$this->Where);
     }
     public function AND ($key,$value,$Conditions="=") {
+        if(method_exists(new parent::$TableData[$this->TableName]['data'][$key]['type'],"Set")) {
+            $DB = new parent::$TableData[$this->TableName]['data'][$key]['type']();
+            $value = $DB->Set($value);
+        }
         $this->Where .= (strpos($this->Where ?? "", "WHERE") === false)?throw new Exception("First, you need to use the WHERE method."):" AND ";
         $this->Where .= \Azad\Database\Query::MakeWhere($key,$value,$Conditions);
         return new $this($this->TableName,parent::$query[$this->TableName],$this->Where);
     }
     public function OR ($key,$value,$Conditions="=") {
+        if(method_exists(new parent::$TableData[$this->TableName]['data'][$key]['type'],"Set")) {
+            $DB = new parent::$TableData[$this->TableName]['data'][$key]['type']();
+            $value = $DB->Set($value);
+        }
         $this->Where .= (strpos($this->Where ?? "", "WHERE") === false)?throw new Exception("First, you need to use the WHERE method."):" OR ";
         $this->Where .= \Azad\Database\Query::MakeWhere($key,$value,$Conditions);
         return new $this($this->TableName,parent::$query[$this->TableName],$this->Where);

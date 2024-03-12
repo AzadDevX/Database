@@ -48,7 +48,6 @@ class Query {
         if ($Foreign_Query !== null) {
             $Query .= $Foreign_Query;
         }
-
         $Query .= " )";
         return $Query;
     }
@@ -76,7 +75,7 @@ class Query {
     public static function UpdateQuery($table_name,$value,$key,$where) {
         $Query = "UPDATE ".$table_name." SET ".$key."='".$value."' WHERE ";
         array_walk($where,function($value,$key) use (&$Query) {
-            $Query .= ($value != null and $value != '')?$key." = '".$value."' AND ":"";
+            $Query .= ($value != null and $value != '' and $value != [])?$key." = '".$value."' AND ":"";
         });
         $Query = rtrim($Query," AND ");
         return $Query;

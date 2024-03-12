@@ -15,14 +15,14 @@ class Database {
     protected static $dir_prj;
     protected static $name_prj;
     protected static $IDListTable;
-    protected static function Query($command) {
+    protected function Query($command) {
         try {
             return self::$DataBase->QueryRun($command);
         } catch (\mysqli_sql_exception $E) {
             throw new Exception\SQLQuery($E->getMessage());
         }
     }
-    protected static function Fetch($queryResult) {
+    protected function Fetch($queryResult) {
         return self::$DataBase->FetchQuery($queryResult);
     }
     protected static function PreparingGet($Rows,$TableName) { #Soon fixed

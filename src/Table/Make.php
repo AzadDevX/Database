@@ -61,6 +61,7 @@ class Make extends \Azad\Database\Database {
             }
             $this->ForeignFrom = $table_name;
             $this->ColumnList[$this->Name]['foreign'] = ['table'=>$table_name,'column'=>$column];
+            return $this;
         }
         public function Null () {
             $this->ColumnList[$this->Name]['default'] = 'NULL';

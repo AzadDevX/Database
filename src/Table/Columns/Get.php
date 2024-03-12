@@ -14,7 +14,7 @@ class Get extends \Azad\Database\Database {
         $TableName = (string) $this->TableName;
         foreach ($Rows as $Row => $Data) {
             foreach ($Data as $key=>$value) {
-                if ($value == null) { continue; }
+                if ($value == null and $value != []) { continue; }
                 if (isset(parent::$TableData[$TableName]['data'][$key]['encrypter'])) {
                     if (!isset(self::$EncrypterStatus[$key]['status']) or self::$EncrypterStatus[$key]['status'] != "decrypted") {
                         $EncrypetName = parent::$TableData[$TableName]['data'][$key]['encrypter'];

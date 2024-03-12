@@ -31,7 +31,7 @@ class Row extends Get {
         $TableName = $this->TableName;
         array_walk(parent::$TableData[$TableName]['short'],function ($value,$key) use ($TableName) {
             $value = parent::$TableData["table_data"][0][$key];
-            if ($value != null) {
+            if ($value != null and $value != '[]') {
                 if(method_exists(new parent::$TableData[$TableName]['data'][$key]['type'],"Set")) {
                     $DB = new parent::$TableData[$TableName]['data'][$key]['type']();
                     $value = $DB->Set($value);

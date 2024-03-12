@@ -24,7 +24,7 @@ class Init extends \Azad\Database\Database {
     }
     public function __call($method, $args) {
         if (!method_exists($this->ClassName,$method)) {
-            throw new Exception("Table [$this->TableName] does not exist");
+            throw new Exception("Method [$method] [$this->TableName] does not exist");
         }
         return $this->ClassName::$method ($args);
     }

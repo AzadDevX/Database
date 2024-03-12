@@ -567,29 +567,26 @@ Now, to update the value of a column we have three methods:
 
 ## Methods:
 ```php
-Update(new_value,column_name)
+Value(new_value)
 ```
 
 ``new_value`` : Set a new value in this parameter
 
-``column_name`` : The name of the column you want to update
 
 
 ```php
-Increase(number,column_name)
+Increase(number)
 ```
 
 ``number`` : The number you want to **add to the previous value**. ``(value + number = new_value)``
 
-``column_name`` : The name of the column you want to update
 
 ```php
-Decrease(number,column_name)
+Decrease(number)
 ```
 
 ``number`` : The number you want to **subtract to the previous value**. ``(number - value = new_value)``
 
-``column_name`` : The name of the column you want to update
 
 ## Condition
 You can also use conditional commands to update your data.

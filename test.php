@@ -10,15 +10,25 @@ $Sql->Config(MyConfig::class);
 
 $Transactions = $Sql->Table("Wallet");
 
-$Find = $Transactions->Select("*");
+$Find = $Transactions->Select("*")->WHERE("user_id",2);
 
-$Data = $Find->Data();
+$Data = $Find->LastRow();
 
+$Data = $Data->
+    Condition
+        ->IF("USD")->EqualTo(1910)
+    ->End()
+        ->Key("USD")->Increase(50)
+            ->Push();
+
+var_dump($Find->LastRow()->Result);
+
+/*
 $Data->
     Condition->
         IF("USD")->Between(300,600)
     ->End()
         ->Key("USD")->Increase(50)
             ->Push();
-
+*/
 

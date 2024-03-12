@@ -623,11 +623,8 @@ try {
     var_dump($E->Debug);
 }
 
-#Result: The value of [first_name] is equal to mohammad - but you have defined (Mohammad2) in the EqualTo
+#Result: throw error: The value of [first_name] is equal to mohammad - but you have defined (Mohammad2) in the EqualTo
 ```
-
-> [!IMPORTANT]
-> Make sure to place the Conditional in ``TRY``
 
 ### Methods:
 ```php

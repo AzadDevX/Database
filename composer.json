@@ -1,7 +1,6 @@
 {
     "name": "azad1324/sql",
     "type": "library",
-    "minimum-stability": "beta",
     "keywords": ["mysqli", "mysql", "database"],
     "license": "MIT",
     "autoload": {

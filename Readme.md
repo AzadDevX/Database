@@ -1,5 +1,14 @@
 ![AzadSqlBanner](https://github.com/Azad1324/Sql/assets/158297225/23f131f0-c061-47e3-bee9-24efae6c0e7e)
+![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white)
+![PHP](https://img.shields.io/badge/php-%23777BB4.svg?style=for-the-badge&logo=php&logoColor=white)
+
+[![GitHub issues](https://img.shields.io/github/issues/Azad1324/sql.svg)](https://GitHub.com/Azad1324/sql/issues/)
+[![GitHub version](https://badge.fury.io/gh/Azad1324%2Fsql.svg)](https://github.com/Azad1324/sql)
+
 [![packagist](https://img.shields.io/packagist/v/azad1324/sql)](https://packagist.org/packages/azad1324/sql)
+[![Github all releases](https://img.shields.io/github/downloads/Azad1324/sql/total.svg)](https://GitHub.com/Azad1324/sql/releases/)
+[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
+
 # 1. Introduction
 
 Code readability is one of the most important components of teamwork. Basic coding should be readable and understandable so that other. developers (teammates or open source) have the ability to understand faster and as a result develop faster.

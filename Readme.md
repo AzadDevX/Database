@@ -278,19 +278,127 @@ Now using the internal ``Correlation`` method to get the data from the second ta
 
 ```php
     public static function Wallet () {
-        return self::Correlation("user_id","Wallet","user_id")[0];
+        return self::Correlation("user_id","Wallet","user_id")[0] ?? false;
     }
 ```
 ```php
 Correlation($OriginColumn,$table_name,$column)
 ```
+
 ``OriginColumn`` : Column name to be evaluated using (use PRIMARY column here)
+
 ``table_name`` : Destination Table Name
+
 ``column`` : The name of the column to which the OriginColumn data is sent
+
 
 ``Correlation`` data output is an **array** of all found data.
 
-    
+> [!IMPORTANT]
+> You need to extract your data before using correlation, this rule is set to prevent heavy library processing
+> 
+```php
+$Transactions = $Sql->Table("Transactions");
+$Find = $Transactions->Select("*")->WHERE("user_id",2);
+$Transactions_Data = $Find->LastRow(); # <------
+return $Transactions->UserData();
+```
+
+** Result **
+
+```php
+object(stdClass)#38 (6) {
+  ["user_id"]=>
+  string(1) "2"
+  ["first_name"]=>
+  string(8) "mohammad"
+  ["last_name"]=>
+  string(4) "azad"
+  ["address"]=>
+  NULL
+  ["created_at"]=>
+  string(19) "2024-03-10 15:48:25"
+  ["updated_time"]=>
+  string(19) "2024-03-10 15:48:25"
+}
+```
+
+Second example :
+
+```php
+$Transactions = $Sql->Table("Transactions");
+$Find = $Transactions->Select("*")->WHERE("user_id",2);
+// $Transactions_Data = $Find->LastRow();
+return $Transactions->UserData();
+```
+
+** Result **
+
+```php
+bool(false)
+```
+
+> [!WARNING]
+> Risk of data mismatch in case of lack of attention
+
+```php
+$Transactions = $Sql->Table("Transactions");
+$Find = $Transactions->Select("*")->WHERE("user_id",2);
+$Transactions_Data = $Find->LastRow();
+$Find = $Transactions->Select("*")->WHERE("user_id",3); # <---- user id changed!
+# Although the user ID has changed, but no operation has been carried out on it.
+return $Transactions->UserData();
+```
+
+** Result **
+
+```php
+object(stdClass)#38 (6) {
+  ["user_id"]=>
+  string(1) "2"
+  ["first_name"]=>
+  string(8) "mohammad"
+  ["last_name"]=>
+  string(4) "azad"
+  ["address"]=>
+  NULL
+  ["created_at"]=>
+  string(19) "2024-03-10 15:48:25"
+  ["updated_time"]=>
+  string(19) "2024-03-10 15:48:25"
+}
+```
+
+Second example (No problem) :
+
+```php
+$Transactions = $Sql->Table("Transactions");
+$Find = $Transactions->Select("*")->WHERE("user_id",2);
+$Transactions_Data = $Find->LastRow();
+$Find = $Transactions->Select("*")->WHERE("user_id",3);
+$Transactions_Data = $Find->LastRow(); # Perform operations on the found data, the global variable is updated!!!
+return $Transactions->UserData();
+```
+
+** Result **
+
+```php
+object(stdClass)#38 (6) {
+  ["user_id"]=>
+  string(1) "3"
+  ["first_name"]=>
+  string(16) "hypothetical_name"
+  ["last_name"]=>
+  string(20) "hypothetical_lastname"
+  ["address"]=>
+  NULL
+  ["created_at"]=>
+  string(19) "2024-03-12 15:56:34"
+  ["updated_time"]=>
+  string(19) "2024-03-12 15:56:34"
+}
+```
+
 # 6. How to insert a data
 After you have created your table, you will need to select your table, which is done using the ``Table`` method.
 for example:

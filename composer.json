@@ -3,6 +3,7 @@
     "type": "library",
     "keywords": ["mysqli", "mysql", "database"],
     "license": "MIT",
+    "minimum-stability": "beta",
     "autoload": {
         "psr-4": {
             "Azad\\Database\\": "src/"

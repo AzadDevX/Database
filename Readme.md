@@ -216,6 +216,17 @@ Foreign(table_name,column_name) # constraint is used to prevent actions that wou
 
 ``column_name`` ``(string)`` : parent table column name
 
+```php
+Null () # set default to Null
+```
+
+```php
+NotNull () # This means that you cannot insert a new record, or update a record without adding a value to this field
+```
+
+```php
+Default ($string) # Set a default value for column
+```
 
 ```php
 Save() # After setting all columns, call this method

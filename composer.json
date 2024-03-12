@@ -1,7 +1,7 @@
 {
     "name": "azad1324/sql",
     "type": "library",
-    "keywords": ["mysqli","mysql","database"],
+    "keywords": ["mysqli", "mysql", "database"],
     "license": "MIT",
     "minimum-stability": "beta",
     "autoload": {
@@ -16,6 +16,7 @@
         }
     ],
     "require": {
-        "php": ">=8.0.0"
+        "php": ">=8.0.0",
+        "azad1324/sql": "v1.0.0-beta.1"
     }
 }

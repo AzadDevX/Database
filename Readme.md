@@ -518,6 +518,8 @@ array(1) {
 ## Second Solution:
 ```php
 $User->FirstRow ();
+# OR
+$User->LastRow ();
 ```
 
 This method get the first data found.

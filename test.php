@@ -9,7 +9,7 @@ $Sql->Config(MyConfig::class);
 $Users = $Sql->Table("Transactions");
 $Select = $Users->Select("*");
 $Where = $Select->WHERE("user_id",2);
-$Where->FirstRow();
+var_dump($Where->LastRow());
 
 var_dump($Users->UserData()->first_name); # Mohammad
 

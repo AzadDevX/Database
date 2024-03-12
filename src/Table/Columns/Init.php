@@ -60,6 +60,17 @@ class Init extends Get {
         parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");
         return $Result;
     }
+    public function LastRow () {
+        if ($this->Where) {
+            parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");
+        }
+        parent::$query[$this->TableName] .= $this->Where;
+        $Data = $this->Get();
+        $Result = array_pop($Data) ?? false;
+        parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");
+        return $Result;
+    }
+    
     public function Manage () {
         if ($this->Where) {
             parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");

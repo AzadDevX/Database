@@ -11,7 +11,7 @@ class Users extends \Azad\Database\Table\Make {
         $this->Name("created_at")->Type(\Azad\Database\Types\CreatedAt::class);
         $this->Name("updated_time")->Type(\Azad\Database\Types\UpdateAt::class);
         $this->Save ();
-        $this->GlobalME();
+        $this->IndexCorrelation();
     }
     public static function Wallet () {
         return self::Correlation("user_id","Wallet","user_id")[0];

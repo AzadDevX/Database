@@ -81,7 +81,7 @@ class Make extends \Azad\Database\Database {
         final public static function Table($table_name) {
             return new \Azad\Database\Table\Init($table_name);
         }
-        final public function GlobalME() {
+        final public function IndexCorrelation() {
             parent::$IDListTable[self::$TableName] = [];
         }
         final static public function Get($table,$prefix=true) {

@@ -549,7 +549,7 @@ $User->LastRow ()
 ```
 
 > [!IMPORTANT]
-> if the output of where is more than one value, All of them will be updated.
+> if the output of ``$User`` is more than one value, All of them will be updated.
 
 **Example:**
 

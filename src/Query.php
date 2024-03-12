@@ -72,11 +72,11 @@ class Query {
         return $key." $Conditions '".$value."'";
     }
     
-    public static function UpdateQuery($table_name,$value,$key,$where) {
-        $Query = "UPDATE ".$table_name." SET ".$key."='".$value."' WHERE ";
-        array_walk($where,function($value,$key) use (&$Query) {
-            $Query .= ($value != null and $value != '' and $value != [])?$key." = '".$value."' AND ":"";
-        });
+    public static function UpdateQuery($table_name,$new_data,$where) {
+        $Query = "UPDATE ".$table_name." SET ";
+        array_walk($new_data,function($value,$key) use (&$Query) { $Query .= $key." = '".$value."', "; });
+        $Query = rtrim($Query,", ")." WHERE ";
+        array_walk($where,function($value,$key) use (&$Query) { $Query .= ($value != null and $value != '' and $value != [])?$key." = '".$value."' AND ":""; });
         $Query = rtrim($Query," AND ");
         return $Query;
     }

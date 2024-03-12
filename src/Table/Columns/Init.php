@@ -4,6 +4,11 @@ namespace Azad\Database\Table\Columns;
 
 class Init extends Get {
     private $Where;
+
+    public $Data;
+    public $Update;
+    public $Condition;
+
     public function __construct($table_name,$query,$Where=null) {
         $this->TableName = $table_name;
         parent::$query[$this->TableName] = $query;
@@ -43,35 +48,59 @@ class Init extends Get {
     
     public function Data () {
         if ($this->Where) {
-            parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");
+            $this->RemovedWhereInQuery ();
         }
         parent::$query[$this->TableName] .= $this->Where;
         $Result = $this->Get() ?? false;
-        parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");
-        return $Result;
+        $this->RemovedWhereInQuery ();
+        $this->Result = $Result;
+        $this->Update = new Update\Rows($this->TableName,$this->Where,$Result);
+        $this->Update->Data = $Result;
+        $this->Condition = new \Azad\Database\Conditions\Conditional($Result,false,$this->Update);
+        return $this;
     }
 
     public function FirstRow () {
         if ($this->Where) {
-            parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");
+            $this->RemovedWhereInQuery ();
         }
         parent::$query[$this->TableName] .= $this->Where;
         $Result = $this->Get()[0] ?? false;
-        parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");
-        return $Result;
+        $this->RemovedWhereInQuery ();
+        $this->Result = $Result;
+        $this->Update = new Update\Row($this->TableName,$Result);
+        $this->Condition = new \Azad\Database\Conditions\Conditional($Result,true,$this->Update);
+        return $this;
     }
     public function LastRow () {
         if ($this->Where) {
-            parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");
+            $this->RemovedWhereInQuery ();
         }
         parent::$query[$this->TableName] .= $this->Where;
         $Data = $this->Get();
+        $this->RemovedWhereInQuery ();
         $Result = array_pop($Data) ?? false;
-        parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");
-        return $Result;
+        $this->Result = $Result;
+        $this->Update = new Update\Row($this->TableName,$Result);
+        $this->Condition = new \Azad\Database\Conditions\Conditional($Result,true,$this->Update);
+        return $this;
+    }
+
+    private function RemovedWhereInQuery () {
+        preg_match_all("#WHERE (.*)#",parent::$query[$this->TableName],$data);
+        if (isset($data[0][0])) {
+            parent::$query[$this->TableName] = str_replace(" ".$data[0][0],'',parent::$query[$this->TableName]);
+        }
     }
     
-    public function Manage () {
+    public function __set($name,$value) {
+        $this->$name = $value;
+    }
+    public function __get($name) {
+        return $this->$name;
+    }
+
+    /*public function Manage () {
         if ($this->Where) {
             parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");
         }
@@ -88,8 +117,8 @@ class Init extends Get {
             $Result = new Rows($this->TableName,$Query);
         }
         return $Result;
-    }
-    public function WorkOn ($Key) { 
+    }*/
+    /*public function WorkOn ($Key) { 
         if ($this->Where) {
             parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");
         }
@@ -103,5 +132,5 @@ class Init extends Get {
         } else {
             return new WorkOn($Key,null,$Query);
         }
-    }
+    }*/
 }

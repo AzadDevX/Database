@@ -9,6 +9,6 @@ class Transactions extends \Azad\Database\Table\Make {
         $this->IndexCorrelation();
     }
     public static function UserData () {
-        return self::Correlation("user_id","Users","user_id")[0];
+        return self::Correlation("user_id","Users","user_id")[0] ?? false;
     }
 }

@@ -11,6 +11,7 @@ class Database {
     protected static $ProjectName;
     protected static $is_have_prefix;
     protected static $InsertData;
+    protected static $UpdateData;
     protected static $db_name;
     protected static $dir_prj;
     protected static $name_prj;
@@ -44,5 +45,8 @@ class Database {
             }
         }
         return $Rows;
+    }
+    protected static function ArraytoObject (array $array) : object {
+        return json_decode(json_encode($array));
     }
 }

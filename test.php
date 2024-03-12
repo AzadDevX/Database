@@ -6,10 +6,19 @@ include_once("config.php");
 $Sql = new Azad\Database\Connect();
 $Sql->Config(MyConfig::class);
 
-$Users = $Sql->Table("Transactions");
-$Select = $Users->Select("*");
-$Where = $Select->WHERE("user_id",2);
-var_dump($Where->LastRow());
 
-var_dump($Users->UserData()->first_name); # Mohammad
+
+$Transactions = $Sql->Table("Wallet");
+
+$Find = $Transactions->Select("*");
+
+$Data = $Find->Data();
+
+$Data->
+    Condition->
+        IF("USD")->Between(300,600)
+    ->End()
+        ->Key("USD")->Increase(50)
+            ->Push();
+
 

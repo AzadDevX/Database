@@ -8,31 +8,19 @@ $Sql->Config(MyConfig::class);
 
 
 
-$Transactions = $Sql->Table("Wallet");
-
-$Find = $Transactions->Select("*")->WHERE("user_id",2);
-
+$Users = $Sql->Table("Users");
+$Find = $Users->Select("*")->WHERE("user_id",2);
 $Data = $Find->LastRow();
-
-# Update
-
-$Data = $Data->
+$Data->
     Update
-        ->Key("USD")->Increase(50)
-            ->Push();
-
-# Update with Condition
-
-$Data = $Data->
-    Condition
-        ->IF("USD")->EqualTo(1910)
-    ->End()
-        ->Key("USD")->Increase(50)
-            ->Push();
-
+        ->Key("first_name")->Value("MohammadA")
+    ->Push();
 
 var_dump($Find->LastRow()->Result);
 
+$Users = $Sql->Table("Users");
+$Find = $Users->Select("*")->WHERE("user_id",2);
+$Data = $Find->Data();
 /*
 $Data->
     Condition->

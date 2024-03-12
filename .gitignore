@@ -1,6 +1,5 @@
 test/
-vendor/
+MyProject/
 composer.lock
-Readme.md
-AzadSql/
 test.php
+config.php

@@ -156,9 +156,17 @@ Type(class_type)
 
 Types:
 
+> **ArrayData**: ``Storing an array in a table (based on JSON)``
+
 > **AutoLess**: ``Custom Datatype Sample, for Data Handling Guide``
 
 > **BigINT**: ``No need for explanation.!``
+
+> **Boolean**: ``No need for explanation.!``
+
+> **Decimal**: ``No need for explanation.!``
+
+> **Floats**: ``No need for explanation.!``
 
 > **CreatedAt**: ``When you insert a new record, it automatically saves the time of the record``
 
@@ -176,9 +184,9 @@ Types:
 
 > **Decimal**: ``No need for explanation.!``
 
-> **ArrayData**: ``Storing an array in a table (based on JSON)``
-
 > **Token**: ``Automatic Token Generation (Based on SHA1)``
+
+> **UserID**: This column is set to Primary and BigINT.
 
 > [!CAUTION]
 > If the set data type does not exist, you will encounter such an error.
@@ -200,6 +208,25 @@ Rebuilder(rebuilder_name) # Set a Rebuilder for Column
 Encrypter(encrypter_name) # Set a Encrypter for Column
 ```
 ``encrypter_name`` ``(string)`` : Encrypter Name (The Encrypter description is in the Magic section.)
+
+```php
+Foreign(table_name,column_name) # constraint is used to prevent actions that would destroy links between tables.
+```
+``table_name`` ``(string)`` : parent table
+
+``column_name`` ``(string)`` : parent table column name
+
+```php
+Null () # set default to Null
+```
+
+```php
+NotNull () # This means that you cannot insert a new record, or update a record without adding a value to this field
+```
+
+```php
+Default ($string) # Set a default value for column
+```
 
 ```php
 Save() # After setting all columns, call this method
@@ -226,6 +253,168 @@ class Users extends \Azad\Database\Table\Make {
         $this->Name("updated_time")->Type(\Azad\Database\Types\UpdateAt::class);
         $this->Save ();
     }
+}
+```
+
+## Correlation of tables data
+With this feature, you can place data from multiple tables in each other.
+
+Manual mode:
+```php
+$Transactions = $Sql->Table("Transactions");
+$Find = $Transactions->Select("*")->WHERE("user_id",2);
+$Transactions_Data = $Find->LastRow();
+$Users = $Sql->Table("Users");
+$Find = $Users->Select("*")->WHERE("user_id",$Transactions_Data['user_id']);
+$UsersData = $Find->LastRow();
+return $UsersData["first_name"];  #mohammad
+```
+
+Use of Tables Correlation:
+```php
+$Transactions = $Sql->Table("Transactions");
+$Find = $Transactions->Select("*")->WHERE("user_id",2);
+$Transactions_Data = $Find->LastRow();
+return $Transactions->UserData()->first_name; #mohammad
+```
+### How to set up correlation?
+First, you need to specify the parent table with ``IndexCorrelation`` method. the data from this table will be stored in a global variable after receiving the data.
+
+```php
+    public function __construct() {
+        $this->Name("user_id")->Type(\Azad\Database\Types\ID::class)->Size(255);
+        $this->Name("first_name")->Type(\Azad\Database\Types\Varchar::class)->Size(255)->Rebuilder("Names");
+        $this->Name("last_name")->Type(\Azad\Database\Types\Varchar::class)->Size(255)->Rebuilder("Names");
+        $this->Name("address")->Type(\Azad\Database\Types\ArrayData::class)->Rebuilder("Names")->Encrypter("Base64");
+        $this->Name("created_at")->Type(\Azad\Database\Types\CreatedAt::class);
+        $this->Name("updated_time")->Type(\Azad\Database\Types\UpdateAt::class);
+        $this->Save ();
+        $this->IndexCorrelation(); # <--------
+    }
+```
+
+Now using the internal ``Correlation`` method to get the data from the second table and define it in a **static** function.
+
+```php
+    public static function Wallet () {
+        return self::Correlation("user_id","Wallet","user_id")[0] ?? false;
+    }
+```
+```php
+Correlation($OriginColumn,$table_name,$column)
+```
+
+``OriginColumn`` : Column name to be evaluated using (use PRIMARY column here)
+
+``table_name`` : Destination Table Name
+
+``column`` : The name of the column to which the OriginColumn data is sent
+
+
+``Correlation`` data output is an **array** of all found data.
+
+> [!IMPORTANT]
+> You need to extract your data before using correlation, this rule is set to prevent heavy library processing
+> 
+```php
+$Transactions = $Sql->Table("Transactions");
+$Find = $Transactions->Select("*")->WHERE("user_id",2);
+$Transactions_Data = $Find->LastRow(); # <------
+return $Transactions->UserData();
+```
+
+** Result **
+
+```php
+object(stdClass)#38 (6) {
+  ["user_id"]=>
+  string(1) "2"
+  ["first_name"]=>
+  string(8) "mohammad"
+  ["last_name"]=>
+  string(4) "azad"
+  ["address"]=>
+  NULL
+  ["created_at"]=>
+  string(19) "2024-03-10 15:48:25"
+  ["updated_time"]=>
+  string(19) "2024-03-10 15:48:25"
+}
+```
+
+Second example :
+
+```php
+$Transactions = $Sql->Table("Transactions");
+$Find = $Transactions->Select("*")->WHERE("user_id",2);
+// $Transactions_Data = $Find->LastRow();
+return $Transactions->UserData();
+```
+
+** Result **
+
+```php
+bool(false)
+```
+
+> [!WARNING]
+> Risk of data mismatch in case of lack of attention
+
+```php
+$Transactions = $Sql->Table("Transactions");
+$Find = $Transactions->Select("*")->WHERE("user_id",2);
+$Transactions_Data = $Find->LastRow();
+$Find = $Transactions->Select("*")->WHERE("user_id",3); # <---- user id changed!
+# Although the user ID has changed, but no operation has been carried out on it.
+return $Transactions->UserData();
+```
+
+** Result **
+
+```php
+object(stdClass)#38 (6) {
+  ["user_id"]=>
+  string(1) "2"
+  ["first_name"]=>
+  string(8) "mohammad"
+  ["last_name"]=>
+  string(4) "azad"
+  ["address"]=>
+  NULL
+  ["created_at"]=>
+  string(19) "2024-03-10 15:48:25"
+  ["updated_time"]=>
+  string(19) "2024-03-10 15:48:25"
+}
+```
+
+Second example (No problem) :
+
+```php
+$Transactions = $Sql->Table("Transactions");
+$Find = $Transactions->Select("*")->WHERE("user_id",2);
+$Transactions_Data = $Find->LastRow();
+$Find = $Transactions->Select("*")->WHERE("user_id",3);
+$Transactions_Data = $Find->LastRow(); # Perform operations on the found data, the global variable is updated!!!
+return $Transactions->UserData();
+```
+
+** Result **
+
+```php
+object(stdClass)#38 (6) {
+  ["user_id"]=>
+  string(1) "3"
+  ["first_name"]=>
+  string(16) "hypothetical_name"
+  ["last_name"]=>
+  string(20) "hypothetical_lastname"
+  ["address"]=>
+  NULL
+  ["created_at"]=>
+  string(19) "2024-03-12 15:56:34"
+  ["updated_time"]=>
+  string(19) "2024-03-12 15:56:34"
 }
 ```
 
@@ -329,9 +518,11 @@ array(1) {
 ## Second Solution:
 ```php
 $User->FirstRow ();
+# OR
+$User->LastRow ();
 ```
 
-This method get the first data found.
+This method get the first/last data found.
 
 ```php
 array(5) {
@@ -432,11 +623,8 @@ try {
     var_dump($E->Debug);
 }
 
-#Result: The value of [first_name] is equal to mohammad - but you have defined (Mohammad2) in the EqualTo
+#Result: throw error: The value of [first_name] is equal to mohammad - but you have defined (Mohammad2) in the EqualTo
 ```
-
-> [!IMPORTANT]
-> Make sure to place the Conditional in ``TRY``
 
 ### Methods:
 ```php

@@ -14,12 +14,23 @@ $Find = $Transactions->Select("*")->WHERE("user_id",2);
 
 $Data = $Find->LastRow();
 
+
+# Update
+
+$Data = $Data->
+    Update
+        ->Key("USD")->Increase(50)
+            ->Push();
+
+# Update with Condition
+
 $Data = $Data->
     Condition
         ->IF("USD")->EqualTo(1910)
     ->End()
         ->Key("USD")->Increase(50)
             ->Push();
+
 
 var_dump($Find->LastRow()->Result);
 

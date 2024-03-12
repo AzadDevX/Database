@@ -202,6 +202,14 @@ Encrypter(encrypter_name) # Set a Encrypter for Column
 ``encrypter_name`` ``(string)`` : Encrypter Name (The Encrypter description is in the Magic section.)
 
 ```php
+Foreign(table_name,column_name) # constraint is used to prevent actions that would destroy links between tables.
+```
+``table_name`` ``(string)`` : parent table
+
+``column_name`` ``(string)`` : parent table column name
+
+
+```php
 Save() # After setting all columns, call this method
 ```
 
@@ -229,6 +237,60 @@ class Users extends \Azad\Database\Table\Make {
 }
 ```
 
+## Correlation of tables data
+With this feature, you can place data from multiple tables in each other.
+
+Manual mode:
+```php
+$Transactions = $Sql->Table("Transactions");
+$Find = $Transactions->Select("*")->WHERE("user_id",2);
+$Transactions_Data = $Find->LastRow();
+$Users = $Sql->Table("Users");
+$Find = $Users->Select("*")->WHERE("user_id",$Transactions_Data['user_id']);
+$UsersData = $Find->LastRow();
+return $UsersData["first_name"];  #mohammad
+```
+
+Use of Tables Correlation:
+```php
+$Transactions = $Sql->Table("Transactions");
+$Find = $Transactions->Select("*")->WHERE("user_id",2);
+$Transactions_Data = $Find->LastRow();
+return $Transactions->UserData()->first_name; #mohammad
+```
+### How to set up correlation?
+First, you need to specify the parent table with ``IndexCorrelation`` method. the data from this table will be stored in a global variable after receiving the data.
+
+```php
+    public function __construct() {
+        $this->Name("user_id")->Type(\Azad\Database\Types\ID::class)->Size(255);
+        $this->Name("first_name")->Type(\Azad\Database\Types\Varchar::class)->Size(255)->Rebuilder("Names");
+        $this->Name("last_name")->Type(\Azad\Database\Types\Varchar::class)->Size(255)->Rebuilder("Names");
+        $this->Name("address")->Type(\Azad\Database\Types\ArrayData::class)->Rebuilder("Names")->Encrypter("Base64");
+        $this->Name("created_at")->Type(\Azad\Database\Types\CreatedAt::class);
+        $this->Name("updated_time")->Type(\Azad\Database\Types\UpdateAt::class);
+        $this->Save ();
+        $this->IndexCorrelation(); # <--------
+    }
+```
+
+Now using the internal ``Correlation`` method to get the data from the second table and define it in a **static** function.
+
+```php
+    public static function Wallet () {
+        return self::Correlation("user_id","Wallet","user_id")[0];
+    }
+```
+```php
+Correlation($OriginColumn,$table_name,$column)
+```
+``OriginColumn`` : Column name to be evaluated using (use PRIMARY column here)
+``table_name`` : Destination Table Name
+``column`` : The name of the column to which the OriginColumn data is sent
+
+``Correlation`` data output is an **array** of all found data.
+
+    
 # 6. How to insert a data
 After you have created your table, you will need to select your table, which is done using the ``Table`` method.
 for example:

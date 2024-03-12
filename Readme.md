@@ -522,7 +522,7 @@ $User->FirstRow ();
 $User->LastRow ();
 ```
 
-This method get the first data found.
+This method get the first/last data found.
 
 ```php
 array(5) {

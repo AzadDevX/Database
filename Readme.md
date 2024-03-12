@@ -1,4 +1,5 @@
 ![AzadSqlBanner](https://github.com/Azad1324/Sql/assets/158297225/23f131f0-c061-47e3-bee9-24efae6c0e7e)
+[![packagist](https://img.shields.io/packagist/v/azad1324/sql)](https://packagist.org/packages/azad1324/sql)
 # 1. Introduction
 
 Code readability is one of the most important components of teamwork. Basic coding should be readable and understandable so that other. developers (teammates or open source) have the ability to understand faster and as a result develop faster.

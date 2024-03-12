@@ -99,7 +99,7 @@ class Make extends \Azad\Database\Database {
                 $Wallet = self::Table($table_name);
                 $Select = $Wallet->Select("*");
                 $Where = $Select->WHERE($column,$Where);
-                return json_decode(json_encode($Where->FirstRow()));
+                return json_decode(json_encode($Where->Data()));
             }
             return false;
         }

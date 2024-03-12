@@ -2,7 +2,6 @@
 namespace MyProject\Tables;
 class Users extends \Azad\Database\Table\Make {
     public $Unique = ["first_name","last_name"];
-    public static $Wallet;
 
     public function __construct() {
         $this->Name("user_id")->Type(\Azad\Database\Types\ID::class)->Size(255);
@@ -15,7 +14,9 @@ class Users extends \Azad\Database\Table\Make {
         $this->GlobalME();
     }
     public static function Wallet () {
-        self::$Wallet = self::Correlation("user_id","Wallet","user_id");
-        return self::$Wallet;
+        return self::Correlation("user_id","Wallet","user_id")[0];
+    }
+    public static function Transactions () {
+        return self::Correlation("user_id","Transactions","user_id");
     }
 }

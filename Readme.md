@@ -39,7 +39,7 @@ Also, each of the Magic has specific rules in design and you need to follow the 
 First, you need to install the library through Composer, to do so run the following command in commandline.
 
 ```
-composer require azad1324/sql
+composer require azaddevx/database
 ```
 
 To use the library, you need to use autoload.php.

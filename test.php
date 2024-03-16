@@ -14,11 +14,13 @@ try {
 
     $Job1 = $Sql->NewJob();
 
+    # Job1 -> Find (VALUE_PRIMARY_KEY) -> From (TABLE_NAME)
     $User1 = $Job1->Find(1)->From("Users");
     $User1_Wallet = $User1->Result['wallet'];
     $User2 = $Job1->Find(2)->From("Users");
     $User2_Wallet = $User2->Result['wallet'];
 
+    # Job1 -> Table (TABLE_NAME) -> SELECT (COLUMN_NAME) -> To (NEW_VALUE) -> Who? (UserObject)
     $Job1->Table("Users")->Select("wallet")->To($User1_Wallet + 5000)->Who($User1);
     $Job1->Table("Users")->Select("wallet")->To($User2_Wallet - 5000)->Who($User2);
 

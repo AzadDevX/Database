@@ -271,6 +271,7 @@ In the Magic section, this feature has been elaborated upon in detail
 Encrypter(encrypter_name) # Set a Encrypter for Column
 ```
 ``encrypter_name`` ``(string)`` : Encrypter Name
+
 **What is an Encryptor?** This feature encodes the data before storage and decrypts it upon retrieval. With this, you can easily encrypt a column and automatically access the decrypted data when displaying it.
 
 This feature is explained in detail in the Magic section.
@@ -278,9 +279,9 @@ This feature is explained in detail in the Magic section.
 ```php
 Foreign(table_name,column_name) # constraint is used to prevent actions that would destroy links between tables.
 ```
-``table_name`` ``(string)`` : parent table
+``table_name`` ``(string)`` : Main table name
 
-``column_name`` ``(string)`` : parent table column name
+``column_name`` ``(string)`` : Main column name
 
 ```php
 Null () # set default to Null
@@ -299,11 +300,13 @@ Save() # After setting all columns, call this method
 ```
 
 ## Properties:
-You can also make adjustments to the data table through Properties.
+Also, you can use the following Properties.
 
 ```php
 $Unique = [Column names];
 ```
+
+This ensures that the set columns do not repeat in other rows.
 
 for example:
 ```php
@@ -323,7 +326,7 @@ class Users extends \Azad\Database\Table\Make {
 ```
 
 ## Correlation of tables data
-With this feature, you can place data from multiple tables in each other.
+This capability creates a link between tables, allowing the user to find themselves in another table without the need for a repeated search
 
 Manual mode:
 ```php

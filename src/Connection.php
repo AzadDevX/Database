@@ -55,6 +55,11 @@ class Connection extends Database {
         parent::$MyHash = $this->HashID;
         return new Table\Init($table_name,$this->HashID);
     }
+    public function NewJob () {
+        $id = sha1(rand(1,9999) + rand(1,9999) + rand(1,9999));
+        return new Jobs\Init($id,$this->HashID,$this);
+    }
+
     private function MakeDir($address) {
         return !file_exists($address)?mkdir($address):false;
     }

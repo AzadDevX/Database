@@ -47,6 +47,9 @@ class Row extends \Azad\Database\Table\Columns\Get {
         }
         $Query = parent::MakeQuery()::Edit($this->Table,parent::$UpdateData,parent::where_data($this->Data,$this->Table));
         $Result = ($this->Query($Query) == true)?$NewData:false;
+        if ($Result == false) {
+            return false;
+        }
         $this->Clear ();
         return new \Azad\Database\Table\Columns\ReturnData($this->Table,$NewData,parent::$MyHash);
     }

@@ -4,7 +4,44 @@
 require 'vendor/autoload.php';
 include_once("config.php");
 
-$Sql = new Azad\Database\Connection(MySqlConfig::class);
+use Azad\Database\Connection;
+use Azad\Database\Jobs\Exception as ExceptionJob;
+
+$Sql = new Connection(MySqlConfig::class);
+
+// ---- Trade example:
+try {
+
+    $Job1 = $Sql->NewJob();
+
+    $User1 = $Job1->Find(1)->From("Users");
+    $User1_Wallet = $User1->Result['wallet'];
+    $User2 = $Job1->Find(2)->From("Users");
+    $User2_Wallet = $User2->Result['wallet'];
+
+    $Job1->Table("Users")->Select("wallet")->To($User1_Wallet + 5000)->Who($User1);
+    $Job1->Table("Users")->Select("wallet")->To($User2_Wallet - 5000)->Who($User2);
+
+    if ($User2_Wallet < 0) {
+        $Job1->Exception(new ExceptionJob("User 2 does not have enough inventory",-1));
+    }
+
+    $Job1->EndJob();
+
+} catch (ExceptionJob $E) {
+    $message = match ($E->getCode()) {
+        -1 => "User 2 you do not have enough balance, please recharge your account.",
+        default => "There is a problem, please try it later."
+    };
+    print($message);
+}
+
+
+
+$Sql->CloseLog ();
+
+
+/*
 
 $Users = $Sql->Table("Users");
 $ID = $Users->Insert()
@@ -17,65 +54,10 @@ $Data = $Find->LastRow();
 
 $Result1 = $Data
     ->Update
-        ->Key("first_name")->Value("Moha424d32wew32")
-        ->Key("last_name")->Value("A4224d13rwr331")
+        ->Key("first_name")->Value("Mo434ha424d32wew32")
+        ->Key("last_name")->Value("A4224d123rwr331")
     ->Push()
 ->Result;
-
-$Sql->CloseLog ();
-
-/*
-for ($i=0; $i < 50; $i++) {
-
-    $Users = $Sql->Table("Users");
-    $ID = $Users->Insert()
-        ->Key("first_name")->Value("F_".rand(1,99999))
-        ->Key("last_name")->Value("L_".rand(1,99999))
-    ->End();
-
-
-
-    $Data
-        ->Update
-            ->Key("first_name")->Value("F_".rand(1,99999))
-            ->Key("last_name")->Value("L_".rand(1,99999))
-        ->Push()
-    ->Result;
-
-}
-
-
-$Users = $Sql->Table("Users");
-$Find = $Users->Select("*")->WHERE("user_id",2);
-$Data = $Find->LastRow();
-
-$Save1 = $Data
-    ->Update
-        ->Key("first_name")->Value("sfafjbs")
-        ->Key("last_name")->Value("Azad")
-    ->Push()
-->Result;
-
-
-$Users = $Sql->Table("Users");
-$Find = $Users->Select("*");
-$Data = $Find->Data();
-
-$Users = $Sql->Table("Users");
-$Find = $Users->Select("*")->WHERE("user_id",3);
-$Data = $Find->Data();
-
-$Find = $Users->Select("*")->WHERE("user_id",2);
-$Data = $Find->Data();
-
-$Find = $Users->Select("*")->WHERE("user_id",3);
-$Data = $Find->LastRow();
-$Save1 = $Data
-    ->Update
-        ->Key("first_name")->Value("MohammadReza")
-        ->Key("last_name")->Value("gH")
-    ->Push()
-->Result;
-
-
 */
+
+

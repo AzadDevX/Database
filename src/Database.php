@@ -18,6 +18,7 @@ class Database {
     protected static $SystemConfig;
 
     protected static $Tables;
+    protected static $Jobs;
     protected static $MyHash;
 
 
@@ -62,8 +63,10 @@ class Database {
 
     protected static function PreparationValues ($key,$value,$table_name) {
         $TableName = $table_name;
-        $ColumnData = self::$Tables[self::$MyHash][$TableName]['columns'][$key];
-
+        $ColumnData = self::$Tables[self::$MyHash][$TableName]['columns'][$key] ?? false;
+        if ($ColumnData == false) {
+            throw new Exception\Columns("Column ".$key." is not correctly defined (table: ".$table_name.")");
+        }
         # ---- is valid method (in type)
         if(method_exists($ColumnData['type'],"is_valid")) {
             $DB = new $ColumnData['type']();
@@ -150,6 +153,7 @@ class Database {
                 if (isset(self::$Tables[self::$MyHash][$table_name]['list'])) {
                     $where = self::$Tables[self::$MyHash][$table_name]['where_by_primary'];
                     $where = array_search($id,$where);
+                    if ($where == false) { return false; }
                     if(isset(self::$Tables[self::$MyHash][$table_name]['list'][$where])) {
                         self::$CountRamOutPut += 1;
                         return self::$Tables[self::$MyHash][$table_name]['list'][$where];

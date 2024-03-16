@@ -1,4 +1,4 @@
 <?php
 
-namespace Azad\Database\Table\Columns;
+namespace Azad\Database\Jobs;
 class Exception extends \Exception { }

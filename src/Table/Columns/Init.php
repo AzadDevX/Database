@@ -24,7 +24,7 @@ class Init extends Get {
             $DB = new parent::$Tables[parent::$MyHash][$this->TableName]['columns'][$key]['type']();
             $value = $DB->Set($value);
         }
-        $this->Where .= (strpos($this->Where ?? "", "WHERE") === false)?" WHERE ":throw new Exception("You are allowed to use the WHERE method only once here.");
+        $this->Where .= (strpos($this->Where ?? "", "WHERE") === false)?" WHERE ":throw new Exceptions\Where("You are allowed to use the WHERE method only once here.");
         $this->Where .= parent::MakeQuery()::Where($key,$value,$Conditions);
         return new $this($this->TableName,parent::$query[$this->TableName],parent::$MyHash,$this->Where);
     }
@@ -33,7 +33,7 @@ class Init extends Get {
             $DB = parent::$Tables[parent::$MyHash][$this->TableName]['columns'][$key]['type']();
             $value = $DB->Set($value);
         }
-        $this->Where .= (strpos($this->Where ?? "", "WHERE") === false)?throw new Exception("First, you need to use the WHERE method."):" AND ";
+        $this->Where .= (strpos($this->Where ?? "", "WHERE") === false)?throw new Exceptions\Where("First, you need to use the WHERE method."):" AND ";
         $this->Where .= parent::MakeQuery()::Where($key,$value,$Conditions);
         return new $this($this->TableName,parent::$query[$this->TableName],parent::$MyHash,$this->Where);
     }
@@ -42,7 +42,7 @@ class Init extends Get {
             $DB = parent::$Tables[parent::$MyHash][$this->TableName]['columns'][$key]['type']();
             $value = $DB->Set($value);
         }
-        $this->Where .= (strpos($this->Where ?? "", "WHERE") === false)?throw new Exception("First, you need to use the WHERE method."):" OR ";
+        $this->Where .= (strpos($this->Where ?? "", "WHERE") === false)?throw new Exceptions\Where("First, you need to use the WHERE method."):" OR ";
         $this->Where .= parent::MakeQuery()::Where($key,$value,$Conditions);
         return new $this($this->TableName,parent::$query[$this->TableName],parent::$MyHash,$this->Where);
     }
@@ -53,6 +53,9 @@ class Init extends Get {
         }
         parent::$query[$this->TableName] .= $this->Where;
         $Result = $this->Get(parent::$MyHash) ?? false;
+        if ($Result == false) {
+            throw new Exceptions\NoData("The data searched does not exist in the table. Table Name: ".$this->TableName." Search Query: ".$this->Where);
+        }
         $this->RemovedWhereInQuery ();
         return new ReturnData($this->TableName,$Result,parent::$MyHash,true);
     }
@@ -63,6 +66,9 @@ class Init extends Get {
         }
         parent::$query[$this->TableName] .= $this->Where;
         $Result = $this->Get(parent::$MyHash)[0] ?? false;
+        if ($Result == false) {
+            throw new Exceptions\NoData("The data searched does not exist in the table. Table Name: ".$this->TableName." Search Query: ".$this->Where);
+        }
         $this->RemovedWhereInQuery ();
         return new ReturnData($this->TableName,$Result,parent::$MyHash);
     }
@@ -74,6 +80,9 @@ class Init extends Get {
         $Data = $this->Get(parent::$MyHash);
         $this->RemovedWhereInQuery ();
         $Result = array_pop($Data) ?? false;
+        if ($Result == false) {
+            throw new Exceptions\NoData("The data searched does not exist in the table. Table Name: ".$this->TableName." Search Query: ".$this->Where);
+        }
         return new ReturnData($this->TableName,$Result,parent::$MyHash);
     }
 

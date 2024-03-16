@@ -27,6 +27,7 @@ class Get extends \Azad\Database\Database {
                 }
             }
         }
+
         $Rows = $this->Fetch($this->Query(self::$query[$TableName]));
         $Rows = parent::PreparingGet($Rows,$TableName);
         if (isset(parent::$IDListTable[$TableName])) {
@@ -48,7 +49,7 @@ class Get extends \Azad\Database\Database {
             }
             if (isset($ColumnData['encrypter'])) {
                 $EncrypetName = $ColumnData['encrypter'];
-                $EncrypetName = self::$name_prj."\\Encrypters\\".$EncrypetName;
+                $EncrypetName = self::$name_prj[parent::$MyHash]."\\Encrypters\\".$EncrypetName;
                 if (!class_exists($EncrypetName)) {
                     throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
                 }

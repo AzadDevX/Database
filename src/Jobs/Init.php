@@ -19,7 +19,7 @@ class Init extends \Azad\Database\Database {
     public function Table ($table_name) {
         return new Table($this->id,$this->hash,$table_name);
     }
-    public function EndJob () {
+    public function Start () {
         foreach (parent::$Jobs[$this->hash][$this->id]['jobs'] as $Data) {
             $column_name = $Data['column_name'];
             $new_value = $Data['new_value'];

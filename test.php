@@ -9,6 +9,32 @@ use Azad\Database\Jobs\Exception as ExceptionJob;
 
 $Sql = new Connection(MySqlConfig::class);
 
+
+/*
+
+Structure of Jobs
+
+try {
+
+    # ---- New Job
+
+    # Save the users you intend to work on!
+
+    # Orders you intend to execute.
+
+    # Exception Errors
+
+    # ---- Start Job
+
+} catch (ExceptionJob $E) {
+
+    # Handle Exception
+
+}
+
+*/
+
+
 // ---- Trade example:
 try {
 
@@ -28,7 +54,7 @@ try {
         $Job1->Exception(new ExceptionJob("User 2 does not have enough inventory",-1));
     }
 
-    $Job1->EndJob();
+    $Job1->Start();
 
 } catch (ExceptionJob $E) {
     $message = match ($E->getCode()) {

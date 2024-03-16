@@ -11,67 +11,95 @@
 
 # 1. Introduction
 
-Code readability is one of the most important components of teamwork. Basic coding should be readable and understandable so that other. developers (teammates or open source) have the ability to understand faster and as a result develop faster.
+One of the main goals of the project is to establish a connection with the database in a way that maintains clean code structure while ensuring program speed, despite the use of various automated capabilities and tools. Additionally, employing object-oriented methods in different parts of the project improves team productivity and helps team members gain full mastery in various project areas.
 
-Azad-Sql library has certain rules and regulations so that different projects can be written in the same way. Also, using the object-oriented method helps other members to master different parts of the project and develop without disturbing the main flow of the code.
+It’s worth noting that this project is still in the testing and debugging phase, and we invite programmers to join us in its development.
 
-This project is open-source and professional developers are expected to cooperate in the development of this project and grow this library together!
 
 # 2. how does it work
-AzadSql library uses Mysqli PHP library to categorize the commands and send them to Query after applying the changes, separate the data, organize it and display it in the output.
 
-using this library you don't need to encrypt the columns manually, you don't need to write repeated commands to apply changes before storing data and receiving them, and you don't even need to evaluate the data of several different columns separately and update after receiving the result; All these processes can be done automatically.
-
-the ability of the library in the defined function (called Magic) can wonderfully summarize your index file and developers can process data on different parts of the columns.
-
-AzadSql developers can also develop different data types and make them available for public use. All these things will help you to ensure that your index file is in absolute order and that team members can apply their method to different parts of the project with open access.
+This is a developing library for interacting with databases (currently only MySQL). The library can automatically encrypt data, sort it, and also execute Query commands through job definitions without losing information or making unilateral changes.
 
 # 3. Basic rules
-you must use the object-oriented method, the file name and class name must match, and you must use the namespace of the project name.
+Folder Setup:
+First, you need to create a folder structure for your project. This folder should include files related to tables, encryption, builders, and other necessary components.
+Make sure to configure this folder properly.
+Project Namespace:
+Alongside configuring the folder, the project name (defined in the configuration class) should serve as a namespace for your project files.
+This ensures that your project remains organized and that different components can be easily associated with the project.
+
 for example:
 ```php
 namespace MyProject\Plugins;
 ```
-Also, each of the Magic has specific rules in design and you need to follow the rules (it will be explained later)
+
+Remember that this project is still in the testing and debugging phase, so it’s essential to collaborate with fellow developers to enhance its functionality. If you have any further questions or need assistance, feel free to ask!
 
 # 4. Initial Setup
 
-First, you need to install the library through Composer, to do so run the following command in commandline.
+
+First, install the azaddevx/database library using Composer. To do this, run the following command in your terminal:
 
 ```
 composer require azaddevx/database
 ```
 
-To use the library, you need to use autoload.php.
+Next, load the library using the autoload.php file:
 
 ```php
+
 require 'vendor/autoload.php';
+
+// Load the Connect class to start using the library:
+$Database = new Azad\Database\Connection(CONFIG CLASS);
 ```
 
-Load the Connect class to start using the library:
+Now, to begin, you need to create a **configuration class**. The components of the configuration are explained below.
 
-```php
-$Database = new Azad\Database\Connect();
-```
+After creating this class, pass it directly to the Connect class.
 
-After loading the class, you need to create a **config class** and pass it to the library.
-The configuration class consists of three main properties, namely Database, Project, and Table.
-These properties are based on the array.
+**Database**: In this section, enter the database connection information. In the future, depending on the type of database you have, the information set for this feature may differ. Currently, this feature includes four elements named as follows:
 
-**Database** property values: ``host`` - ``username`` - ``password`` - ``port`` - ``name``
+``host``: Your database host
 
-**Project** property values: ``directory`` - ``name``
+``username``: The username used for connection
 
-**Table** property values: ``prefix``
+``password``: Your database password
+
+``name``: The name of the database you intend to connect to
+
+**Project**: In this section, your project information including the project name, project folder, etc., is set up
+
+which includes two elements: ``directory`` and ``name``
+
+**Table**: This feature contains the general settings related to the data table. Currently, it includes an element named prefix. The prefix of the data table can essentially serve as a signature for all data tables, placed before the actual name and separated from the main table name by an underscore (_).
+
+**Log**: This feature is useful when you are debugging your project. The logs save all the operations performed by the library in an insecure file (you must handle the security settings yourself), and you can view the commands executed by the library. It includes the following three elements:
+
+- ``file_name``: The name of the file where the logs are saved.
+
+- ``save``: The data you need to save in this file, which includes the following elements:
+    - **query**: Saves the query commands.
+    - **affected_rows**: Saves the number of changes applied after executing a query.
+    - **get_ram**: Saves the data received from the system’s RAM.
+    - **save_ram**: Saves the data stored in the system’s RAM.
+    - **jobs**: Saves the data related to jobs.
+    - **database**: Saves all the stored data related to databases.
+    
+- ``retain_previous_data``: A boolean type, if true, previous logs are retained in the file.
+
+**System**: This feature pertains to the main system of the library, which includes two elements: ``RAM`` and ``Database``.
+
+``RAM``: This feature stores the data received from the database in the system’s RAM, eliminating the need for resending queries to retrieve them again. This process enhances the speed of the project but configuring it is optional.
+
+``Database``: The type of database you intend to connect to; currently, only Mysql is available.
 
 Below is a sample of the configuration class:
 
 ```php
 <?php
-class MyConfig {
-    public $Database;
-    public $Project;
-    public $Table;
+class MySqlConfig {
+    public $Database,$Project,$Table,$Log,$System;
     public function __construct() {
         # -------- Database config
         $this->Database['host'] = '127.0.0.1';
@@ -79,29 +107,47 @@ class MyConfig {
         $this->Database['password'] = '';
         $this->Database['port'] = '';
         $this->Database['name'] = 'AzadSql';
+
+
         # -------- Project config
-        $this->Project['directory'] = "MyProject"; # Project folder path
-        # Note: this folder is not created automatically.
-        $this->Project['name'] = "MyProject"; # Project name (namespace must be set to this name)
+        $this->Project['directory'] = __DIR__."/MyProject";
+        $this->Project['name'] = "MyProject";
         if (!file_exists($this->Project['directory'])) { mkdir($this->Project['directory']); }
+
+
         # -------- Table config
-        $this->Table['prefix'] = "mp"; # table prefixes
+        $this->Table['prefix'] = "mp";
+
+
+        # -------- Log
+        $this->Log['file_name'] = "Database.log";
+        $this->Log['save'] = ['query','affected_rows','get_ram','jobs'];
+        // save_ram , database
+        $this->Log['retain_previous_data'] = false;
+
+
+        # -------- System
+        $this->System['RAM'] = true;
+        # On average 25% speed increase if activated!
+        $this->System['Database'] = 'Mysql';
     }
 }
 ```
-After creating the configuration class, connect it to the main class via the ``config`` method.
+After you have configured the config class, pass it to the main library class.
+
+For example:
 ```php
-$Sql->Config(MyConfig::class);
+$Database = new Azad\Database\Connection(MySqlConfig::class);
 ```
 
-# 5. Project folder path
+# 5. Main Project Folders
 
-After configuring the project, folders are created in the introduced folder.
+After a successful connection, these folders will be created in the directory set by you (in configuration class):
 
 ```php
     MyProject/
   
-      Constants/ # Soon
+      Enums/ # Soon
     
       Encrypters/
   
@@ -114,26 +160,24 @@ After configuring the project, folders are created in the introduced folder.
       Tables/
 ```
 
-# 6. How to create a table
-To do this, enter the project folder and create a php file in the Tables folder (`MyProject\Tables\`).
-> [!TIP]
-> The name you choose for the file is considered as the table name.
+# 6. How to Create a Data Table
+To do this, enter the Tables folder in your project folder (`MyProject\Tables\`). This folder contains files that are used to create a data table.
 
-After creating the PHP file, you need to create a namespace. ``PROJECT-NAME\Tables``
+To do this, enter the project folder and create a php file in the Tables folder 
+> [!NOTE]
+> the file name and class name **must match**. Also, make sure to use the **namespace** that includes **your project name and the term Tables** (``PROJECT-NAME\Tables``). Finally, ensure that you inherit from the ``\Azad\Database\Table\Make`` class.
+
 
 ```php
 <?php
 namespace MyProject\Tables;
-```
-After creating namespace, create a class **named with the file** and inherit from the ``\Azad\Database\Table\Make`` class. for example:
-```php
 class Users extends \Azad\Database\Table\Make {
 
 }
 ```
-In the example above, we are going to create a table with the name of ``Users``.
-> [!TIP]
-> If you set a value in the config file for ``prefix``, the table name will be set automatically prefix, **don't do it manually**
+In the above example, we are creating a data table named **Users** in a file called Users.php
+
+(``PROJECT-NAME\Tables\Users.php``).
 
 Now, we're going to set up the database columns through ``__construct``.
 ```php

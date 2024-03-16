@@ -261,13 +261,19 @@ Size(size)
 ```php
 Rebuilder(rebuilder_name) # Set a Rebuilder for Column
 ```
-``rebuilder_name`` ``(string)`` : Rebuilder Name (The Rebuilder description is in the Magic section.)
+``rebuilder_name`` ``(string)`` : Rebuilder Name
 
+**What are Rebuilders**? Rebuilders help you to standardize the appearance of your data. For example, they can make all letters lowercase (this aids in data evaluation and extraction)
+
+In the Magic section, this feature has been elaborated upon in detail
 
 ```php
 Encrypter(encrypter_name) # Set a Encrypter for Column
 ```
-``encrypter_name`` ``(string)`` : Encrypter Name (The Encrypter description is in the Magic section.)
+``encrypter_name`` ``(string)`` : Encrypter Name
+**What is an Encryptor?** This feature encodes the data before storage and decrypts it upon retrieval. With this, you can easily encrypt a column and automatically access the decrypted data when displaying it.
+
+This feature is explained in detail in the Magic section.
 
 ```php
 Foreign(table_name,column_name) # constraint is used to prevent actions that would destroy links between tables.

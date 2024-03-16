@@ -908,6 +908,97 @@ array(5) {
 }
 
 ```
+## Jobs
+
+An interesting and very efficient feature. Have you ever experienced that after transferring funds between two users, one user’s balance decreases but the second user’s balance does not increase? It’s true, you might have been entangled in consecutive and complex conditions, but here we have a better solution.
+
+Using this feature, all data are evaluated before execution, listed in order, and if the execution of one of them encounters a problem, the previous data is recovered, and no data is changed.
+
+Pay attention to the example below
+
+
+```php
+
+try {
+
+    $Job1 = $Sql->NewJob();
+
+    # Job1 -> Find (VALUE_PRIMARY_KEY) -> From (TABLE_NAME)
+    $User1 = $Job1->Find(1)->From("Users");
+    $User1_Wallet = $User1->Result['wallet'];
+    $User2 = $Job1->Find(2)->From("Users");
+    $User2_Wallet = $User2->Result['wallet'];
+
+    $Amount = 10000;
+
+    # Job1 -> Table (TABLE_NAME) -> SELECT (COLUMN_NAME) -> To (NEW_VALUE) -> Who? (UserObject)
+    $Job1->Table("Users")->Select("wallet")->To($User1_Wallet + $Amount)->Who($User1);
+    $Job1->Table("Users")->Select("wallet")->To($User2_Wallet - $Amount)->Who($User2);
+
+    if ($User2_Wallet < $Amount) {
+        $Job1->Exception(new ExceptionJob("User 2 does not have enough inventory",-1));
+    }
+
+    $Job1->Start();
+
+} catch (ExceptionJob $E) {
+    $message = match ($E->getCode()) {
+        -1 => "User 2 you do not have enough balance, please recharge your account.",
+        default => "There is a problem, please try it later."
+    };
+    print($message);
+}
+
+```
+
+In the above example, we intend to transfer 10,000 monetary units between two users.
+
+The clean architecture of this feature is as follows:
+
+First, define the users whose data you need.
+
+Then, define the variables you require.
+
+Now, start operations on the data.
+
+Finally, check the data before starting the job.
+
+
+In the first step, it is necessary to define a new job, which is done with the ``NewJob`` method.
+
+```PHP
+$Job1 = $Sql->NewJob();
+```
+
+After defining a Job to receive data from a table (in the example above, ``Users``), use the following structure:
+
+```PHP
+$Job1->Find(VALUE_PRIMARY_KEY)->From(TABLE_NAME);
+```
+
+The input for the ``Find`` method is actually the value of the Primary Key column. The job automatically detects which column is the Primary Key and uses the value of this method to evaluate with the Primary column.
+
+Then, using the ``From`` method, specify which table the data belongs to.
+
+> [!Note]
+> that in the Job, do not manually change the data at all; we need the previous data and the new data, and this requires properly writing the jobs.
+
+In the next step, to save the update command, we use the following structure:
+
+```PHP
+$Job1->Table(TABLE_NAME)->SELECT(COLUMN_NAME)->To(NEW_VALUE)->Who?(UserObject);
+```
+
+In the ``Table`` method, enter the name of the table you intend to work with its rows. For the ``Select`` input, enter the name of the column you intend to edit the data of (in the example above, amount).
+
+Now, define what the new input should be with the ``To`` method. Finally, using the ``Who`` method, specify which user you are editing (use the variables defined in the previous step by the ``Find`` method).
+
+Now, finally, we can evaluate the data before starting the commands, and in case of a problem, use the Exception method. 
+> [!Note]
+> that the input for this method must definitely be the ``ExceptionJob`` class.
+
+After the complete configuration of the Job, the commands are executed in the defined order using the ``Start`` command.
+
 
 # Library Developers Guide :fist_right:  :fist_left:
 

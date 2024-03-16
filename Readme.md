@@ -179,7 +179,9 @@ In the above example, we are creating a data table named **Users** in a file cal
 
 (``PROJECT-NAME\Tables\Users.php``).
 
-Now, we're going to set up the database columns through ``__construct``.
+Now it’s time to configure the data table. The table settings are done in the class constructor (``__construct``). 
+
+First, pay attention to the following example:
 ```php
 <?php
 namespace MyProject\Tables;
@@ -194,53 +196,57 @@ class Users extends \Azad\Database\Table\Make {
     }
 }
 ```
+
+It is clear that the columns of the data table are added line by line. Using the ``Name`` method, we specify the name of the data table column, and with ``Type``, we determine the type of data we intend to store in it. Finally, with ``Size``, we set the size of the data. This is the simplest way to create columns for a data table. However, the data column settings are not limited to these three methods.
+
 ## Methods:
 ```php
 Name(column_name)
 ```
 
-``column_name`` : Set the column name with this method. First of all، you need to specify the column name otherwise you will encounter an error.
+``column_name`` : The column name is set in this method. The input to this method is a string and it needs to be called in the most initial state. Other methods that are explained later require the name defined by this method.
 > [!CAUTION]
 > **PHP Fatal error:  ``Uncaught Azad\Database\Table\Exception``: You need to specify the column name first.**
 
 ```php
 Type(class_type)
 ```
-``class_type``: Class of data type. Classes of data types are defined in the main project (``src/Types``)
+``class_type``: This method determines the data type of the column. Below is a list of data types available.
+> [!NOTE]
+> that the input parameter must be a class from ``\Azad\Database\Types\``
 
 Types:
+- ``ArrayData``: Takes data as an array input and outputs it as an array, but it is stored in the database as JSON.
 
-> **ArrayData**: ``Storing an array in a table (based on JSON)``
+- ``AutoLess``: This data type is provided as a guide for other team programmers (explained at the end of the documentation).
 
-> **AutoLess**: ``Custom Datatype Sample, for Data Handling Guide``
+- ``BigINT``: No need for explanation.!
 
-> **BigINT**: ``No need for explanation.!``
+- ``Boolean``: No need for explanation.!
 
-> **Boolean**: ``No need for explanation.!``
+- ``Decimal``: No need for explanation.!
 
-> **Decimal**: ``No need for explanation.!``
+- ``Floats``: No need for explanation.!
 
-> **Floats**: ``No need for explanation.!``
+- ``CreatedAt``: Does not require manual value assignment during insertion; this column stores the time when the row was created.
 
-> **CreatedAt**: ``When you insert a new record, it automatically saves the time of the record``
+- ``ID``: Used to determine user IDs, it uses the n+1 algorithm and selects the column as the primary key.
 
-> **ID**: ``Automatically increments numbers and is chosen as the primary key``
+- ``Integer``: No need for explanation.!
 
-> **Integer**: ``No need for explanation.!``
+- ``Random``: This data type is provided as a guide for other team programmers (explained at the end of the documentation).
 
-> **Random**: ``Custom Datatype Sample, for Data Handling Guide``
+- ``UpdateAt``: Similar to CreatedAt, it does not require value assignment and stores the time of the last edit of a row.
 
-> **UpdateAt**: ``When you update your record, it saves the time of the last change``
+- ``Varchar``: No need for explanation.!
 
-> **Varchar**: ``No need for explanation.!``
+- ``timestamp``: No need for explanation.!
 
-> **timestamp**: ``No need for explanation.!``
+- ``Decimal``: No need for explanation.!
 
-> **Decimal**: ``No need for explanation.!``
+- ``Token``: Creates a unique identifier, useful for creating APIs.
 
-> **Token**: ``Automatic Token Generation (Based on SHA1)``
-
-> **UserID**: This column is set to Primary and BigINT.
+- ``UserID``: Selected as the primary key and is of the BigINT type."
 
 > [!CAUTION]
 > If the set data type does not exist, you will encounter such an error.

@@ -3,14 +3,15 @@
 namespace Azad\Database\Table\Columns;
 
 class Init extends Get {
-    private $Where;
+    private $Where,$Hash;
 
     public $Data;
     public $Update;
     public $Condition;
 
-    public function __construct($table_name,$query,$Where=null) {
+    public function __construct($table_name,$query,$hash,$Where=null) {
         $this->TableName = $table_name;
+        parent::$MyHash = $hash;
         parent::$query[$this->TableName] = $query;
         if ($Where != null) {
             $this->Where .= $Where;
@@ -19,31 +20,31 @@ class Init extends Get {
         }
     }
     public function WHERE ($key,$value,$Conditions="=") {
-        if(method_exists(new parent::$TableData[$this->TableName]['data'][$key]['type'],"Set")) {
-            $DB = new parent::$TableData[$this->TableName]['data'][$key]['type']();
+        if(method_exists(new parent::$Tables[parent::$MyHash][$this->TableName]['columns'][$key]['type'],"Set")) {
+            $DB = new parent::$Tables[parent::$MyHash][$this->TableName]['columns'][$key]['type']();
             $value = $DB->Set($value);
         }
         $this->Where .= (strpos($this->Where ?? "", "WHERE") === false)?" WHERE ":throw new Exception("You are allowed to use the WHERE method only once here.");
-        $this->Where .= \Azad\Database\Query::MakeWhere($key,$value,$Conditions);
-        return new $this($this->TableName,parent::$query[$this->TableName],$this->Where);
+        $this->Where .= parent::MakeQuery()::Where($key,$value,$Conditions);
+        return new $this($this->TableName,parent::$query[$this->TableName],parent::$MyHash,$this->Where);
     }
     public function AND ($key,$value,$Conditions="=") {
-        if(method_exists(new parent::$TableData[$this->TableName]['data'][$key]['type'],"Set")) {
-            $DB = new parent::$TableData[$this->TableName]['data'][$key]['type']();
+        if(method_exists(parent::$Tables[parent::$MyHash][$this->TableName]['columns'][$key]['type'],"Set")) {
+            $DB = parent::$Tables[parent::$MyHash][$this->TableName]['columns'][$key]['type']();
             $value = $DB->Set($value);
         }
         $this->Where .= (strpos($this->Where ?? "", "WHERE") === false)?throw new Exception("First, you need to use the WHERE method."):" AND ";
-        $this->Where .= \Azad\Database\Query::MakeWhere($key,$value,$Conditions);
-        return new $this($this->TableName,parent::$query[$this->TableName],$this->Where);
+        $this->Where .= parent::MakeQuery()::Where($key,$value,$Conditions);
+        return new $this($this->TableName,parent::$query[$this->TableName],parent::$MyHash,$this->Where);
     }
     public function OR ($key,$value,$Conditions="=") {
-        if(method_exists(new parent::$TableData[$this->TableName]['data'][$key]['type'],"Set")) {
-            $DB = new parent::$TableData[$this->TableName]['data'][$key]['type']();
+        if(method_exists(parent::$Tables[parent::$MyHash][$this->TableName]['columns'][$key]['type'],"Set")) {
+            $DB = parent::$Tables[parent::$MyHash][$this->TableName]['columns'][$key]['type']();
             $value = $DB->Set($value);
         }
         $this->Where .= (strpos($this->Where ?? "", "WHERE") === false)?throw new Exception("First, you need to use the WHERE method."):" OR ";
-        $this->Where .= \Azad\Database\Query::MakeWhere($key,$value,$Conditions);
-        return new $this($this->TableName,parent::$query[$this->TableName],$this->Where);
+        $this->Where .= parent::MakeQuery()::Where($key,$value,$Conditions);
+        return new $this($this->TableName,parent::$query[$this->TableName],parent::$MyHash,$this->Where);
     }
     
     public function Data () {
@@ -51,13 +52,9 @@ class Init extends Get {
             $this->RemovedWhereInQuery ();
         }
         parent::$query[$this->TableName] .= $this->Where;
-        $Result = $this->Get() ?? false;
+        $Result = $this->Get(parent::$MyHash) ?? false;
         $this->RemovedWhereInQuery ();
-        $this->Result = $Result;
-        $this->Update = new Update\Rows($this->TableName,$this->Where,$Result);
-        $this->Update->Data = $Result;
-        $this->Condition = new \Azad\Database\Conditions\Conditional($Result,false,$this->Update);
-        return $this;
+        return new ReturnData($this->TableName,$Result,parent::$MyHash,true);
     }
 
     public function FirstRow () {
@@ -65,25 +62,19 @@ class Init extends Get {
             $this->RemovedWhereInQuery ();
         }
         parent::$query[$this->TableName] .= $this->Where;
-        $Result = $this->Get()[0] ?? false;
+        $Result = $this->Get(parent::$MyHash)[0] ?? false;
         $this->RemovedWhereInQuery ();
-        $this->Result = $Result;
-        $this->Update = new Update\Row($this->TableName,$Result);
-        $this->Condition = new \Azad\Database\Conditions\Conditional($Result,true,$this->Update);
-        return $this;
+        return new ReturnData($this->TableName,$Result,parent::$MyHash);
     }
     public function LastRow () {
         if ($this->Where) {
             $this->RemovedWhereInQuery ();
         }
         parent::$query[$this->TableName] .= $this->Where;
-        $Data = $this->Get();
+        $Data = $this->Get(parent::$MyHash);
         $this->RemovedWhereInQuery ();
         $Result = array_pop($Data) ?? false;
-        $this->Result = $Result;
-        $this->Update = new Update\Row($this->TableName,$Result);
-        $this->Condition = new \Azad\Database\Conditions\Conditional($Result,true,$this->Update);
-        return $this;
+        return new ReturnData($this->TableName,$Result,parent::$MyHash);
     }
 
     private function RemovedWhereInQuery () {
@@ -93,44 +84,4 @@ class Init extends Get {
         }
     }
     
-    public function __set($name,$value) {
-        $this->$name = $value;
-    }
-    public function __get($name) {
-        return $this->$name;
-    }
-
-    /*public function Manage () {
-        if ($this->Where) {
-            parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");
-        }
-        parent::$query[$this->TableName] .= $this->Where;
-        $QueryResult = $this->Get();
-        $Query = parent::$query[$this->TableName];
-        parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");
-
-        if(count($QueryResult) == 0) {
-            $Result = false;
-        } elseif (count($QueryResult) == 1) {
-            $Result = new Row($this->TableName,$Query);
-        } else {
-            $Result = new Rows($this->TableName,$Query);
-        }
-        return $Result;
-    }*/
-    /*public function WorkOn ($Key) { 
-        if ($this->Where) {
-            parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");
-        }
-        parent::$query[$this->TableName] .= $this->Where;
-        $QueryResult = $this->Get();
-        $Query = parent::$query[$this->TableName];
-        parent::$query[$this->TableName] = rtrim(parent::$query[$this->TableName],$this->Where ?? "");
-
-        if(count($QueryResult) == 0) {
-            return false;
-        } else {
-            return new WorkOn($Key,null,$Query);
-        }
-    }*/
 }

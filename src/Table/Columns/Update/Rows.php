@@ -4,13 +4,14 @@ namespace Azad\Database\Table\Columns\Update;
 
 class Rows extends \Azad\Database\Table\Columns\Get {
     public $WhereQ,$Data,$FindedData;
-    private $Table,$LastKey;
+    private $Table,$LastKey,$hash;
 
 
-    public function __construct($TableName,$Query,$FindedData) {
+    public function __construct($TableName,$Query,$FindedData,$hash) {
         $this->WhereQ = $Query;
         $this->Table = $TableName;
         $this->FindedData = $FindedData;
+        $this->hash = $hash;
     }
     
     public function Key($key) {
@@ -19,7 +20,7 @@ class Rows extends \Azad\Database\Table\Columns\Get {
         return $this;
     }
     public function Value($value) {
-        $value = $this->PreparationValues ($this->LastKey,$value);
+        parent::PreparationValues ($this->LastKey,$value,$this->Table);
         parent::$UpdateData[$this->LastKey]['value'] = $value;
         parent::$UpdateData[$this->LastKey]['type'] = "normal";
         return $this;
@@ -36,11 +37,8 @@ class Rows extends \Azad\Database\Table\Columns\Get {
     }
 
     public function Push () {
-
         $OldDataForWhere = (isset($this->Data)) ? $this->Data : $this->FindedData;
-
         $Data = (isset($this->Data)) ? $this->Data : $this->FindedData;
-
         foreach ($Data as $DKey=>$OldData) {
             foreach ($OldData as $Key=>$Value) {
                 if(isset(parent::$UpdateData[$Key])) {
@@ -54,80 +52,14 @@ class Rows extends \Azad\Database\Table\Columns\Get {
                     }
                 }
             }
-            $Query = \Azad\Database\Query::UpdateQuery($this->Table,$Data[$DKey],$this->where($OldDataForWhere[$DKey]));
+            $Query = parent::MakeQuery()::Edit($this->Table,$Data[$DKey],parent::where_data($OldDataForWhere,$this->Table));
             if($this->Query($Query) != true) {
                 throw new Exception("Failed Update - Query: ".$Query);
             }
         }
-        return $Data;
+        return new \Azad\Database\Table\Columns\ReturnData($this->Table,$Data,parent::$MyHash);
     }
 
-
-    private function UpdateVariables ($new_data) {
-        array_walk($new_data,function ($value,$key) { parent::$TableData['table_data'][0][$key] = $value; });
-    }
-    private function RebuilderResult($Rebuilder,$data) {
-        $RebuilderName = parent::$name_prj."\\Rebuilders\\".$Rebuilder;
-        if (!class_exists($RebuilderName)) {
-            throw new \Azad\Database\Exception\Load("Rebuilder [$RebuilderName] does not exist");
-        }
-        return $RebuilderName::Rebuild ($data);
-    }
-    private function PreparationValues ($key,$value) {
-        $TableName = $this->Table;
-        # ---- Rebuilder
-        if (isset(parent::$TableData[$TableName]['data'][$key]['rebuilder'])) {
-            if (!is_array($value)) {
-                $value = $this->RebuilderResult(parent::$TableData[$TableName]['data'][$key]['rebuilder'],$value);
-            } else {
-                $Rebuilder = parent::$TableData[$TableName]['data'][$key]['rebuilder'];
-                $value = \Azad\Database\Arrays::Value($value,function ($data) use ($Rebuilder) {
-                    return $this->RebuilderResult($Rebuilder,$data);
-                });
-            }
-        }
-        # ---- Encrypter
-        if (isset(parent::$TableData[$TableName]['data'][$key]['encrypter'])) {
-            $EncrypetName = parent::$TableData[$TableName]['data'][$key]['encrypter'];
-            $EncrypetName = parent::$name_prj."\\Encrypters\\".$EncrypetName;
-            if (!class_exists($EncrypetName)) {
-                throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
-            }
-            $value = $EncrypetName::Encrypt($value);
-        }
-        # ---- Set method (in type)
-        if(method_exists(new parent::$TableData[$TableName]['data'][$key]['type'],"Set")) {
-            $DB = new parent::$TableData[$TableName]['data'][$key]['type']();
-            $value = $DB->Set($value);
-        }
-        # ---- Escape String
-        return parent::$DataBase->EscapeString ($value);
-    }
-    private function where($old_data) {
-        $new = [];
-        foreach ($old_data as $key=>$value) {
-            if ($value == null or $value == [] or $value == '') {
-                continue;
-            }
-            if (isset(parent::$TableData[$this->Table]['data'][$key]['encrypter'])) {
-                $EncrypetName = parent::$TableData[$this->Table]['data'][$key]['encrypter'];
-                $EncrypetName = parent::$name_prj."\\Encrypters\\".$EncrypetName;
-                if (!class_exists($EncrypetName)) {
-                    throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
-                }
-                $value = $EncrypetName::Encrypt($value);
-            }
-            if(method_exists(new parent::$TableData[$this->Table]['data'][$key]['type'],"Set")) {
-                $DB = new parent::$TableData[$this->Table]['data'][$key]['type']();
-                $value = $DB->Set($value);
-            }
-            $new[$key] = $value;
-        }
-        return $new;
-    }
-    private function Clear () {
-        parent::$UpdateData = null;
-    }
 
 
 }

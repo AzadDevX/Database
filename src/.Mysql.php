@@ -1,5 +1,6 @@
 <?php
 
+/* For Debug
 namespace Azad\Database;
 
 class Mysql {
@@ -27,3 +28,5 @@ class Mysql {
         return $Data;
     }
 }
+
+*/

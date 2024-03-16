@@ -8,36 +8,58 @@ class Get extends \Azad\Database\Database {
     protected static $WhereQuery;
     protected static $EncrypterStatus=[];
 
+    private function FindPrimaryKeyWhereInQuery ($table_name,$query) {
+        $primary_key = parent::$Tables[parent::$MyHash][$table_name]["primary_key"];
+        preg_match_all("#".$primary_key." = '(.*)'#",$query,$data);
+        return $data[1][0] ?? false;
+    }
+
     protected function Get($table_name=null) {
         $TableName = (isset($table_name)) ? $table_name : $this->TableName;
-        $Rows = $this->Fetch($this->Query(self::$query[$TableName]));
         $TableName = (string) $this->TableName;
-        foreach ($Rows as $Row => $Data) {
-            foreach ($Data as $key=>$value) {
-                if ($value == null and $value != []) { continue; }
-                if (isset(parent::$TableData[$TableName]['data'][$key]['encrypter'])) {
-                    if (!isset(self::$EncrypterStatus[$key]['status']) or self::$EncrypterStatus[$key]['status'] != "decrypted") {
-                        $EncrypetName = parent::$TableData[$TableName]['data'][$key]['encrypter'];
-                        $EncrypetName = parent::$name_prj."\\Encrypters\\".$EncrypetName;
-                        if (!class_exists($EncrypetName)) {
-                            throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
-                        }
-                        self::$EncrypterStatus[$key] = ['value'=>$value,'status'=>"decrypting"];
-                        $value = $EncrypetName::Decrypt($value);
-                        self::$EncrypterStatus[$key] = ['value'=>$value,'status'=>"decrypted"];
-                    }
-                }
-                if(method_exists(new parent::$TableData[$TableName]['data'][$key]['type'],"Get")) {
-                    $DB = new parent::$TableData[$TableName]['data'][$key]['type']();
-                    $value = $DB->Get($value);
+        if(parent::$SystemConfig[parent::$MyHash]['RAM'] == true) {
+            $PrimaryKeyWhere = $this->FindPrimaryKeyWhereInQuery ($TableName,self::$query[$TableName]);
+            if ($PrimaryKeyWhere) {
+                $Data = $this->GetFromRam ($TableName,$PrimaryKeyWhere);
+                if ($Data) {
+                    if (in_array("get_ram",parent::$Log[parent::$MyHash]['save'])) { parent::Log(parent::DateLog ()." Get data from Ram: TableName: [".$TableName."] ".parent::$Tables[parent::$MyHash][$TableName]["primary_key"]." = ".$PrimaryKeyWhere); };
+                    return [$Data];
                 }
             }
         }
+        $Rows = $this->Fetch($this->Query(self::$query[$TableName]));
+        $Rows = parent::PreparingGet($Rows,$TableName);
         if (isset(parent::$IDListTable[$TableName])) {
             parent::$IDListTable[$TableName] = end($Rows) ?? [];
         }
-        parent::$TableData['table_data'] = $Rows;
+        parent::$Tables[parent::$MyHash][$table_name]['data'] = $Rows;
+        if(parent::$SystemConfig[parent::$MyHash]['RAM'] == true) {
+            $this->SaveToRam ($TableName,$Rows);
+        }
         return $Rows;
     }
 
+    protected static function where_data($data,$TableName) {
+        $new = [];
+        foreach ($data as $key=>$value) {
+            $ColumnData = self::$Tables[self::$MyHash][$TableName]['columns'][$key];
+            if ($value == null or $value == [] or $value == '') {
+                continue;
+            }
+            if (isset($ColumnData['encrypter'])) {
+                $EncrypetName = $ColumnData['encrypter'];
+                $EncrypetName = self::$name_prj."\\Encrypters\\".$EncrypetName;
+                if (!class_exists($EncrypetName)) {
+                    throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
+                }
+                $value = $EncrypetName::Encrypt($value);
+            }
+            if(method_exists($ColumnData['type'],"Set")) {
+                $DB = new $ColumnData['type']();
+                $value = $DB->Set($value);
+            }
+            $new[$key] = $value;
+        }
+        return $new;
+    }
 }

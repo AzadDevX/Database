@@ -4,7 +4,7 @@ namespace Azad\Database;
 
 class Connection extends Database {
 
-    public $Version = "v2.0.0";
+    public $Version = "v2.0.1";
     private $ProjectStartAt;
     private $MemoryUsage;
     public $HashID;

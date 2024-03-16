@@ -23,7 +23,7 @@ class MySqlConfig {
 
         # -------- Log
         $this->Log['file_name'] = "Database.log";
-        $this->Log['save'] = ['query','affected_rows','get_ram'];
+        $this->Log['save'] = ['query','affected_rows','get_ram','jobs'];
         // save_ram , database
         $this->Log['retain_previous_data'] = false;
 

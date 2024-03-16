@@ -23,14 +23,20 @@ class Init extends \Azad\Database\Database {
         foreach (parent::$Jobs[$this->hash][$this->id]['jobs'] as $Data) {
             $column_name = $Data['column_name'];
             $new_value = $Data['new_value'];
-            $user = $Data['user'];
             $job = $Data['job'];
-    
             if ($job == 'update') {
                 try {
-                    $Result = $user->Update->Key($column_name)->Value($new_value)->Push();
-                    echo $column_name." changed to ".$new_value.PHP_EOL;
-                    parent::$Jobs[$this->hash][$this->id]['recovery'][] = ['column_name'=>$column_name,'user'=>$user];
+                    parent::$Jobs[$this->hash][$this->id]['recovery'][] = $Data;
+                    $Table = $this->main_class->Table($Data['table_class']);
+                    $User = $Table->Select("*")->WHERE($Data['primary_column'],$Data['primary_value'])->LastRow();
+                    $Result = $User->Update->Key($column_name)->Value($new_value)->Push();
+                    if ($Result == false) {
+                        return $this->Recovery();
+                    }
+                    if (in_array("jobs",self::$Log[self::$MyHash]['save'])) {
+                        $Table = $Data['table_name'];
+                        parent::Log(parent::DateLog ()." Jobs: ".$column_name." [".$Table."] -> ".$Data['primary_value']." = ".$Data['primary_column']." Updated To ".$new_value);
+                    }
                 } catch (\Throwable $Error) {
                     return $this->Recovery();
                 }
@@ -39,12 +45,14 @@ class Init extends \Azad\Database\Database {
         return true;
     }
     private function Recovery() {
-        foreach(parent::$Jobs[$this->hash][$this->id]['recovery'] as $Data) {
-            $OldData = $Data['user']->Result;
+        foreach(array_reverse(parent::$Jobs[$this->hash][$this->id]['recovery']) as $Data) {
             $DataChanged = $Data['column_name'];
-            $FindOldData = $OldData[$DataChanged];
-            $Data['user']->Update->Key($DataChanged)->Value($FindOldData);
-            echo $DataChanged." Backed to ".$FindOldData;
+            $Table = $this->main_class->Table($Data['table_class']);
+            $User = $Table->Select("*")->WHERE($Data['primary_column'],$Data['primary_value'])->LastRow();
+            $User->Update->Key($DataChanged)->Value($Data['old_value'])->Push();
+            if (in_array("jobs",self::$Log[self::$MyHash]['save'])) {
+                parent::Log(parent::DateLog ()." Jobs Recovery: ".$DataChanged." [".$Data['table_name']."] -> ".$Data['primary_value']." = ".$Data['primary_column']." Recovery To ".$Data['old_value']);
+            }
         }
         return false;
     }
@@ -113,13 +121,20 @@ class To extends Init {
 
 class SaveJob extends Init {
     public function __construct($id,$hash,$table_name,$column_name,$new_value,$user_obj) {
+        $table_class = $table_name;
+        $table_name = parent::$is_have_prefix[$hash]?parent::$TablePrefix[$hash]."_".$table_name:$table_name;
+        $FindUser = self::$Tables[$hash][$table_name]["primary_key"];
+        $primary_value = $user_obj->Result[$FindUser];
         parent::$Jobs[$hash][$id]['jobs'][] =
         [
             'table_name'=>$table_name,
+            'table_class'=>$table_class,
             'column_name'=>$column_name,
             'new_value'=>$new_value,
-            'user'=>$user_obj,
-            'job'=>'update'
+            'primary_column'=>$FindUser,
+            'primary_value'=>$primary_value,
+            'old_value'=>$user_obj->Result[$column_name],
+            'job'=>'update',
         ];
     }
 }

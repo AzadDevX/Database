@@ -487,8 +487,11 @@ object(stdClass)#38 (6) {
 }
 ```
 
-# 6. How to insert a data
-After you have created your table, you will need to select your table, which is done using the ``Table`` method.
+# 6. How do we import data into a data table?
+After the data table configuration is complete, to start injecting data, select your desired data table using the ``Table`` method.
+
+The output of this method is another class with methods like ``Select`` and ``Insert`` and functions that you have defined in the library class. Currently, we use the ``Insert`` method to inject data.
+
 for example:
 ```php
 $Database = new Azad\Database\Connect("AzadSql");
@@ -523,13 +526,22 @@ Value(data)
 End(); # After completing the list of columns and their values, call this method
 ```
 
-# 7. How to get a value
-After you have saved your table to a variable (in the previous example ``$Users``), select your data using the ``WHERE`` method
+In summary, after selecting the data table, there are two methods for adding data: the ``Key`` method, which is for the name of the data column, and the ``Value`` method, which specifies the value of this column.
+
+Finally, after determining the data, the data injection process begins with the ``End()`` command. If you need the ID identifier of your data, the output of End is actually the last id added to the data table.
+
+# 7. How do we extract a row or multiple rows from a data table?
+
+Here, we will work with another method called ``Select``. This method get the column whose data you need; if you want the data of all columns, use the asterisk (*).
+
+After selecting your column, you can search for a specific row/rows with the ``WHERE``, ``AND``, ``OR``.
+
+Pay attention to the example below.
 
 ```php
-$User = $Users->Select("*");
-$User = $User->WHERE("first_name","Mohammad")
-            ->AND("last_name","azad");
+$Users = $Database->Table("Users")->Select("*");
+$User = $Users->WHERE("first_name","Mohammad")
+                    ->AND("last_name","azad");
 ```
 ## Methods:
 
@@ -557,9 +569,25 @@ OR(column_name,value) # Logical Operators (or - ||)
 
 ``value`` : Column value.
 
-After setting up the where، you can get your data list in two ways.
+After completing the data search with WHERE clauses, you can access the data using these three methods:
 
-## First Solution:
+``Data()``: This includes all the retrieved data.
+
+``FirstRow()``: Displays the first retrieved data.
+
+``LastRow()``: Displays the last retrieved data.
+
+The output of all three methods consists of three attributes:
+
+**Result**: The retrieved data.
+
+**Update**: Used for updating or editing data.
+
+**Condition**: Contains conditional expression methods.
+
+Currently, we intend to extract data, so we’ll use the ``Result`` attribute.
+
+## Rows
 ```php
 $User->Data ()->Result;
 ```
@@ -584,7 +612,7 @@ array(1) {
 }
 ```
 
-## Second Solution:
+## Row
 ```php
 $User->FirstRow ()->Result;
 # OR

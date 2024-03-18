@@ -9,6 +9,23 @@ use Azad\Database\Jobs\Exception as ExceptionJob;
 
 $Sql = new Connection(MySqlConfig::class);
 
+$Users = $Sql->Table("Users");
+/*
+$Users->Insert()
+    ->Key("first_name")->Value("Mohammad")
+    ->Key("last_name")->Value("Azad")
+    ->Key("status")->Value(MyProject\Enums\UserStatus::Active)
+->End();
+*/
+
+$Find = $Users->Select("*")->WHERE("user_id",1);
+$Data = $Find->LastRow();
+
+var_dump($Data->Result['status']->value); // 1
+var_dump($Data->Result['status']->name); // "Active"
+var_dump($Data->Result['status']->toPersian()); // فعال
+var_dump($Data->Result['status'] == MyProject\Enums\UserStatus::Active); // true
+
 
 /*
 

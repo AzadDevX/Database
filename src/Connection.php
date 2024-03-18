@@ -4,7 +4,7 @@ namespace Azad\Database;
 
 class Connection extends Database {
 
-    public $Version = "v2.0.1";
+    public $Version = "v2.1.1";
     private $ProjectStartAt;
     private $MemoryUsage;
     public $HashID;
@@ -43,8 +43,9 @@ class Connection extends Database {
         parent::$DataBase[$this->HashID] = $ConnectionObj;
 
         parent::Log("System Config Ram: ".parent::$SystemConfig[$this->HashID]["RAM"]);
+        $this->LoadEnums ();
         $this->LoadPlugins ();
-        $this->LoadRebuilders ();
+        $this->LoadNormalizers ();
         $this->LoadEncrypters ();
         $this->LoadTables ();
 
@@ -68,7 +69,7 @@ class Connection extends Database {
         $this->MakeDir($dir."/Tables");
         $this->MakeDir($dir."/Enums");
         $this->MakeDir($dir."/Encrypters");
-        $this->MakeDir($dir."/Rebuilders");
+        $this->MakeDir($dir."/Normalizers");
         $this->MakeDir($dir."/Plugins");
     }
     private function LoadTables () { // Tables maked here
@@ -79,11 +80,14 @@ class Connection extends Database {
     private function LoadPlugins () {
         array_map(fn($filename) => include_once($filename),glob(parent::$dir_prj[$this->HashID]."/Plugins/*.php"));
     }
-    private function LoadRebuilders () {
-        array_map(fn($filename) => include_once($filename),glob(parent::$dir_prj[$this->HashID]."/Rebuilders/*.php"));
+    private function LoadNormalizers () {
+        array_map(fn($filename) => include_once($filename),glob(parent::$dir_prj[$this->HashID]."/Normalizers/*.php"));
     }
     private function LoadEncrypters () {
         array_map(fn($filename) => include_once($filename),glob(parent::$dir_prj[$this->HashID]."/Encrypters/*.php"));
+    }
+    private function LoadEnums () {
+        array_map(fn($filename) => include_once($filename),glob(parent::$dir_prj[$this->HashID]."/Enums/*.php"));
     }
     public function LoadPlugin ($class,$data) {
         $class = parent::$name_prj[$this->HashID]."\\Plugins\\".$class;
@@ -92,12 +96,12 @@ class Connection extends Database {
         }
         return new $class($data);
     }
-    protected function RebuilderResult ($RebuilderName,$Data) {
-        $RebuilderName = parent::$name_prj[$this->HashID]."\\Rebuilders\\".$RebuilderName;
-        if (!class_exists($RebuilderName)) {
-            throw new Exception\Load("Rebuilder [$RebuilderName] does not exist");
+    protected function NormalizerResult ($NormalizerName,$Data) {
+        $NormalizerName = parent::$name_prj[$this->HashID]."\\Normalizers\\".$NormalizerName;
+        if (!class_exists($NormalizerName)) {
+            throw new Exception\Load("Normalizers [$NormalizerName] does not exist");
         }
-        return $RebuilderName::Rebuild ($Data);
+        return $NormalizerName::Normalization ($Data);
     }
 
     public function CloseLog () {

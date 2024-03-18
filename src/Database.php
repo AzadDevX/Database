@@ -43,19 +43,24 @@ class Database {
             foreach ($Data as $key=>$value) {
                 $ColumnData = self::$Tables[self::$MyHash][$TableName]['columns'][$key];
                 if ($value == null or $value == []) { continue; }
-                    if (isset($ColumnData['encrypter'])) {
-                        $EncrypetName = $ColumnData['encrypter'];
-                        $EncrypetName = self::$name_prj."\\Encrypters\\".$EncrypetName;
-                        if (!class_exists($EncrypetName)) {
-                            throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
-                        }
-                        $value = $EncrypetName::Decrypt($value);
+                if (isset($ColumnData['encrypter'])) {
+                    $EncrypetName = $ColumnData['encrypter'];
+                    $EncrypetName = self::$name_prj."\\Encrypters\\".$EncrypetName;
+                    if (!class_exists($EncrypetName)) {
+                        throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
                     }
+                    $value = $EncrypetName::Decrypt($value);
+                }
+                if (isset($ColumnData['enum'])) {
+                    $value = $ColumnData['enum']::tryFrom($value);
+                }
+                if(!isset($ColumnData['enum']) && method_exists(new $ColumnData['type'],"Get")) {
+                    $DB = new $ColumnData['type']();
+                    $value = $DB->Get($value);
+                }
+                $Rows[$Row][$key] = $value;
             }
-            if(method_exists(new $ColumnData['type'],"Get")) {
-                $DB = new $ColumnData['type']();
-                $value = $DB->Get($value);
-            }
+            
         }
         return $Rows;
     }
@@ -67,11 +72,20 @@ class Database {
         if ($ColumnData == false) {
             throw new Exception\Columns("Column ".$key." is not correctly defined (table: ".$table_name.")");
         }
+
+        # ----- Check Enum
+        if(isset($ColumnData['enum'])) {
+            if (!$value instanceof $ColumnData['enum']) {
+                throw new Exception\DataType("The value you entered does not match the enum set for the column.");
+            }
+            $value = $value->value;
+        }
+
         # ---- is valid method (in type)
         if(method_exists($ColumnData['type'],"is_valid")) {
             $DB = new $ColumnData['type']();
             if(!$DB->is_valid($value)) {
-                return false;
+                throw new Exception\DataType("The entered value is not acceptable for type class.");
             }
         }
         # ---- Set method (in type)
@@ -79,14 +93,14 @@ class Database {
             $DB = new $ColumnData['type']();
             $value = $DB->Set($value);
         }
-        # ---- Rebuilder
-        if (isset($ColumnData['rebuilder'])) {
+        # ---- Normalizer
+        if (isset($ColumnData['Normalizer'])) {
             if (!is_array($value)) {
-                $value = self::RebuilderResult($ColumnData['rebuilder'],$value);
+                $value = self::NormalizerResult($ColumnData['Normalizer'],$value);
             } else {
-                $Rebuilder = $ColumnData['rebuilder'];
-                $value = \Azad\Database\Arrays::Value($value,function ($data) use ($Rebuilder) {
-                    return self::RebuilderResult($Rebuilder,$data);
+                $Normalizer = $ColumnData['Normalizer'];
+                $value = \Azad\Database\Arrays::Value($value,function ($data) use ($Normalizer) {
+                    return self::NormalizerResult($Normalizer,$data);
                 });
             }
         }
@@ -106,12 +120,12 @@ class Database {
         return json_decode(json_encode($array));
     }
 
-    private static function RebuilderResult($Rebuilder,$data) {
-        $RebuilderName = self::$name_prj[self::$MyHash]."\\Rebuilders\\".$Rebuilder;
-        if (!class_exists($RebuilderName)) {
-            throw new \Azad\Database\Exception\Load("Rebuilder [$RebuilderName] does not exist");
+    private static function NormalizerResult($Normalizer,$data) {
+        $NormalizerName = self::$name_prj[self::$MyHash]."\\Normalizers\\".$Normalizer;
+        if (!class_exists($NormalizerName)) {
+            throw new \Azad\Database\Exception\Load("Normalizer [$NormalizerName] does not exist");
         }
-        return $RebuilderName::Rebuild ($data);
+        return $NormalizerName::Normalization ($data);
     }
     protected static function Log($data) {
         $address = self::$dir_prj[self::$MyHash]."/".self::$Log[self::$MyHash]['file_name'];

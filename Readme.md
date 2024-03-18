@@ -11,67 +11,95 @@
 
 # 1. Introduction
 
-Code readability is one of the most important components of teamwork. Basic coding should be readable and understandable so that other. developers (teammates or open source) have the ability to understand faster and as a result develop faster.
+One of the main goals of the project is to establish a connection with the database in a way that maintains clean code structure while ensuring program speed, despite the use of various automated capabilities and tools. Additionally, employing object-oriented methods in different parts of the project improves team productivity and helps team members gain full mastery in various project areas.
 
-Azad-Sql library has certain rules and regulations so that different projects can be written in the same way. Also, using the object-oriented method helps other members to master different parts of the project and develop without disturbing the main flow of the code.
+It’s worth noting that this project is still in the testing and debugging phase, and we invite programmers to join us in its development.
 
-This project is open-source and professional developers are expected to cooperate in the development of this project and grow this library together!
 
 # 2. how does it work
-AzadSql library uses Mysqli PHP library to categorize the commands and send them to Query after applying the changes, separate the data, organize it and display it in the output.
 
-using this library you don't need to encrypt the columns manually, you don't need to write repeated commands to apply changes before storing data and receiving them, and you don't even need to evaluate the data of several different columns separately and update after receiving the result; All these processes can be done automatically.
-
-the ability of the library in the defined function (called Magic) can wonderfully summarize your index file and developers can process data on different parts of the columns.
-
-AzadSql developers can also develop different data types and make them available for public use. All these things will help you to ensure that your index file is in absolute order and that team members can apply their method to different parts of the project with open access.
+This is a developing library for interacting with databases (currently only MySQL). The library can automatically encrypt data, sort it, and also execute Query commands through job definitions without losing information or making unilateral changes.
 
 # 3. Basic rules
-you must use the object-oriented method, the file name and class name must match, and you must use the namespace of the project name.
+Folder Setup:
+First, you need to create a folder structure for your project. This folder should include files related to tables, encryption, builders, and other necessary components.
+Make sure to configure this folder properly.
+Project Namespace:
+Alongside configuring the folder, the project name (defined in the configuration class) should serve as a namespace for your project files.
+This ensures that your project remains organized and that different components can be easily associated with the project.
+
 for example:
 ```php
 namespace MyProject\Plugins;
 ```
-Also, each of the Magic has specific rules in design and you need to follow the rules (it will be explained later)
+
+Remember that this project is still in the testing and debugging phase, so it’s essential to collaborate with fellow developers to enhance its functionality. If you have any further questions or need assistance, feel free to ask!
 
 # 4. Initial Setup
 
-First, you need to install the library through Composer, to do so run the following command in commandline.
+
+First, install the azaddevx/database library using Composer. To do this, run the following command in your terminal:
 
 ```
 composer require azaddevx/database
 ```
 
-To use the library, you need to use autoload.php.
+Next, load the library using the autoload.php file:
 
 ```php
+
 require 'vendor/autoload.php';
+
+// Load the Connect class to start using the library:
+$Database = new Azad\Database\Connection(CONFIG CLASS);
 ```
 
-Load the Connect class to start using the library:
+Now, to begin, you need to create a **configuration class**. The components of the configuration are explained below.
 
-```php
-$Database = new Azad\Database\Connect();
-```
+After creating this class, pass it directly to the Connect class.
 
-After loading the class, you need to create a **config class** and pass it to the library.
-The configuration class consists of three main properties, namely Database, Project, and Table.
-These properties are based on the array.
+**Database**: In this section, enter the database connection information. In the future, depending on the type of database you have, the information set for this feature may differ. Currently, this feature includes four elements named as follows:
 
-**Database** property values: ``host`` - ``username`` - ``password`` - ``port`` - ``name``
+``host``: Your database host
 
-**Project** property values: ``directory`` - ``name``
+``username``: The username used for connection
 
-**Table** property values: ``prefix``
+``password``: Your database password
+
+``name``: The name of the database you intend to connect to
+
+**Project**: In this section, your project information including the project name, project folder, etc., is set up
+
+which includes two elements: ``directory`` and ``name``
+
+**Table**: This feature contains the general settings related to the data table. Currently, it includes an element named prefix. The prefix of the data table can essentially serve as a signature for all data tables, placed before the actual name and separated from the main table name by an underscore (_).
+
+**Log**: This feature is useful when you are debugging your project. The logs save all the operations performed by the library in an insecure file (you must handle the security settings yourself), and you can view the commands executed by the library. It includes the following three elements:
+
+- ``file_name``: The name of the file where the logs are saved.
+
+- ``save``: The data you need to save in this file, which includes the following elements:
+    - **query**: Saves the query commands.
+    - **affected_rows**: Saves the number of changes applied after executing a query.
+    - **get_ram**: Saves the data received from the system’s RAM.
+    - **save_ram**: Saves the data stored in the system’s RAM.
+    - **jobs**: Saves the data related to jobs.
+    - **database**: Saves all the stored data related to databases.
+    
+- ``retain_previous_data``: A boolean type, if true, previous logs are retained in the file.
+
+**System**: This feature pertains to the main system of the library, which includes two elements: ``RAM`` and ``Database``.
+
+``RAM``: This feature stores the data received from the database in the system’s RAM, eliminating the need for resending queries to retrieve them again. This process enhances the speed of the project but configuring it is optional.
+
+``Database``: The type of database you intend to connect to; currently, only Mysql is available.
 
 Below is a sample of the configuration class:
 
 ```php
 <?php
-class MyConfig {
-    public $Database;
-    public $Project;
-    public $Table;
+class MySqlConfig {
+    public $Database,$Project,$Table,$Log,$System;
     public function __construct() {
         # -------- Database config
         $this->Database['host'] = '127.0.0.1';
@@ -79,29 +107,47 @@ class MyConfig {
         $this->Database['password'] = '';
         $this->Database['port'] = '';
         $this->Database['name'] = 'AzadSql';
+
+
         # -------- Project config
-        $this->Project['directory'] = "MyProject"; # Project folder path
-        # Note: this folder is not created automatically.
-        $this->Project['name'] = "MyProject"; # Project name (namespace must be set to this name)
+        $this->Project['directory'] = __DIR__."/MyProject";
+        $this->Project['name'] = "MyProject";
         if (!file_exists($this->Project['directory'])) { mkdir($this->Project['directory']); }
+
+
         # -------- Table config
-        $this->Table['prefix'] = "mp"; # table prefixes
+        $this->Table['prefix'] = "mp";
+
+
+        # -------- Log
+        $this->Log['file_name'] = "Database.log";
+        $this->Log['save'] = ['query','affected_rows','get_ram','jobs'];
+        // save_ram , database
+        $this->Log['retain_previous_data'] = false;
+
+
+        # -------- System
+        $this->System['RAM'] = true;
+        # On average 25% speed increase if activated!
+        $this->System['Database'] = 'Mysql';
     }
 }
 ```
-After creating the configuration class, connect it to the main class via the ``config`` method.
+After you have configured the config class, pass it to the main library class.
+
+For example:
 ```php
-$Sql->Config(MyConfig::class);
+$Database = new Azad\Database\Connection(MySqlConfig::class);
 ```
 
-# 5. Project folder path
+# 5. Main Project Folders
 
-After configuring the project, folders are created in the introduced folder.
+After a successful connection, these folders will be created in the directory set by you (in configuration class):
 
 ```php
     MyProject/
   
-      Constants/ # Soon
+      Enums/ # Soon
     
       Encrypters/
   
@@ -114,28 +160,28 @@ After configuring the project, folders are created in the introduced folder.
       Tables/
 ```
 
-# 6. How to create a table
-To do this, enter the project folder and create a php file in the Tables folder (`MyProject\Tables\`).
-> [!TIP]
-> The name you choose for the file is considered as the table name.
+# 6. How to Create a Data Table
+To do this, enter the Tables folder in your project folder (`MyProject\Tables\`). This folder contains files that are used to create a data table.
 
-After creating the PHP file, you need to create a namespace. ``PROJECT-NAME\Tables``
+To do this, enter the project folder and create a php file in the Tables folder 
+> [!NOTE]
+> the file name and class name **must match**. Also, make sure to use the **namespace** that includes **your project name and the term Tables** (``PROJECT-NAME\Tables``). Finally, ensure that you inherit from the ``\Azad\Database\Table\Make`` class.
+
 
 ```php
 <?php
 namespace MyProject\Tables;
-```
-After creating namespace, create a class **named with the file** and inherit from the ``\Azad\Database\Table\Make`` class. for example:
-```php
 class Users extends \Azad\Database\Table\Make {
 
 }
 ```
-In the example above, we are going to create a table with the name of ``Users``.
-> [!TIP]
-> If you set a value in the config file for ``prefix``, the table name will be set automatically prefix, **don't do it manually**
+In the above example, we are creating a data table named **Users** in a file called Users.php
 
-Now, we're going to set up the database columns through ``__construct``.
+(``PROJECT-NAME\Tables\Users.php``).
+
+Now it’s time to configure the data table. The table settings are done in the class constructor (``__construct``). 
+
+First, pay attention to the following example:
 ```php
 <?php
 namespace MyProject\Tables;
@@ -150,53 +196,57 @@ class Users extends \Azad\Database\Table\Make {
     }
 }
 ```
+
+It is clear that the columns of the data table are added line by line. Using the ``Name`` method, we specify the name of the data table column, and with ``Type``, we determine the type of data we intend to store in it. Finally, with ``Size``, we set the size of the data. This is the simplest way to create columns for a data table. However, the data column settings are not limited to these three methods.
+
 ## Methods:
 ```php
 Name(column_name)
 ```
 
-``column_name`` : Set the column name with this method. First of all، you need to specify the column name otherwise you will encounter an error.
+``column_name`` : The column name is set in this method. The input to this method is a string and it needs to be called in the most initial state. Other methods that are explained later require the name defined by this method.
 > [!CAUTION]
 > **PHP Fatal error:  ``Uncaught Azad\Database\Table\Exception``: You need to specify the column name first.**
 
 ```php
 Type(class_type)
 ```
-``class_type``: Class of data type. Classes of data types are defined in the main project (``src/Types``)
+``class_type``: This method determines the data type of the column. Below is a list of data types available.
+> [!NOTE]
+> that the input parameter must be a class from ``\Azad\Database\Types\``
 
 Types:
+- ``ArrayData``: Takes data as an array input and outputs it as an array, but it is stored in the database as JSON.
 
-> **ArrayData**: ``Storing an array in a table (based on JSON)``
+- ``AutoLess``: This data type is provided as a guide for other team programmers (explained at the end of the documentation).
 
-> **AutoLess**: ``Custom Datatype Sample, for Data Handling Guide``
+- ``BigINT``: No need for explanation.!
 
-> **BigINT**: ``No need for explanation.!``
+- ``Boolean``: No need for explanation.!
 
-> **Boolean**: ``No need for explanation.!``
+- ``Decimal``: No need for explanation.!
 
-> **Decimal**: ``No need for explanation.!``
+- ``Floats``: No need for explanation.!
 
-> **Floats**: ``No need for explanation.!``
+- ``CreatedAt``: Does not require manual value assignment during insertion; this column stores the time when the row was created.
 
-> **CreatedAt**: ``When you insert a new record, it automatically saves the time of the record``
+- ``ID``: Used to determine user IDs, it uses the n+1 algorithm and selects the column as the primary key.
 
-> **ID**: ``Automatically increments numbers and is chosen as the primary key``
+- ``Integer``: No need for explanation.!
 
-> **Integer**: ``No need for explanation.!``
+- ``Random``: This data type is provided as a guide for other team programmers (explained at the end of the documentation).
 
-> **Random**: ``Custom Datatype Sample, for Data Handling Guide``
+- ``UpdateAt``: Similar to CreatedAt, it does not require value assignment and stores the time of the last edit of a row.
 
-> **UpdateAt**: ``When you update your record, it saves the time of the last change``
+- ``Varchar``: No need for explanation.!
 
-> **Varchar**: ``No need for explanation.!``
+- ``timestamp``: No need for explanation.!
 
-> **timestamp**: ``No need for explanation.!``
+- ``Decimal``: No need for explanation.!
 
-> **Decimal**: ``No need for explanation.!``
+- ``Token``: Creates a unique identifier, useful for creating APIs.
 
-> **Token**: ``Automatic Token Generation (Based on SHA1)``
-
-> **UserID**: This column is set to Primary and BigINT.
+- ``UserID``: Selected as the primary key and is of the BigINT type."
 
 > [!CAUTION]
 > If the set data type does not exist, you will encounter such an error.
@@ -211,20 +261,27 @@ Size(size)
 ```php
 Rebuilder(rebuilder_name) # Set a Rebuilder for Column
 ```
-``rebuilder_name`` ``(string)`` : Rebuilder Name (The Rebuilder description is in the Magic section.)
+``rebuilder_name`` ``(string)`` : Rebuilder Name
 
+**What are Rebuilders**? Rebuilders help you to standardize the appearance of your data. For example, they can make all letters lowercase (this aids in data evaluation and extraction)
+
+In the Magic section, this feature has been elaborated upon in detail
 
 ```php
 Encrypter(encrypter_name) # Set a Encrypter for Column
 ```
-``encrypter_name`` ``(string)`` : Encrypter Name (The Encrypter description is in the Magic section.)
+``encrypter_name`` ``(string)`` : Encrypter Name
+
+**What is an Encryptor?** This feature encodes the data before storage and decrypts it upon retrieval. With this, you can easily encrypt a column and automatically access the decrypted data when displaying it.
+
+This feature is explained in detail in the Magic section.
 
 ```php
 Foreign(table_name,column_name) # constraint is used to prevent actions that would destroy links between tables.
 ```
-``table_name`` ``(string)`` : parent table
+``table_name`` ``(string)`` : Main table name
 
-``column_name`` ``(string)`` : parent table column name
+``column_name`` ``(string)`` : Main column name
 
 ```php
 Null () # set default to Null
@@ -243,11 +300,13 @@ Save() # After setting all columns, call this method
 ```
 
 ## Properties:
-You can also make adjustments to the data table through Properties.
+Also, you can use the following Properties.
 
 ```php
 $Unique = [Column names];
 ```
+
+This ensures that the set columns do not repeat in other rows.
 
 for example:
 ```php
@@ -267,7 +326,7 @@ class Users extends \Azad\Database\Table\Make {
 ```
 
 ## Correlation of tables data
-With this feature, you can place data from multiple tables in each other.
+This capability creates a link between tables, allowing the user to find themselves in another table without the need for a repeated search
 
 Manual mode:
 ```php
@@ -428,8 +487,11 @@ object(stdClass)#38 (6) {
 }
 ```
 
-# 6. How to insert a data
-After you have created your table, you will need to select your table, which is done using the ``Table`` method.
+# 6. How do we import data into a data table?
+After the data table configuration is complete, to start injecting data, select your desired data table using the ``Table`` method.
+
+The output of this method is another class with methods like ``Select`` and ``Insert`` and functions that you have defined in the library class. Currently, we use the ``Insert`` method to inject data.
+
 for example:
 ```php
 $Database = new Azad\Database\Connect("AzadSql");
@@ -464,13 +526,22 @@ Value(data)
 End(); # After completing the list of columns and their values, call this method
 ```
 
-# 7. How to get a value
-After you have saved your table to a variable (in the previous example ``$Users``), select your data using the ``WHERE`` method
+In summary, after selecting the data table, there are two methods for adding data: the ``Key`` method, which is for the name of the data column, and the ``Value`` method, which specifies the value of this column.
+
+Finally, after determining the data, the data injection process begins with the ``End()`` command. If you need the ID identifier of your data, the output of End is actually the last id added to the data table.
+
+# 7. How do we extract a row or multiple rows from a data table?
+
+Here, we will work with another method called ``Select``. This method get the column whose data you need; if you want the data of all columns, use the asterisk (*).
+
+After selecting your column, you can search for a specific row/rows with the ``WHERE``, ``AND``, ``OR``.
+
+Pay attention to the example below.
 
 ```php
-$User = $Users->Select("*");
-$User = $User->WHERE("first_name","Mohammad")
-            ->AND("last_name","azad");
+$Users = $Database->Table("Users")->Select("*");
+$User = $Users->WHERE("first_name","Mohammad")
+                    ->AND("last_name","azad");
 ```
 ## Methods:
 
@@ -498,9 +569,25 @@ OR(column_name,value) # Logical Operators (or - ||)
 
 ``value`` : Column value.
 
-After setting up the where، you can get your data list in two ways.
+After completing the data search with WHERE clauses, you can access the data using these three methods:
 
-## First Solution:
+``Data()``: This includes all the retrieved data.
+
+``FirstRow()``: Displays the first retrieved data.
+
+``LastRow()``: Displays the last retrieved data.
+
+The output of all three methods consists of three attributes:
+
+**Result**: The retrieved data.
+
+**Update**: Used for updating or editing data.
+
+**Condition**: Contains conditional expression methods.
+
+Currently, we intend to extract data, so we’ll use the ``Result`` attribute.
+
+## Rows
 ```php
 $User->Data ()->Result;
 ```
@@ -525,7 +612,7 @@ array(1) {
 }
 ```
 
-## Second Solution:
+## Row
 ```php
 $User->FirstRow ()->Result;
 # OR
@@ -849,6 +936,97 @@ array(5) {
 }
 
 ```
+## Jobs
+
+An interesting and very efficient feature. Have you ever experienced that after transferring funds between two users, one user’s balance decreases but the second user’s balance does not increase? It’s true, you might have been entangled in consecutive and complex conditions, but here we have a better solution.
+
+Using this feature, all data are evaluated before execution, listed in order, and if the execution of one of them encounters a problem, the previous data is recovered, and no data is changed.
+
+Pay attention to the example below
+
+
+```php
+
+try {
+
+    $Job1 = $Sql->NewJob();
+
+    # Job1 -> Find (VALUE_PRIMARY_KEY) -> From (TABLE_NAME)
+    $User1 = $Job1->Find(1)->From("Users");
+    $User1_Wallet = $User1->Result['wallet'];
+    $User2 = $Job1->Find(2)->From("Users");
+    $User2_Wallet = $User2->Result['wallet'];
+
+    $Amount = 10000;
+
+    # Job1 -> Table (TABLE_NAME) -> SELECT (COLUMN_NAME) -> To (NEW_VALUE) -> Who? (UserObject)
+    $Job1->Table("Users")->Select("wallet")->To($User1_Wallet + $Amount)->Who($User1);
+    $Job1->Table("Users")->Select("wallet")->To($User2_Wallet - $Amount)->Who($User2);
+
+    if ($User2_Wallet < $Amount) {
+        $Job1->Exception(new ExceptionJob("User 2 does not have enough inventory",-1));
+    }
+
+    $Job1->Start();
+
+} catch (ExceptionJob $E) {
+    $message = match ($E->getCode()) {
+        -1 => "User 2 you do not have enough balance, please recharge your account.",
+        default => "There is a problem, please try it later."
+    };
+    print($message);
+}
+
+```
+
+In the above example, we intend to transfer 10,000 monetary units between two users.
+
+The clean architecture of this feature is as follows:
+
+First, define the users whose data you need.
+
+Then, define the variables you require.
+
+Now, start operations on the data.
+
+Finally, check the data before starting the job.
+
+
+In the first step, it is necessary to define a new job, which is done with the ``NewJob`` method.
+
+```PHP
+$Job1 = $Sql->NewJob();
+```
+
+After defining a Job to receive data from a table (in the example above, ``Users``), use the following structure:
+
+```PHP
+$Job1->Find(VALUE_PRIMARY_KEY)->From(TABLE_NAME);
+```
+
+The input for the ``Find`` method is actually the value of the Primary Key column. The job automatically detects which column is the Primary Key and uses the value of this method to evaluate with the Primary column.
+
+Then, using the ``From`` method, specify which table the data belongs to.
+
+> [!Note]
+> that in the Job, do not manually change the data at all; we need the previous data and the new data, and this requires properly writing the jobs.
+
+In the next step, to save the update command, we use the following structure:
+
+```PHP
+$Job1->Table(TABLE_NAME)->SELECT(COLUMN_NAME)->To(NEW_VALUE)->Who?(UserObject);
+```
+
+In the ``Table`` method, enter the name of the table you intend to work with its rows. For the ``Select`` input, enter the name of the column you intend to edit the data of (in the example above, amount).
+
+Now, define what the new input should be with the ``To`` method. Finally, using the ``Who`` method, specify which user you are editing (use the variables defined in the previous step by the ``Find`` method).
+
+Now, finally, we can evaluate the data before starting the commands, and in case of a problem, use the Exception method. 
+> [!Note]
+> that the input for this method must definitely be the ``ExceptionJob`` class.
+
+After the complete configuration of the Job, the commands are executed in the defined order using the ``Start`` command.
+
 
 # Library Developers Guide :fist_right:  :fist_left:
 

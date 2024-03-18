@@ -55,7 +55,10 @@ class Get extends \Azad\Database\Database {
                 }
                 $value = $EncrypetName::Encrypt($value);
             }
-            if(method_exists($ColumnData['type'],"Set")) {
+            if (isset($ColumnData['enum'])) {
+                $value = \Azad\Database\Enums::EnumToValue($TableName,$key,$value);
+            }
+            if(isset($ColumnData['type']) && method_exists($ColumnData['type'],"Set")) {
                 $DB = new $ColumnData['type']();
                 $value = $DB->Set($value);
             }

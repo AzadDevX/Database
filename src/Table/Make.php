@@ -31,12 +31,14 @@ class Make extends \Azad\Database\Database {
         if (!isset($enum_class::cases()[0])) {
             throw new Exception("Your enum has no cases.");
         }
-        if (!isset($enum_class::cases()[0]->value)) {
-            throw new Exception("You need to set the data type for the enum.");
+        if (isset($enum_class::cases()[0]->value)) {
+            $this->Columns[$this->Name]['type'] = gettype($enum_class::cases()[0]->value) == "string"?new \Azad\Database\Types\Varchar():new \Azad\Database\Types\Integer();
+            $this->ShortKeyType[$this->Name] = $this->Columns[$this->Name]['type'];
+        } else {
+            $this->ShortKeyType[$this->Name] = "enum";
         }
+
         $this->Columns[$this->Name]['enum'] = $enum_class;
-        $this->Columns[$this->Name]['type'] = gettype($enum_class::cases()[0]->value) == "string"?new \Azad\Database\Types\Varchar():new \Azad\Database\Types\Integer();
-        $this->ShortKeyType[$this->Name] = $this->Columns[$this->Name]['type'];
         return $this;
     }
 

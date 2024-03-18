@@ -22,11 +22,15 @@ $Users->Insert()
 $Find = $Users->Select("*")->WHERE("user_id",1);
 $Data = $Find->LastRow();
 
-var_dump($Data->Result['status']->value); // 1
+
+var_dump($Data->Result['status']->value ?? "no value"); // 1
 var_dump($Data->Result['status']->name); // "Active"
 var_dump($Data->Result['status']->toPersian()); // فعال
 var_dump($Data->Result['status'] == MyProject\Enums\UserStatus::Active); // true
 
+$New = $Data->Update
+    ->Key("status")->Value(MyProject\Enums\UserStatus::Disable)
+->Push();
 
 /*
 

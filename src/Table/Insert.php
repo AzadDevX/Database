@@ -12,7 +12,7 @@ class Insert extends \Azad\Database\Database {
         $this->TableName = $TableName;
         $this->Hash = $Hash;
         array_walk(parent::$Tables[$Hash][$TableName]['short_types'],function ($value,$key) {
-            if(method_exists(new $value(),"InsertMe")) {
+            if(is_object($value) && method_exists(new $value(),"InsertMe")) {
                 $DB = new $value();
                 $this->Key($key)->Value($DB->InsertMe());
             }

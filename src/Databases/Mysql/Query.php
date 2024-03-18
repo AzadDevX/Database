@@ -15,7 +15,7 @@ class Query extends \Azad\Database\Databases\Query {
         $Foreign_Query = null;
         $primary_key = null;
         array_walk($table_obj->Columns,function($ColumnData,$ColumnName) use (&$Query,&$primary_key,&$Foreign_Query) {
-            if ($ColumnData['type']->Primary == true) { $primary_key = $ColumnName; }
+            if ($ColumnData['type']->Primary ?? false == true) { $primary_key = $ColumnName; }
             if (isset($ColumnData["foreign"])) { $Foreign_Query = ", FOREIGN KEY (".$ColumnName.") REFERENCES ".$ColumnData["foreign"]["table"]."(".$ColumnData["foreign"]["column"].")"; }
             $Query .= self::DataTypeTable ($ColumnName,$ColumnData).", ";
         });
@@ -78,7 +78,11 @@ class Query extends \Azad\Database\Databases\Query {
     private static function DataTypeTable ($ColumnName,$ColumnData) {
         $Query = "`".$ColumnName."` ";
         if (isset($ColumnData["enum"])) {
-            $Case = array_column($ColumnData["enum"]::cases(),'name');
+            if (isset($ColumnData['enum']::cases()[0]->value)) {
+                $Case = array_column($ColumnData["enum"]::cases(),'value');
+            } else {
+                $Case = array_column($ColumnData["enum"]::cases(),'name');
+            }
             $Case = array_map(fn ($value) => "'".$value."'",$Case);
             $Query .= " ENUM (".implode(",",$Case).")";
         } else {
@@ -95,7 +99,7 @@ class Query extends \Azad\Database\Databases\Query {
         if (isset($ColumnData['not_null']) and $ColumnData['not_null'] == true) {
             $Query .= " NOT NULL ";
         }
-        if (method_exists($ColumnData["type"],"AddToQueryTable")) {
+        if (isset($ColumnData["type"]) && method_exists($ColumnData["type"],"AddToQueryTable")) {
             $Query .= " ".$ColumnData["type"]->AddToQueryTable();
         }
         return $Query;

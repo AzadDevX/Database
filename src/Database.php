@@ -52,7 +52,7 @@ class Database {
                     $value = $EncrypetName::Decrypt($value);
                 }
                 if (isset($ColumnData['enum'])) {
-                    $value = constant("{$ColumnData['enum']}::{$value}");
+                    $value = Enums::ValueToEnum($TableName,$key,$value);
                 }
                 if(!isset($ColumnData['enum']) && method_exists(new $ColumnData['type'],"Get")) {
                     $DB = new $ColumnData['type']();
@@ -75,21 +75,18 @@ class Database {
 
         # ----- Check Enum
         if(isset($ColumnData['enum'])) {
-            if (!$value instanceof $ColumnData['enum']) {
-                throw new Exception\DataType("The value you entered does not match the enum set for the column.");
-            }
-            $value = $value->value;
+            $value = Enums::EnumToValue($table_name,$key,$value);
         }
 
         # ---- is valid method (in type)
-        if(method_exists($ColumnData['type'],"is_valid")) {
+        if(isset($ColumnData['type']) && method_exists($ColumnData['type'],"is_valid")) {
             $DB = new $ColumnData['type']();
             if(!$DB->is_valid($value)) {
                 throw new Exception\DataType("The entered value is not acceptable for type class.");
             }
         }
         # ---- Set method (in type)
-        if(method_exists($ColumnData['type'],"Set")) {
+        if(isset($ColumnData['type']) && method_exists($ColumnData['type'],"Set")) {
             $DB = new $ColumnData['type']();
             $value = $DB->Set($value);
         }

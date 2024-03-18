@@ -52,7 +52,7 @@ class Database {
                     $value = $EncrypetName::Decrypt($value);
                 }
                 if (isset($ColumnData['enum'])) {
-                    $value = $ColumnData['enum']::tryFrom($value);
+                    $value = constant("{$ColumnData['enum']}::{$value}");
                 }
                 if(!isset($ColumnData['enum']) && method_exists(new $ColumnData['type'],"Get")) {
                     $DB = new $ColumnData['type']();

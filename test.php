@@ -10,6 +10,7 @@ use Azad\Database\Jobs\Exception as ExceptionJob;
 $Sql = new Connection(MySqlConfig::class);
 
 $Users = $Sql->Table("Users");
+
 /*
 $Users->Insert()
     ->Key("first_name")->Value("Mohammad")

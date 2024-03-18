@@ -77,10 +77,17 @@ class Query extends \Azad\Database\Databases\Query {
     /* Private Methods */
     private static function DataTypeTable ($ColumnName,$ColumnData) {
         $Query = "`".$ColumnName."` ";
-        $Query .= $ColumnData["type"]->SqlType;
+        if (isset($ColumnData["enum"])) {
+            $Case = array_column($ColumnData["enum"]::cases(),'name');
+            $Case = array_map(fn ($value) => "'".$value."'",$Case);
+            $Query .= " ENUM (".implode(",",$Case).")";
+        } else {
+            $Query .= $ColumnData["type"]->SqlType;
+        }
         if (isset($ColumnData["size"])) {
             $Query .= "(".$ColumnData["size"].")";
         }
+
         if (isset($ColumnData['default'])) {
             $DefaultValue = ($ColumnData['default'] == 'NULL')?'NULL':"'".$ColumnData['default']."'";
             $Query .= "DEFAULT ".$DefaultValue;

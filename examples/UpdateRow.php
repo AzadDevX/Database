@@ -12,10 +12,10 @@ $Sql->LoadPlugin("MyUsers",[]);
 
 $Users = $Sql->Table("Users");
 
-if(!$Users->RowExists("first_name","Mohammad3")){
+if(!$Users->RowExists("first_name","Mohammad")){
     $Users->Insert()
-        ->Key("first_name")->Value("Mohammad3")
-        ->Key("last_name")->Value("Azad3")
+        ->Key("first_name")->Value("Mohammad")
+        ->Key("last_name")->Value("Azad")
         ->Key("status")->Value(MyProject\Enums\UserStatus::Active)
         ->Key("wallet")->Value("50000")
     ->End();
@@ -27,9 +27,14 @@ var_dump($Find->LastRow()->Result);
 
 # Nested Update
 $NewData = $Find->LastRow()
-                ->Update
-                    ->Key("wallet")->Value("10000")
-                ->Push()
+                            ->Update
+                                ->Key("wallet")->Increase(5000)
+                            ->Push()
+                                    ->Update
+                                        ->Key("wallet")->Increase(5000)
+                                    ->Push()
 ->Result;
 
-var_dump($NewData);
+# wallet : 60000
+
+?>

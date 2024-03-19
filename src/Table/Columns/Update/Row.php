@@ -17,8 +17,9 @@ class Row extends \Azad\Database\Table\Columns\Get {
         return $this;
     }
     public function Value($value) {
-        $value = parent::PreparationValues ($this->LastKey,$value,$this->Table);
-        parent::$UpdateData[$this->LastKey] = $value;
+
+        $value = $this->PreparingNewData($this->Table,[$this->LastKey=>$value],encrypt:false,set_datatype:false);
+        parent::$UpdateData[$this->LastKey] = $value[$this->LastKey];
         return $this;
     }
     public function Increase ($value) {

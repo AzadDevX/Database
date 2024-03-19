@@ -69,7 +69,7 @@ class Database {
     }
 
 
-    protected static function PreparationValues ($key,$value,$table_name) {
+    protected static function PreparationValues ($key,$value,$table_name) { #Disable Soon
         $TableName = $table_name;
         $ColumnData = self::$Tables[self::$MyHash][$TableName]['columns'][$key] ?? false;
         if ($ColumnData == false) {
@@ -123,7 +123,7 @@ class Database {
         return json_decode(json_encode($array));
     }
 
-    private static function NormalizerResult($Normalizer,$data) {
+    protected static function NormalizerResult($Normalizer,$data) {
         $NormalizerClass = self::$name_prj[self::$MyHash]."\\Normalizers\\".$Normalizer;
         if (!class_exists($NormalizerClass)) {
             if (self::$SystemConfig[self::$MyHash]["Debug"]) {

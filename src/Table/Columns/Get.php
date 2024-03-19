@@ -55,9 +55,19 @@ class Get extends \Azad\Database\Database {
         return $new;
     }
 
-    protected function PreparingNewData ($table,$data,bool $encrypt=true,bool $set_datatype=true,bool $venum=false,bool $enumv=false) {
+    protected function PreparingNewData ($table,$data,
+        bool $encrypt=true,
+        bool $set_datatype=true,
+        bool $venum=false,
+        bool $enumv=false,
+        bool $check_valid=true,
+        bool $normalizer=true,
+    ) {
         foreach($data as $key=>$value) {
+            if ($value == null) { continue; }
+            $value = $check_valid == true?self::is_valid_data ($table,$key,$value):$value;
             $value = $set_datatype == true?self::SetDataType ($table,$key,$value):$value;
+            $value = $normalizer == true?self::Normalizer ($table,$key,$value):$value;
             $value = $venum == true?\Azad\Database\Enums::ValueToEnum($table,$key,$value):$value;
             $value = $enumv == true?\Azad\Database\Enums::EnumToValue($table,$key,$value):$value;
             $value = $encrypt == true?self::Encrypt ($table,$key,$value):$value;
@@ -86,6 +96,30 @@ class Get extends \Azad\Database\Database {
         if(isset($ColumnData['type']) && method_exists($ColumnData['type'],"Set")) {
             $DB = new $ColumnData['type']();
             $value = $DB->Set($value);
+        }
+        return $value;
+    }
+    private static function is_valid_data ($table,$column,$value) {
+        $ColumnData = self::$Tables[self::$MyHash][$table]['columns'][$column];
+        if(isset($ColumnData['type']) && method_exists($ColumnData['type'],"is_valid")) {
+            $DB = new $ColumnData['type']();
+            if(!$DB->is_valid($value)) {
+                throw new \Azad\Database\Exceptions\DataType("The entered value is not acceptable for type class.");
+            }
+        }
+        return $value;
+    }
+    private static function Normalizer ($table,$column,$value) {
+        $ColumnData = self::$Tables[self::$MyHash][$table]['columns'][$column];
+        if (isset($ColumnData['Normalizer'])) {
+            if (!is_array($value)) {
+                $value = parent::NormalizerResult($ColumnData['Normalizer'],$value);
+            } else {
+                $Normalizer = $ColumnData['Normalizer'];
+                $value = \Azad\Database\Arrays::Value($value,function ($data) use ($Normalizer) {
+                    return parent::NormalizerResult($Normalizer,$data);
+                });
+            }
         }
         return $value;
     }

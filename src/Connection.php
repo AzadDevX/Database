@@ -99,16 +99,6 @@ class Connection extends Database {
         }
         return new $class($data);
     }
-    protected function NormalizerResult ($NormalizerName,$Data) {
-        $NormalizerName = parent::$name_prj[$this->HashID]."\\Normalizers\\".$NormalizerName;
-        if (!class_exists($NormalizerName)) {
-            if (parent::$SystemConfig[$this->HashID]["Debug"]) {
-                throw new Exceptions\Debug(__METHOD__,['directory'=>parent::$dir_prj[$this->HashID],'project_name'=>parent::$name_prj[$this->HashID]],$Data);
-            }
-            throw new Exceptions\Load("Normalizer does not exist",Exceptions\LoadCode::Normalizer->value,$NormalizerName);
-        }
-        return $NormalizerName::Normalization ($Data);
-    }
 
     public function CloseLog () {
         $RunTime = microtime(1) - $this->ProjectStartAt;

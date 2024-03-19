@@ -57,7 +57,7 @@ class Init extends Get {
             throw new \Azad\Database\Exceptions\Row("The data searched does not exist in the table. Table Name: ".$this->TableName." Search Query: ".$this->Where);
         }
         $this->RemovedWhereInQuery ();
-        return new ReturnData($this->TableName,$Result,parent::$MyHash,true);
+        return new ReturnRows($this->TableName,$Result,parent::$MyHash);
     }
 
     public function FirstRow () {
@@ -70,7 +70,7 @@ class Init extends Get {
             throw new \Azad\Database\Exceptions\Row("The data searched does not exist in the table. Table Name: ".$this->TableName." Search Query: ".$this->Where);
         }
         $this->RemovedWhereInQuery ();
-        return new ReturnData($this->TableName,$Result,parent::$MyHash);
+        return new ReturnRow($this->TableName,$Result,parent::$MyHash);
     }
     public function LastRow () {
         if ($this->Where) {
@@ -83,7 +83,7 @@ class Init extends Get {
         if ($Result == false) {
             throw new \Azad\Database\Exceptions\Row("The data searched does not exist in the table. Table Name: ".$this->TableName." Search Query: ".$this->Where);
         }
-        return new ReturnData($this->TableName,$Result,parent::$MyHash);
+        return new ReturnRow($this->TableName,$Result,parent::$MyHash);
     }
 
     private function RemovedWhereInQuery () {

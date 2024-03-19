@@ -4,10 +4,11 @@ namespace Azad\Database\Conditions;
 
 class Conditional extends Init {
     public $Arr,$Value,$Key,$Method,$CV,$Return,$ReturnToClass;
-    private $SingleData,$ResultTo;
-    public function __construct($Arr,$SingleData=true,$ResultTo) {
+    private $SingleData,$table_name,$hash;
+    public function __construct($Arr,$table_name,$hash,$SingleData=true) {
         $this->Arr = $Arr;
-        $this->ResultTo = $ResultTo;
+        $this->hash = $hash;
+        $this->table_name = $table_name;
         $this->SingleData = $SingleData;
     }
     private function AndOr() {
@@ -189,15 +190,13 @@ class Conditional extends Init {
             if (parent::$IFResult == false) {
                 $Value = (is_array($this->Value))?json_encode($this->Value):$this->Value;
                 $CV = (is_array($this->CV))?json_encode($this->CV):$this->CV;
-                $this->ResultTo->IFResult = false;
                 throw new \Azad\Database\Exceptions\Conditional("The value of [".$this->Key."] is equal to ".$Value." - but you have defined (".$CV.") in the ".$this->Method);
             }
-            $this->ResultTo->IFResult = true;
-            return $this->ResultTo;
         }
         if ($this->SingleData == false) {
-            $this->ResultTo->Data = $this->Arr ?? [];
+            return new \Azad\Database\Table\Columns\ReturnRows($this->table_name,$this->Arr,$this->hash);
+        } else {
+            return new \Azad\Database\Table\Columns\ReturnRow($this->table_name,$this->Arr,$this->hash);
         }
-        return $this->ResultTo;
     }
 }

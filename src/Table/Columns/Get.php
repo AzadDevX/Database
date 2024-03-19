@@ -55,14 +55,14 @@ class Get extends \Azad\Database\Database {
         return $new;
     }
 
-    protected function PreparingNewData ($table,$data,
+    protected function PreparingNewData (string $table,array $data,
         bool $encrypt=true,
         bool $set_datatype=true,
         bool $venum=false,
         bool $enumv=false,
         bool $check_valid=true,
         bool $normalizer=true,
-    ) {
+    ) : array {
         foreach($data as $key=>$value) {
             if ($value == null) { continue; }
             $value = $check_valid == true?self::is_valid_data ($table,$key,$value):$value;

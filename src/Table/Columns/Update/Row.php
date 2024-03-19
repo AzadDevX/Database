@@ -53,7 +53,7 @@ class Row extends \Azad\Database\Table\Columns\Get {
             return false;
         }
         $this->Clear ();
-        return new \Azad\Database\Table\Columns\ReturnData($this->Table,$Result,parent::$MyHash);
+        return new \Azad\Database\Table\Columns\ReturnRow($this->Table,$Result,parent::$MyHash);
     }
     private function Clear () {
         parent::$UpdateData = null;

@@ -45,3 +45,5 @@ var_dump($Find->Data()
             ->Key("wallet")->Increase(50000)
         ->Push()
 ->Result);
+
+?>

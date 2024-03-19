@@ -11,7 +11,7 @@ class Connection extends Database {
 
     public function __construct($class) {
 
-        $this->HashID = sha1(rand(1,99999) + rand(1,99999) + rand(1,999999));
+        $this->HashID = sha1(bin2hex(random_bytes(32)));
         parent::$MyHash = $this->HashID;
 
         $this->ProjectStartAt = microtime(1);

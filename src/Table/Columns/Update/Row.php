@@ -43,6 +43,7 @@ class Row extends \Azad\Database\Table\Columns\Get {
         }
         $NewData = array_merge($this->Data,parent::$UpdateData);
         $Result = $this->PreparingNewData($this->Table,$NewData,encrypt:false);
+        var_dump("NEW DATA ",$Result);
         $SendToQuery = $this->PreparingNewData($this->Table,parent::$UpdateData,enumv:true);
 
         if(parent::$SystemConfig[parent::$MyHash]['RAM'] == true) {

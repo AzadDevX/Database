@@ -47,6 +47,10 @@ class Get extends \Azad\Database\Database {
             if ($value == null or $value == [] or $value == '' or $value == 'null') {
                 continue;
             }
+            if($ColumnData['type']?->Primary == true) {
+                $new[$key] = $value;
+                break;
+            }
             $value = self::Encrypt ($TableName,$key,$value);
             $value = \Azad\Database\Enums::EnumToValue($TableName,$key,$value);
             $value = self::SetDataType ($TableName,$key,$value);

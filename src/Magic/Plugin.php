@@ -10,6 +10,10 @@ abstract class Plugin extends \Azad\Database\Database {
     final protected static function Table($table_name) {
         return new \Azad\Database\Table\Init($table_name,parent::$MyHash);
     }
+    final public function NewJob () {
+        $id = sha1(rand(1,9999) + rand(1,9999) + rand(1,9999));
+        return new \Azad\Database\Jobs\Init($id,parent::$MyHash,$this);
+    }
     final protected function IncludePlugin ($name,$data) {
         $class = parent::$name_prj[parent::$MyHash]."\\Plugins\\".$name;
         if (!class_exists($class)) {

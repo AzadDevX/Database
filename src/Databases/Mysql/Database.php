@@ -21,7 +21,11 @@ class Database extends \Azad\Database\Databases\Database {
         return $this;
     }
     public function Run ($query) {
-        $this->Result = $this->Database->query($query);
+        try {
+            $this->Result = $this->Database->query($query);
+        } catch (\mysqli_sql_exception $e) {
+            throw new Exception("Query error: ".$e->getMessage());
+        }
         $this->affected_rows = $this->Database->affected_rows;
         $this->LastID = $this->Database->insert_id;
         return $this;

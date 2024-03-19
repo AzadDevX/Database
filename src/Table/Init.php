@@ -24,6 +24,14 @@ class Init extends \Azad\Database\Database {
         self::$InsertData['settings']["if_not_exists"] = $if_not_exists;
         return new Insert($this->TableName,$this->Hash);
     }
+    public function RowExists ($column,$value) {
+        try {
+            $this->Select ("*")->WHERE($column,$value)->LastRow();
+            return true;
+        } catch (\Azad\Database\Exceptions\Row $e) {
+            return false;
+        }
+    }
     public function __call($method, $args) {
         if (!method_exists($this->ClassName,$method)) {
             throw new \Azad\Database\Exceptions\Structure("The method you intend to use to send data does not exist in the data table class. class: ".$this->ClassName." method: ".$method."");

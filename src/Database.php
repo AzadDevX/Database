@@ -146,6 +146,9 @@ class Database {
     private function Unique ($array,$key) {
         $uniqueUsers = [];
         foreach (array_reverse($array) as $item) {
+            if (!isset($item[$key])) {
+                return false;
+            }
             $userId = $item[$key];
             if (!isset($uniqueUsers[$userId])) {
                 $uniqueUsers[$userId] = $item;
@@ -153,12 +156,14 @@ class Database {
         }
         return array_values($uniqueUsers);
     }
+
     protected function SaveToRam ($table_name,$data) {
         $primary_key = self::$Tables[self::$MyHash][$table_name]["primary_key"];
         $OldDataForLog = self::$Tables[self::$MyHash][$table_name]['list'] ?? [];
         if (isset($primary_key)) {
             $add = array_merge(self::$Tables[self::$MyHash][$table_name]['list'] ?? [], $data);
             $unique = $this->Unique ($add,$primary_key);
+            if (!$unique) { return false; }
             $new_data = array_values($unique);
             self::$Tables[self::$MyHash][$table_name]['where_by_primary'] = array_column($new_data,$primary_key);
             self::$Tables[self::$MyHash][$table_name]['list'] = $new_data;

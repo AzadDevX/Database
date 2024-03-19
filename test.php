@@ -14,11 +14,14 @@ $Sql->LoadPlugin("MyUsers",[]);
 $Users = $Sql->Table("Users");
 
 
-$Users->Insert()
-    ->Key("first_name")->Value("Mohammad2")
-    ->Key("last_name")->Value("Azad2")
-    ->Key("status")->Value(MyProject\Enums\UserStatus::Active)
-->End();
+
+if(!$Users->RowExists("first_name","Mohammad")){
+    $Users->Insert()
+        ->Key("first_name")->Value("Mohammad")
+        ->Key("last_name")->Value("Azad")
+        ->Key("status")->Value(MyProject\Enums\UserStatus::Active)
+    ->End();
+}
 
 
 $Find = $Users->Select("*")->WHERE("user_id",1);

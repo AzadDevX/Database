@@ -190,7 +190,7 @@ class Conditional extends Init {
                 $Value = (is_array($this->Value))?json_encode($this->Value):$this->Value;
                 $CV = (is_array($this->CV))?json_encode($this->CV):$this->CV;
                 $this->ResultTo->IFResult = false;
-                throw new Exception("The value of [".$this->Key."] is equal to ".$Value." - but you have defined (".$CV.") in the ".$this->Method);
+                throw new \Azad\Database\Exceptions\Conditional("The value of [".$this->Key."] is equal to ".$Value." - but you have defined (".$CV.") in the ".$this->Method);
             }
             $this->ResultTo->IFResult = true;
             return $this->ResultTo;

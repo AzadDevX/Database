@@ -6,6 +6,9 @@ class Enums extends Database {
     public static function ValueToEnum($table,$column,$value) {
         $ColumnData = parent::$Tables[parent::$MyHash][$table]['columns'][$column];
         if (isset($ColumnData['enum'])) {
+            if ($value instanceof $ColumnData['enum']) {
+                return $value;
+            }
             if (isset($ColumnData['enum']::cases()[0]->value)) {
                 $value = $ColumnData['enum']::tryFrom($value);
             } else {
@@ -26,7 +29,7 @@ class Enums extends Database {
                 $value = $enum->name;
             }
         }
-        return $value;
+        return $value ?? $enum;
     }
 
 }

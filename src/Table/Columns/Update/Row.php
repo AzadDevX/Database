@@ -23,14 +23,14 @@ class Row extends \Azad\Database\Table\Columns\Get {
     }
     public function Increase ($value) {
         if (!isset(parent::$UpdateData[$this->LastKey])) {
-            parent::$UpdateData[$this->LastKey] = parent::$Tables[parent::$MyHash][$this->Table]['data'][$this->LastKey];
+            parent::$UpdateData[$this->LastKey] = $this->Data[$this->LastKey];
         }
         parent::$UpdateData[$this->LastKey] += $value;
         return $this;
     }
     public function Decrease ($value) {
         if (!isset(parent::$UpdateData[$this->LastKey])) {
-            parent::$UpdateData[$this->LastKey] = parent::$Tables[parent::$MyHash][$this->Table]['data'][$this->LastKey];
+            parent::$UpdateData[$this->LastKey] = $this->Data[$this->LastKey];
         }
         parent::$UpdateData[$this->LastKey] -= $value;
         return $this;
@@ -41,19 +41,18 @@ class Row extends \Azad\Database\Table\Columns\Get {
             return false;
         }
         $NewData = array_merge($this->Data,parent::$UpdateData);
-        foreach($NewData as $key=>$value) {
-            $NewData[$key] = \Azad\Database\Enums::ValueToEnum($this->Table,$key,$value);
-        }
+        $Result = $this->PreparingNewData($this->Table,$NewData,encrypt:false);
+        $SendToQuery = $this->PreparingNewData($this->Table,parent::$UpdateData,enumv:true);
+
         if(parent::$SystemConfig[parent::$MyHash]['RAM'] == true) {
             parent::SaveToRam ($this->Table,[$NewData]);
         }
-        $Query = parent::MakeQuery()::Edit($this->Table,parent::$UpdateData,parent::where_data($this->Data,$this->Table));
-        $Result = ($this->Query($Query) == true)?$NewData:false;
-        if ($Result == false) {
+        $Query = parent::MakeQuery()::Edit($this->Table,$SendToQuery,parent::where_data($this->Data,$this->Table));
+        if ($this->Query($Query) == false) {
             return false;
         }
         $this->Clear ();
-        return new \Azad\Database\Table\Columns\ReturnData($this->Table,$NewData,parent::$MyHash);
+        return new \Azad\Database\Table\Columns\ReturnData($this->Table,$Result,parent::$MyHash);
     }
     private function Clear () {
         parent::$UpdateData = null;

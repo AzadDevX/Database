@@ -26,7 +26,9 @@ class Insert extends \Azad\Database\Database {
     public function Value ($Value) {
         $TableName = $this->TableName;
         $Value = parent::PreparationValues ($this->key,$Value,$TableName);
-        parent::$InsertData[parent::$MyHash]["value"][] = "'$Value'";
+        if ($Value != null) {
+            parent::$InsertData[parent::$MyHash]["value"][] = "'$Value'";
+        }
         return $this;
     }
     public function End() {

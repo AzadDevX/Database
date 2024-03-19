@@ -45,7 +45,7 @@ class Database {
                 if ($value == null or $value == []) { continue; }
                 if (isset($ColumnData['encrypter'])) {
                     $EncryptName = $ColumnData['encrypter'];
-                    $EncryptClass = self::$name_prj."\\Encrypters\\".$EncryptName;
+                    $EncryptClass = self::$name_prj[self::$MyHash]."\\Encrypters\\".$EncryptName;
                     if (!class_exists($EncryptClass)) {
                         if (self::$SystemConfig[self::$MyHash]["Debug"]) {
                             throw new Exceptions\Debug(__METHOD__,['directory'=>self::$dir_prj[self::$MyHash],'project_name'=>self::$name_prj[self::$MyHash]],$EncryptName);

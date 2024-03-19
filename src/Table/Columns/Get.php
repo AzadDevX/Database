@@ -44,31 +44,49 @@ class Get extends \Azad\Database\Database {
         $new = [];
         foreach ($data as $key=>$value) {
             $ColumnData = self::$Tables[self::$MyHash][$TableName]['columns'][$key];
-            if ($value == null or $value == [] or $value == '') {
+            if ($value == null or $value == [] or $value == '' or $value == 'null') {
                 continue;
             }
-
-            if (isset($ColumnData['encrypter'])) {
-                $EncryptName = $ColumnData['encrypter'];
-                $EncryptClass = self::$name_prj[self::$MyHash]."\\Encrypters\\".$EncryptName;
-                if (!class_exists($EncryptClass)) {
-                    if (self::$SystemConfig[self::$MyHash]["Debug"]) {
-                        throw new \Azad\Database\Exceptions\Debug(__METHOD__,['directory'=>self::$dir_prj[self::$MyHash],'project_name'=>self::$name_prj[self::$MyHash]],$EncryptName);
-                    }
-                    throw new \Azad\Database\Exceptions\Load("Encrypter does not exist",\Azad\Database\Exceptions\LoadCode::Encrypeter->value,$EncryptName);
-                }
-                $value = $EncryptClass::Encrypt($value);
-            }
-
-            if (isset($ColumnData['enum'])) {
-                $value = \Azad\Database\Enums::EnumToValue($TableName,$key,$value);
-            }
-            if(isset($ColumnData['type']) && method_exists($ColumnData['type'],"Set")) {
-                $DB = new $ColumnData['type']();
-                $value = $DB->Set($value);
-            }
+            $value = self::Encrypt ($TableName,$key,$value);
+            $value = \Azad\Database\Enums::EnumToValue($TableName,$key,$value);
+            $value = self::SetDataType ($TableName,$key,$value);
             $new[$key] = $value;
         }
         return $new;
+    }
+
+    protected function PreparingNewData ($table,$data,bool $encrypt=true,bool $set_datatype=true,bool $venum=false,bool $enumv=false) {
+        foreach($data as $key=>$value) {
+            $value = $set_datatype == true?self::SetDataType ($table,$key,$value):$value;
+            $value = $venum == true?\Azad\Database\Enums::ValueToEnum($table,$key,$value):$value;
+            $value = $enumv == true?\Azad\Database\Enums::EnumToValue($table,$key,$value):$value;
+            $value = $encrypt == true?self::Encrypt ($table,$key,$value):$value;
+            $data[$key] = $value;
+        }
+        return $data;
+    }
+
+    private static function Encrypt ($table,$column,$value) {
+        $ColumnData = self::$Tables[self::$MyHash][$table]['columns'][$column];
+        if (isset($ColumnData['encrypter'])) {
+            $EncryptName = $ColumnData['encrypter'];
+            $EncryptClass = self::$name_prj[self::$MyHash]."\\Encrypters\\".$EncryptName;
+            if (!class_exists($EncryptClass)) {
+                if (self::$SystemConfig[self::$MyHash]["Debug"]) {
+                    throw new \Azad\Database\Exceptions\Debug(__METHOD__,['directory'=>self::$dir_prj[self::$MyHash],'project_name'=>self::$name_prj[self::$MyHash]],$EncryptName);
+                }
+                throw new \Azad\Database\Exceptions\Load("Encrypter does not exist",\Azad\Database\Exceptions\LoadCode::Encrypeter->value,$EncryptName);
+            }
+            $value = $EncryptClass::Encrypt($value);
+        }
+        return $value;
+    }
+    private static function SetDataType ($table,$column,$value) {
+        $ColumnData = self::$Tables[self::$MyHash][$table]['columns'][$column];
+        if(isset($ColumnData['type']) && method_exists($ColumnData['type'],"Set")) {
+            $DB = new $ColumnData['type']();
+            $value = $DB->Set($value);
+        }
+        return $value;
     }
 }

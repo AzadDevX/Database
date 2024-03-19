@@ -5,19 +5,21 @@ require 'vendor/autoload.php';
 include_once("config.php");
 
 use Azad\Database\Connection;
-use Azad\Database\Jobs\Exception as ExceptionJob;
+use Azad\Database\Exceptions\Jobs as ExceptionJob;
 
 $Sql = new Connection(MySqlConfig::class);
 
+$Sql->LoadPlugin("MyUsers",[]);
+
 $Users = $Sql->Table("Users");
 
-/*
+
 $Users->Insert()
-    ->Key("first_name")->Value("Mohammad")
-    ->Key("last_name")->Value("Azad")
+    ->Key("first_name")->Value("Mohammad2")
+    ->Key("last_name")->Value("Azad2")
     ->Key("status")->Value(MyProject\Enums\UserStatus::Active)
 ->End();
-*/
+
 
 $Find = $Users->Select("*")->WHERE("user_id",1);
 $Data = $Find->LastRow();

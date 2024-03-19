@@ -54,10 +54,9 @@ class Rows extends \Azad\Database\Table\Columns\Get {
                 $Data[$DKey][$Key] = \Azad\Database\Enums::ValueToEnum($this->Table,$Key,$Data[$DKey][$Key]);
             }
             $Query = parent::MakeQuery()::Edit($this->Table,$Data[$DKey],parent::where_data($OldDataForWhere,$this->Table));
-            if($this->Query($Query) != true) {
-                throw new Exception("Failed Update - Query: ".$Query);
+            if($this->Query($Query) == false) {
+                return false;
             }
-            
         }
         return new \Azad\Database\Table\Columns\ReturnData($this->Table,$Data,parent::$MyHash);
     }

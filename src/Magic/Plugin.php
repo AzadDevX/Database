@@ -8,13 +8,16 @@ abstract class Plugin extends \Azad\Database\Database {
         $this->Data = $Data;
     }
     final protected static function Table($table_name) {
-        return new \Azad\Database\Table\Init($table_name);
+        return new \Azad\Database\Table\Init($table_name,parent::$MyHash);
     }
-    final protected function IncludePlugin ($PluginName,$Data) {
-        $PluginName = parent::$name_prj."\\Plugins\\".$PluginName;
-        if (!class_exists($PluginName)) {
-            throw new \Azad\Database\Exception\Load("Plugin [$PluginName] does not exist");
+    final protected function IncludePlugin ($name,$data) {
+        $class = parent::$name_prj[parent::$MyHash]."\\Plugins\\".$name;
+        if (!class_exists($class)) {
+            if (parent::$SystemConfig[parent::$MyHash]["Debug"]) {
+                throw new \Azad\Database\Exceptions\Debug(__METHOD__,['directory'=>parent::$dir_prj[parent::$MyHash],'project_name'=>parent::$name_prj[parent::$MyHash]],$name);
+            }
+            throw new \Azad\Database\Exceptions\Load("Plugin does not exist",\Azad\Database\Exceptions\LoadCode::Plugin->value,$class);
         }
-        return new $PluginName($Data);
+        return new $class($data);
     }
 }

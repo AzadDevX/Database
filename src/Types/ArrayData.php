@@ -9,6 +9,6 @@ class ArrayData extends Init {
         return json_decode($value,1);
     }
     public function is_valid ($data) {
-        return (gettype($data) != "array") ? throw new \Azad\Database\Exception\DataType("The entered value for this data type is not valid.") : true;
+        return (gettype($data) != "array") ? throw new \Azad\Database\Exceptions\DataType("The entered value for this data type is not valid.") : true;
     }
 }

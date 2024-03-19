@@ -12,7 +12,7 @@ class MySqlConfig {
 
 
         # -------- Project config
-        $this->Project['directory'] = __DIR__."/MyProject";
+        $this->Project['directory'] = __DIR__."\MyProject";
         $this->Project['name'] = "MyProject";
         if (!file_exists($this->Project['directory'])) { mkdir($this->Project['directory']); }
 
@@ -32,5 +32,8 @@ class MySqlConfig {
         $this->System['RAM'] = true;
         # On average 25% speed increase if activated!
         $this->System['Database'] = 'Mysql';
+        $this->System['Debug'] = true;
+        # Before the final release, set this value to true.
+        # Although it will keep the processor busy, it provides guidance for debugging!
     }
 }

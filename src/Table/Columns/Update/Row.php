@@ -40,13 +40,10 @@ class Row extends \Azad\Database\Table\Columns\Get {
         if ($this->IFResult == false) {
             return false;
         }
-
-        
         $NewData = array_merge($this->Data,parent::$UpdateData);
         foreach($NewData as $key=>$value) {
             $NewData[$key] = \Azad\Database\Enums::ValueToEnum($this->Table,$key,$value);
         }
-
         if(parent::$SystemConfig[parent::$MyHash]['RAM'] == true) {
             parent::SaveToRam ($this->Table,[$NewData]);
         }

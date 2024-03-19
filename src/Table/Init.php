@@ -10,7 +10,7 @@ class Init extends \Azad\Database\Database {
         parent::$MyHash = $hash;
         $Class = parent::$name_prj[parent::$MyHash]."\\Tables\\".$Table_Name;
         if (!class_exists($Class)) {
-            throw new Exception("Table [$Table_Name] does not exist");
+            throw new \Azad\Database\Exceptions\Structure("The class of data table [$Table_Name] has not been created - class: ".[$Class]."");
         }
         $this->Hash = $hash;
         $this->ClassName = $Class;
@@ -26,7 +26,7 @@ class Init extends \Azad\Database\Database {
     }
     public function __call($method, $args) {
         if (!method_exists($this->ClassName,$method)) {
-            throw new Exception("Method [$method] [$this->TableName] does not exist");
+            throw new \Azad\Database\Exceptions\Structure("The method you intend to use to send data does not exist in the data table class. class: ".$this->ClassName." method: ".$method."");
         }
         return $this->ClassName::$method ($args);
     }

@@ -31,18 +31,10 @@ class Insert extends \Azad\Database\Database {
     }
     public function End() {
         $Result = false;
-        try {
-            $Table = (string) $this->TableName;
-            $Data = parent::$InsertData[parent::$MyHash];
-            $Query = parent::MakeQuery()::Insert(['table'=>$Table,'columns'=>$Data]);
-            $Result = $this->Query($Query);
-        } catch (\Azad\Database\Exception\SqlQuery $e) {
-            if (parent::$InsertData[parent::$MyHash]['settings']["if_not_exists"] == true) {
-                $Result = false;
-            } else {
-                throw new Exception($e->getMessage());
-            }
-        }
+        $Table = (string) $this->TableName;
+        $Data = parent::$InsertData[parent::$MyHash];
+        $Query = parent::MakeQuery()::Insert(['table'=>$Table,'columns'=>$Data]);
+        $Result = $this->Query($Query) ?? false;
         parent::$InsertData = null;
         return (!$Result)?false:parent::$DataBase[parent::$MyHash]->LastID;
     }

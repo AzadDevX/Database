@@ -56,7 +56,7 @@ class Init extends \Azad\Database\Database {
         }
         return false;
     }
-    public function Exception (Exception $Error) {
+    public function Exception (\Azad\Database\Exceptions\Jobs $Error) {
         throw $Error;
     }
 }

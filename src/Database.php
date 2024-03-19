@@ -44,12 +44,15 @@ class Database {
                 $ColumnData = self::$Tables[self::$MyHash][$TableName]['columns'][$key];
                 if ($value == null or $value == []) { continue; }
                 if (isset($ColumnData['encrypter'])) {
-                    $EncrypetName = $ColumnData['encrypter'];
-                    $EncrypetName = self::$name_prj."\\Encrypters\\".$EncrypetName;
-                    if (!class_exists($EncrypetName)) {
-                        throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
+                    $EncryptName = $ColumnData['encrypter'];
+                    $EncryptClass = self::$name_prj."\\Encrypters\\".$EncryptName;
+                    if (!class_exists($EncryptClass)) {
+                        if (self::$SystemConfig[self::$MyHash]["Debug"]) {
+                            throw new Exceptions\Debug(__METHOD__,['directory'=>self::$dir_prj[self::$MyHash],'project_name'=>self::$name_prj[self::$MyHash]],$EncryptName);
+                        }
+                        throw new Exceptions\Load("Encrypter does not exist",Exceptions\LoadCode::Encrypeter->value,$EncryptName);
                     }
-                    $value = $EncrypetName::Decrypt($value);
+                    $value = $EncryptClass::Decrypt($value);
                 }
                 if (isset($ColumnData['enum'])) {
                     $value = Enums::ValueToEnum($TableName,$key,$value);
@@ -70,7 +73,7 @@ class Database {
         $TableName = $table_name;
         $ColumnData = self::$Tables[self::$MyHash][$TableName]['columns'][$key] ?? false;
         if ($ColumnData == false) {
-            throw new Exception\Columns("Column ".$key." is not correctly defined (table: ".$table_name.")");
+            throw new Exceptions\Row("Column ".$key." is not correctly defined (table: ".$table_name.")");
         }
 
         # ----- Check Enum
@@ -82,7 +85,7 @@ class Database {
         if(isset($ColumnData['type']) && method_exists($ColumnData['type'],"is_valid")) {
             $DB = new $ColumnData['type']();
             if(!$DB->is_valid($value)) {
-                throw new Exception\DataType("The entered value is not acceptable for type class.");
+                throw new Exceptions\DataType("The entered value is not acceptable for type class.");
             }
         }
         # ---- Set method (in type)
@@ -103,12 +106,15 @@ class Database {
         }
         # ---- Encrypter
         if (isset($ColumnData['encrypter'])) {
-            $EncrypetName = $ColumnData['encrypter'];
-            $EncrypetName = self::$name_prj[self::$MyHash]."\\Encrypters\\".$EncrypetName;
-            if (!class_exists($EncrypetName)) {
-                throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
+            $EncryptName = $ColumnData['encrypter'];
+            $EncryptClass = self::$name_prj[self::$MyHash]."\\Encrypters\\".$EncryptName;
+            if (!class_exists($EncryptClass)) {
+                if (self::$SystemConfig[self::$MyHash]["Debug"]) {
+                    throw new Exceptions\Debug(__METHOD__,['directory'=>self::$dir_prj[self::$MyHash],'project_name'=>self::$name_prj[self::$MyHash]],$EncryptName);
+                }
+                throw new Exceptions\Load("Encrypter does not exist",Exceptions\LoadCode::Encrypeter->value,$EncryptName);
             }
-            $value = $EncrypetName::Encrypt($value);
+            $value = $EncryptClass::Encrypt($value);
         }
         # ---- Escape String
         return self::$DataBase[self::$MyHash]->EscapeString ($value);
@@ -118,11 +124,14 @@ class Database {
     }
 
     private static function NormalizerResult($Normalizer,$data) {
-        $NormalizerName = self::$name_prj[self::$MyHash]."\\Normalizers\\".$Normalizer;
-        if (!class_exists($NormalizerName)) {
-            throw new \Azad\Database\Exception\Load("Normalizer [$NormalizerName] does not exist");
+        $NormalizerClass = self::$name_prj[self::$MyHash]."\\Normalizers\\".$Normalizer;
+        if (!class_exists($NormalizerClass)) {
+            if (self::$SystemConfig[self::$MyHash]["Debug"]) {
+                throw new Exceptions\Debug(__METHOD__,['directory'=>self::$dir_prj[self::$MyHash],'project_name'=>self::$name_prj[self::$MyHash]],$Normalizer);
+            }
+            throw new Exceptions\Load("Normalizer does not exist",Exceptions\LoadCode::Normalizer->value,$Normalizer);
         }
-        return $NormalizerName::Normalization ($data);
+        return $NormalizerClass::Normalization ($data);
     }
     protected static function Log($data) {
         $address = self::$dir_prj[self::$MyHash]."/".self::$Log[self::$MyHash]['file_name'];

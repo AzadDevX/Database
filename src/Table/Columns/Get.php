@@ -47,14 +47,19 @@ class Get extends \Azad\Database\Database {
             if ($value == null or $value == [] or $value == '') {
                 continue;
             }
+
             if (isset($ColumnData['encrypter'])) {
-                $EncrypetName = $ColumnData['encrypter'];
-                $EncrypetName = self::$name_prj[parent::$MyHash]."\\Encrypters\\".$EncrypetName;
-                if (!class_exists($EncrypetName)) {
-                    throw new \Azad\Database\Exception\Load("Encrypter [$EncrypetName] does not exist");
+                $EncryptName = $ColumnData['encrypter'];
+                $EncryptClass = self::$name_prj[self::$MyHash]."\\Encrypters\\".$EncryptName;
+                if (!class_exists($EncryptClass)) {
+                    if (self::$SystemConfig[self::$MyHash]["Debug"]) {
+                        throw new \Azad\Database\Exceptions\Debug(__METHOD__,['directory'=>self::$dir_prj[self::$MyHash],'project_name'=>self::$name_prj[self::$MyHash]],$EncryptName);
+                    }
+                    throw new \Azad\Database\Exceptions\Load("Encrypter does not exist",\Azad\Database\Exceptions\LoadCode::Encrypeter->value,$EncryptName);
                 }
-                $value = $EncrypetName::Encrypt($value);
+                $value = $EncryptClass::Encrypt($value);
             }
+
             if (isset($ColumnData['enum'])) {
                 $value = \Azad\Database\Enums::EnumToValue($TableName,$key,$value);
             }

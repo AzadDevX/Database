@@ -23,13 +23,13 @@ class Make extends \Azad\Database\Database {
     }
     final protected function Enum (string $enum_class) {
         if (!$this->Name) {
-            throw new Exception("You need to specify the column name first.");
+            throw new \Azad\Database\Exceptions\Structure("You need to specify the column name first.");
         }
         if (!enum_exists($enum_class)) {
-            throw new Exception("The entered value is not an enum.");
+            throw new \Azad\Database\Exceptions\DataValue("The entered value is not an enum.");
         }
         if (!isset($enum_class::cases()[0])) {
-            throw new Exception("Your enum has no cases.");
+            throw new \Azad\Database\Exceptions\Structure("Your enum has no cases.");
         }
         if (isset($enum_class::cases()[0]->value)) {
             $this->Columns[$this->Name]['type'] = gettype($enum_class::cases()[0]->value) == "string"?new \Azad\Database\Types\Varchar():new \Azad\Database\Types\Integer();
@@ -50,10 +50,10 @@ class Make extends \Azad\Database\Database {
     }
     final protected function Type($type) {
         if (!$this->Name) {
-            throw new Exception("You need to specify the column name first.");
+            throw new \Azad\Database\Exceptions\Structure("You need to specify the column name first.");
         }
         if (!class_exists($type)) {
-            throw new Exception("The 'type' value entered is not valid");
+            throw new \Azad\Database\Exceptions\DataType("The 'type' value entered is not valid.");
         }
         $this->Columns[$this->Name]['type'] = new $type();
         $this->ShortKeyType[$this->Name] = new $type();
@@ -61,21 +61,28 @@ class Make extends \Azad\Database\Database {
     }
     final protected function Size($size) {
         if (!$this->Name) {
-            throw new Exception("You need to specify the column name first.");
+            throw new \Azad\Database\Exceptions\Structure("You need to specify the column name first.");
         }
         $this->Columns[$this->Name]['size'] = $size;
         return $this;
     }
     final protected function Normalizer($name) {
         if (!$this->Name) {
-            throw new Exception("You need to specify the column name first.");
+            throw new \Azad\Database\Exceptions\Structure("You need to specify the column name first.");
+        }
+        $class = parent::$name_prj[parent::$MyHash]."\\Normalizers\\".$name;
+        if (!class_exists($class)) {
+            if (parent::$SystemConfig[parent::$MyHash]["Debug"]) {
+                throw new \Azad\Database\Exceptions\Debug(__METHOD__,['directory'=>parent::$dir_prj[parent::$MyHash],'project_name'=>parent::$name_prj[parent::$MyHash]],$name);
+            }
+            throw new \Azad\Database\Exceptions\Load("Normalizer does not exist",\Azad\Database\Exceptions\LoadCode::Normalizer->value,$name);
         }
         $this->Columns[$this->Name]['Normalizer'] = $name;
         return $this;
     }
     final protected function Encrypter($name) {
         if (!$this->Name) {
-            throw new Exception("You need to specify the column name first.");
+            throw new \Azad\Database\Exceptions\Structure("You need to specify the column name first.");
         }
         $this->Columns[$this->Name]['encrypter'] = $name;
         return $this;

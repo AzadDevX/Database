@@ -530,6 +530,29 @@ In summary, after selecting the data table, there are two methods for adding dat
 
 Finally, after determining the data, the data injection process begins with the ``End()`` command. If you need the ID identifier of your data, the output of End is actually the last id added to the data table.
 
+## How can I check if a row exists? 
+Sometimes it’s necessary to verify whether the data you intend to add to a database might encounter duplication issues. To achieve this, we use the RowExists method to check whether a row exists in our data table or not
+
+```php
+$Table->RowExists("column_name","value"); // true | false
+```
+
+In the example below, we examine whether the name ``Mohammad`` has been registered for the column **first_name** in the **Users data table** or not. The output of this method is true (meaning it exists) and false (meaning it does not exist).
+
+After ensuring that this data has not been saved in our table, we add it to the table (this prevents errors related to unique and primary_key)."
+
+```php
+$Users = $Sql->Table("Users");
+if(!$Users->RowExists("first_name","Mohammad")){
+    $Users->Insert()
+        ->Key("first_name")->Value("Mohammad")
+        ->Key("last_name")->Value("Azad")
+        ->Key("status")->Value(MyProject\Enums\UserStatus::Active)
+        ->Key("wallet")->Value(10000)
+    ->End();
+}
+```
+
 # 7. How do we extract a row or multiple rows from a data table?
 
 Here, we will work with another method called ``Select``. This method get the column whose data you need; if you want the data of all columns, use the asterisk (*).

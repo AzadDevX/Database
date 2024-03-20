@@ -1,4 +1,5 @@
 ![AzadSqlBanner](https://github.com/AzadDevX/Database/assets/158297225/23f131f0-c061-47e3-bee9-24efae6c0e7e)
+
 ![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white)
 ![PHP](https://img.shields.io/badge/php-%23777BB4.svg?style=for-the-badge&logo=php&logoColor=white)
 
@@ -15,12 +16,12 @@ One of the main goals of the project is to establish a connection with the datab
 
 It’s worth noting that this project is still in the testing and debugging phase, and we invite programmers to join us in its development.
 
-
 # 2. how does it work
 
 This is a developing library for interacting with databases (currently only MySQL). The library can automatically encrypt data, sort it, and also execute Query commands through job definitions without losing information or making unilateral changes.
 
 # 3. Basic rules
+
 Folder Setup:
 First, you need to create a folder structure for your project. This folder should include files related to tables, encryption, builders, and other necessary components.
 Make sure to configure this folder properly.
@@ -29,6 +30,7 @@ Alongside configuring the folder, the project name (defined in the configuration
 This ensures that your project remains organized and that different components can be easily associated with the project.
 
 for example:
+
 ```php
 namespace MyProject\Plugins;
 ```
@@ -37,10 +39,9 @@ Remember that this project is still in the testing and debugging phase, so it’
 
 # 4. Initial Setup
 
-
 First, install the azaddevx/database library using Composer. To do this, run the following command in your terminal:
 
-```
+```console
 composer require azaddevx/database
 ```
 
@@ -79,13 +80,13 @@ which includes two elements: ``directory`` and ``name``
 - ``file_name``: The name of the file where the logs are saved.
 
 - ``save``: The data you need to save in this file, which includes the following elements:
-    - **query**: Saves the query commands.
-    - **affected_rows**: Saves the number of changes applied after executing a query.
-    - **get_ram**: Saves the data received from the system’s RAM.
-    - **save_ram**: Saves the data stored in the system’s RAM.
-    - **jobs**: Saves the data related to jobs.
-    - **database**: Saves all the stored data related to databases.
-    
+  - **query**: Saves the query commands.
+  - **affected_rows**: Saves the number of changes applied after executing a query.
+  - **get_ram**: Saves the data received from the system’s RAM.
+  - **save_ram**: Saves the data stored in the system’s RAM.
+  - **jobs**: Saves the data related to jobs.
+  - **database**: Saves all the stored data related to databases.
+
 - ``retain_previous_data``: A boolean type, if true, previous logs are retained in the file.
 
 **System**: This feature pertains to the main system of the library, which includes two elements: ``RAM`` and ``Database``.
@@ -133,9 +134,11 @@ class MySqlConfig {
     }
 }
 ```
+
 After you have configured the config class, pass it to the main library class.
 
 For example:
+
 ```php
 $Database = new Azad\Database\Connection(MySqlConfig::class);
 ```
@@ -161,12 +164,12 @@ After a successful connection, these folders will be created in the directory se
 ```
 
 # 6. How to Create a Data Table
+
 To do this, enter the Tables folder in your project folder (`MyProject\Tables\`). This folder contains files that are used to create a data table.
 
 To do this, enter the project folder and create a php file in the Tables folder 
 > [!NOTE]
 > the file name and class name **must match**. Also, make sure to use the **namespace** that includes **your project name and the term Tables** (``PROJECT-NAME\Tables``). Finally, ensure that you inherit from the ``\Azad\Database\Table\Make`` class.
-
 
 ```php
 <?php
@@ -175,13 +178,15 @@ class Users extends \Azad\Database\Table\Make {
 
 }
 ```
+
 In the above example, we are creating a data table named **Users** in a file called Users.php
 
 (``PROJECT-NAME\Tables\Users.php``).
 
-Now it’s time to configure the data table. The table settings are done in the class constructor (``__construct``). 
+Now it’s time to configure the data table. The table settings are done in the class constructor (``__construct``).
 
 First, pay attention to the following example:
+
 ```php
 <?php
 namespace MyProject\Tables;
@@ -199,7 +204,8 @@ class Users extends \Azad\Database\Table\Make {
 
 It is clear that the columns of the data table are added line by line. Using the ``Name`` method, we specify the name of the data table column, and with ``Type``, we determine the type of data we intend to store in it. Finally, with ``Size``, we set the size of the data. This is the simplest way to create columns for a data table. However, the data column settings are not limited to these three methods.
 
-## Methods:
+## Methods
+
 ```php
 Name(column_name)
 ```
@@ -211,11 +217,13 @@ Name(column_name)
 ```php
 Type(class_type)
 ```
+
 ``class_type``: This method determines the data type of the column. Below is a list of data types available.
 > [!NOTE]
 > that the input parameter must be a class from ``\Azad\Database\Types\``
 
 Types:
+
 - ``ArrayData``: Takes data as an array input and outputs it as an array, but it is stored in the database as JSON.
 
 - ``AutoLess``: This data type is provided as a guide for other team programmers (explained at the end of the documentation).
@@ -250,17 +258,18 @@ Types:
 
 > [!CAUTION]
 > If the set data type does not exist, you will encounter such an error.
-> 
 > **PHP Fatal error:  ``Uncaught Azad\Database\Table\Exception``: The 'type' value entered is not valid**
 
 ```php
 Size(size)
 ```
+
 ``size``: Data Type Size
 
 ```php
 Rebuilder(rebuilder_name) # Set a Rebuilder for Column
 ```
+
 ``rebuilder_name`` ``(string)`` : Rebuilder Name
 
 **What are Rebuilders**? Rebuilders help you to standardize the appearance of your data. For example, they can make all letters lowercase (this aids in data evaluation and extraction)
@@ -270,6 +279,7 @@ In the Magic section, this feature has been elaborated upon in detail
 ```php
 Encrypter(encrypter_name) # Set a Encrypter for Column
 ```
+
 ``encrypter_name`` ``(string)`` : Encrypter Name
 
 **What is an Encryptor?** This feature encodes the data before storage and decrypts it upon retrieval. With this, you can easily encrypt a column and automatically access the decrypted data when displaying it.
@@ -279,6 +289,7 @@ This feature is explained in detail in the Magic section.
 ```php
 Foreign(table_name,column_name) # constraint is used to prevent actions that would destroy links between tables.
 ```
+
 ``table_name`` ``(string)`` : Main table name
 
 ``column_name`` ``(string)`` : Main column name
@@ -299,7 +310,8 @@ Default ($string) # Set a default value for column
 Save() # After setting all columns, call this method
 ```
 
-## Properties:
+## Properties
+
 Also, you can use the following Properties.
 
 ```php
@@ -309,6 +321,7 @@ $Unique = [Column names];
 This ensures that the set columns do not repeat in other rows.
 
 for example:
+
 ```php
 <?php
 namespace MyProject\Tables;
@@ -326,9 +339,11 @@ class Users extends \Azad\Database\Table\Make {
 ```
 
 ## Correlation of tables data
+
 This capability creates a link between tables, allowing the user to find themselves in another table without the need for a repeated search
 
 Manual mode:
+
 ```php
 $Transactions = $Sql->Table("Transactions");
 $Find = $Transactions->Select("*")->WHERE("user_id",2);
@@ -340,13 +355,16 @@ return $UsersData["first_name"];  #mohammad
 ```
 
 Use of Tables Correlation:
+
 ```php
 $Transactions = $Sql->Table("Transactions");
 $Find = $Transactions->Select("*")->WHERE("user_id",2);
 $Transactions_Data = $Find->LastRow()->Result;
 return $Transactions->UserData()->first_name; #mohammad
 ```
+
 ### How to set up correlation?
+
 First, you need to specify the parent table with ``IndexCorrelation`` method. the data from this table will be stored in a global variable after receiving the data.
 
 ```php
@@ -369,6 +387,7 @@ Now using the internal ``Correlation`` method to get the data from the second ta
         return self::Correlation("user_id","Wallet","user_id")[0] ?? false;
     }
 ```
+
 ```php
 Correlation($OriginColumn,$table_name,$column)
 ```
@@ -379,12 +398,11 @@ Correlation($OriginColumn,$table_name,$column)
 
 ``column`` : The name of the column to which the OriginColumn data is sent
 
-
 ``Correlation`` data output is an **array** of all found data.
 
 > [!IMPORTANT]
 > You need to extract your data before using correlation, this rule is set to prevent heavy library processing
-> 
+
 ```php
 $Transactions = $Sql->Table("Transactions");
 $Find = $Transactions->Select("*")->WHERE("user_id",2);
@@ -392,7 +410,7 @@ $Transactions_Data = $Find->LastRow()->Result; # <------
 return $Transactions->UserData();
 ```
 
-** Result **
+**Result:**
 
 ```php
 object(stdClass)#38 (6) {
@@ -420,7 +438,7 @@ $Find = $Transactions->Select("*")->WHERE("user_id",2);
 return $Transactions->UserData();
 ```
 
-** Result **
+**Result:**
 
 ```php
 bool(false)
@@ -438,7 +456,7 @@ $Find = $Transactions->Select("*")->WHERE("user_id",3); # <---- user id changed!
 return $Transactions->UserData();
 ```
 
-** Result **
+**Result:**
 
 ```php
 object(stdClass)#38 (6) {
@@ -468,7 +486,7 @@ $Transactions_Data = $Find->LastRow()->Result; # Perform operations on the found
 return $Transactions->UserData();
 ```
 
-** Result **
+**Result:**
 
 ```php
 object(stdClass)#38 (6) {
@@ -488,17 +506,20 @@ object(stdClass)#38 (6) {
 ```
 
 # 6. How do we import data into a data table?
+
 After the data table configuration is complete, to start injecting data, select your desired data table using the ``Table`` method.
 
 The output of this method is another class with methods like ``Select`` and ``Insert`` and functions that you have defined in the library class. Currently, we use the ``Insert`` method to inject data.
 
 for example:
+
 ```php
 $Database = new Azad\Database\Connect("AzadSql");
 $Users = $Database->Table("Users");
 ```
 
 After selecting the table, insert your data into the table using the ``Insert`` method
+
 ```php
 $Database = new Azad\Database\Connect("AzadSql");
 $Users = $Database->Table("Users");
@@ -508,7 +529,8 @@ $Users->Insert()
     ->Key("last_name")->Value('Azad')  // Saved as 'azad' because the Rebuilder has been used
 ->End();
 ```
-## Methods:
+
+## Methods
 
 ```php
 Key(column_name)
@@ -530,7 +552,8 @@ In summary, after selecting the data table, there are two methods for adding dat
 
 Finally, after determining the data, the data injection process begins with the ``End()`` command. If you need the ID identifier of your data, the output of End is actually the last id added to the data table.
 
-## How can I check if a row exists? 
+## How can I check if a row exists?
+
 Sometimes it’s necessary to verify whether the data you intend to add to a database might encounter duplication issues. To achieve this, we use the RowExists method to check whether a row exists in our data table or not
 
 ```php
@@ -551,6 +574,7 @@ if(!$Users->RowExists("first_name","Mohammad")){
     ->End();
 }
 ```
+
 ## Using enums
 
 Before using enums, it’s necessary to talk about their application. What is an enum?
@@ -562,6 +586,7 @@ Enums group related constants, which can be helpful when you have a set of relat
 To start using enums, you need to follow a few steps:
 
 ### 1. Creating a New Enum
+
 Navigate to the enums folder within your project’s directory and create a file with the name of your enum. In this example, we are using UserStatus (```MyProject/Enums/UserStatus.php```).
 
 Then, specify that this is a class for an enum by using ```namespace MyProject\Enums;```
@@ -593,12 +618,15 @@ enum UserStatus : int {
 > However, it is not mandatory to set a value for each case, as the library will automatically operate according to your enum.
 
 ### 2.Data Table Settings
+
 Open the data table file of your choice.
 After setting the name, use the Enum method from the name method.
 Look at the example below:
+
 ```php
 $this->Name("status")->Enum(\MyProject\Enums\UserStatus::class);
 ```
+
 After assigning the Enum, the process of saving and retrieving data will change.
 
 To add a row and also to update it, you must definitely use the defined enum. In the example below, you will see a sample of adding data.
@@ -663,7 +691,8 @@ $Users = $Database->Table("Users")->Select("*");
 $User = $Users->WHERE("first_name","Mohammad")
                     ->AND("last_name","azad");
 ```
-## Methods:
+
+## Methods
 
 ```php
 WHERE(column_name,value)
@@ -708,6 +737,7 @@ The output of all three methods consists of three attributes:
 Currently, we intend to extract data, so we’ll use the ``Result`` attribute.
 
 ## Rows
+
 ```php
 $User->Data ()->Result;
 ```
@@ -733,6 +763,7 @@ array(1) {
 ```
 
 ## Row
+
 ```php
 $User->FirstRow ()->Result;
 # OR
@@ -757,7 +788,9 @@ array(5) {
 ```
 
 # 8. How to Update a row
+
 To update one or more columns, after selecting Row (via ``FirstRow`` | ``LastRow`` | ``Data``) Use the ``Update`` properties.
+
 ```php
 $User->LastRow ()
     ->Update
@@ -789,14 +822,11 @@ Value(new_value)
 
 ``new_value`` : Set a new value in this parameter
 
-
-
 ```php
 Increase(number)
 ```
 
 ``number`` : The number you want to **add to the previous value**. ``(value + number = new_value)``
-
 
 ```php
 Decrease(number)
@@ -804,10 +834,11 @@ Decrease(number)
 
 ``number`` : The number you want to **subtract to the previous value**. ``(number - value = new_value)``
 
-
 ## Condition
+
 You can also use conditional commands to update your data.
 Examples: (In this example, all columns of USD that range from 300 to 600 are added to 50 values.)
+
 ```php
 try {
     $Users = $Sql->Table("Users");
@@ -817,15 +848,17 @@ try {
         Condition->
             IF("USD")->Between(300,600)
         ->End()
-            ->Key("USD")->Increase(50)
-                ->Push();
+            ->Update
+                ->Key("USD")->Increase(50)
+            ->Push();
 } catch (Azad\Database\Conditions\Exception $E) {
     var_dump($E->getMessage());
 }
 
 ```
 
-### Methods:
+### Methods
+
 ```php
 IF (column_name)
 ```
@@ -844,7 +877,8 @@ Or (column_name) # Logical Operators (or - ||)
 
 ``column_name`` : Column name
 
-### Conditional Methods:
+### Conditional Methods
+
 ```php
 EqualTo(x) # The defined column is equal to the value of x
 ISNot(x) # The defined column does not equal the value of x
@@ -860,11 +894,13 @@ NotIN(array x) # If there is no x in the data of a column،
 ```
 
 # Functionals
+
 Functional functions, (which are located in the main project) to expedite work. This part is still developing. (``src\Functional``)
 
 # Magic
 
 ## Rebuilders
+
 In a simple sense, it means sorting data. Use Rebuilder when you plan to store data regularly in the database.
 
 ``tEhRAn -> Tehran``
@@ -873,7 +909,7 @@ The data is sent to rebuilders before being saved, then the rebuilder stores it 
 
 < **Data -> Rebuilder -> New Data -> Save** >
 
-### How to make new Rebuilder:
+### How to make new Rebuilder
 
 To do this, enter the project folder and create a php file in the Rebuilders folder (``AzadSql\Rebuilders\x.php``)
 In this example, we use the name "Names", using Rebuilder "Names" to store the user's names as case lower 
@@ -881,6 +917,7 @@ In this example, we use the name "Names", using Rebuilder "Names" to store the u
 (``x.php -> Names.php``)
 
 **Rules:**
+
 1. Similar to the table structure, the file name needs to be the same as the class name.
 2. Use the namespace. ``ProjectName\Rebuilders``
 3. Inherit from ``\Azad\Database\Magic\Rebuilder``
@@ -888,6 +925,7 @@ In this example, we use the name "Names", using Rebuilder "Names" to store the u
 5. The end. The output of ``Rebuild`` is stored in the table and ``$Data`` is the data that is intended to be stored in the table
 
 $Data -> Names::Rebuild($Data) -> Save
+
 ```php
 <?php
 # Names.php
@@ -898,7 +936,9 @@ class Names extends \Azad\Database\Magic\Rebuilder {
     }
 }
 ```
+
 And in the table you want to do for the column you want:
+
 ```php
     ...
         $this->Name("first_name")
@@ -932,6 +972,7 @@ In this example, we use the name "Base64", Using Base64 Encrypter، encrypts you
 (``x.php -> Base64.php``)
 
 **Rules:**
+
 1. Similar to the table structure, the file name needs to be the same as the class name.
 2. Use the namespace. ``ProjectName\Encrypters``
 3. Inherit from ``\Azad\Database\Magic\Encrypter``
@@ -972,10 +1013,12 @@ The plugin has access to all database data. It can receive data and change them.
 Plugins help you improve your teamwork and also publish plugins on the web
 Plugins help you process the data in another folder and access its defined methods in the main file.
 
-### How to make Plugin:
+### How to make Plugin
+
 To do this, enter the project folder and create a php file in the Plugins folder (``MyProject\Plugins\x.php``)
 
 **Rules:**
+
 1. Similar to the table structure, the file name needs to be the same as the class name.
 2. Use the namespace. ``ProjectName\Plugins``
 3. Inherit from ``\Azad\Database\Magic\Plugin``
@@ -985,6 +1028,7 @@ To do this, enter the project folder and create a php file in the Plugins folder
 ``$this->Data`` : This value is **set during coding**, the data needed for the plugin is placed in this section
 
 Example of making a plugin:
+
 ```php
 <?php
 
@@ -1004,6 +1048,7 @@ class UserManagment extends \Azad\Database\Magic\Plugin {
 
 ?>
 ```
+
 You can also import another plugin through the ``IncludePlugin`` method.
 
 ```php
@@ -1021,6 +1066,7 @@ class ChangeName extends \Azad\Database\Magic\Plugin {
 ```
 
 Example of loading a plugin:
+
 ```php
 <?php
 #  index.php
@@ -1041,6 +1087,7 @@ $UserManagment->ChangeFirstName("Mohammad2"); // Use plugin methods
 
 var_dump($User->LastRow()->Result); // Get new data
 ```
+
 ```php
 array(5) {
   ["user_id"]=>
@@ -1054,8 +1101,8 @@ array(5) {
   ["updated_time"]=>
   string(19) "2024-03-07 13:05:13"
 }
-
 ```
+
 ## Jobs
 
 An interesting and very efficient feature. Have you ever experienced that after transferring funds between two users, one user’s balance decreases but the second user’s balance does not increase? It’s true, you might have been entangled in consecutive and complex conditions, but here we have a better solution.
@@ -1064,9 +1111,7 @@ Using this feature, all data are evaluated before execution, listed in order, an
 
 Pay attention to the example below
 
-
 ```php
-
 try {
 
     $Job1 = $Sql->NewJob();
@@ -1096,7 +1141,6 @@ try {
     };
     print($message);
 }
-
 ```
 
 In the above example, we intend to transfer 10,000 monetary units between two users.
@@ -1110,7 +1154,6 @@ Then, define the variables you require.
 Now, start operations on the data.
 
 Finally, check the data before starting the job.
-
 
 In the first step, it is necessary to define a new job, which is done with the ``NewJob`` method.
 
@@ -1147,14 +1190,15 @@ Now, finally, we can evaluate the data before starting the commands, and in case
 
 After the complete configuration of the Job, the commands are executed in the defined order using the ``Start`` command.
 
-
 # Library Developers Guide :fist_right:  :fist_left:
 
 ## How to make a new data types
-Data types are created as object-oriented, this helps us to set specific features for each of the data types.
-The folder for data types is in ``/src/types``. 
 
-**Rules**
+Data types are created as object-oriented, this helps us to set specific features for each of the data types.
+The folder for data types is in ``/src/types``.
+
+**Rules:**
+
 1. The file name is equal to the class name.
 2. use the namespace ``Azad\Database\Types``
 3. Inheriting from Init
@@ -1162,9 +1206,11 @@ The folder for data types is in ``/src/types``.
 Class components are divided into two sets of properties and methods.
 
 ### Properties
+
 ``$SqlType`` : A required properties that needs to be defined as public.
 The value of these properties is sent to sql as a data type.
 BIGInt example:
+
 ```php
 <?php
 namespace Azad\Database\Types;
@@ -1176,6 +1222,7 @@ class BigINT extends Init {
 
 ``$Primary`` : A boolean value، if true is defined، this column is automatically treated as primary key
 ID example:
+
 ```php
 <?php
 namespace Azad\Database\Types;
@@ -1189,11 +1236,14 @@ class ID extends Init {
 ```
 
 ### Methods
+
 ```php
 AddToQueryTable ()
 ```
+
 Adds a new value in SQL after the data type
 CreatedAt example:
+
 ```php
 <?php
 namespace Azad\Database\Types;
@@ -1211,13 +1261,17 @@ class CreatedAt extends Init {
 ```php
 InsertMe()
 ```
+
 After the user uses Insert for the first, this value is considered for the column.
+
 ```php
 UpdateMe()
 ```
+
 After the user updates **one of their columns**, the column defined by this method changes to the output of this method.
 
 Random example:
+
 ```php
 <?php
 namespace Azad\Database\Types;
@@ -1237,11 +1291,13 @@ class Random extends Init {
 ```php
 Set($value)
 ```
+
 After the user intends to store a data, the data is sent to this method and its output is replaced as new data.
 
 ``$value`` : The value that is being stored in the database
 
 AutoLess example:
+
 ```php
 <?php
 namespace Azad\Database\Types;
@@ -1261,11 +1317,13 @@ class AutoLess extends Init {
 ```php
 Get($value)
 ```
+
 After the programmer intended to get his data from the table column, the table column data was first sent to this method and its output was set as output data.
 
 ``$value`` : The value that is being stored in the database
 
 ArrayData example:
+
 ```php
 <?php
 namespace Azad\Database\Types;

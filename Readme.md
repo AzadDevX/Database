@@ -547,10 +547,107 @@ if(!$Users->RowExists("first_name","Mohammad")){
     $Users->Insert()
         ->Key("first_name")->Value("Mohammad")
         ->Key("last_name")->Value("Azad")
-        ->Key("status")->Value(MyProject\Enums\UserStatus::Active)
         ->Key("wallet")->Value(10000)
     ->End();
 }
+```
+## Using enums
+
+Before using enums, it’s necessary to talk about their application. What is an enum?
+These constants are typically used to make code more readable and maintainable by replacing numeric codes with descriptive names.
+Enums make your code more understandable by allowing you to use meaningful names instead of magic numbers.
+Enums provide compile-time type checking, preventing invalid values from being assigned to variables.
+Enums group related constants, which can be helpful when you have a set of related values that should be considered together.
+
+To start using enums, you need to follow a few steps:
+
+### 1. Creating a New Enum
+Navigate to the enums folder within your project’s directory and create a file with the name of your enum. In this example, we are using UserStatus (```MyProject/Enums/UserStatus.php```).
+
+Then, specify that this is a class for an enum by using ```namespace MyProject\Enums;```
+
+> [!NOTE]
+> This step is not mandatory but helps in making your code more readable).
+
+Next, create an enum using the ```enum``` keyword. [PHP Document](https://www.php.net/manual/en/language.types.enumerations.php)
+
+Consider the following example where we have set two states for the status of our users’ accounts, Active and Inactive:
+
+```php
+enum UserStatus {
+    case Active;
+    case Inactive;
+}
+```
+
+You can also assign values to each of the expressions, but note that you must specify the data type. For instance, if you consider the number 1 for Active, you must set that this is an enum of type int:
+
+```php
+enum UserStatus : int {
+    case Active = 1;
+    case Inactive = 2;
+}
+```
+
+> [!NOTE]
+> However, it is not mandatory to set a value for each case, as the library will automatically operate according to your enum.
+
+### 2.Data Table Settings
+Open the data table file of your choice.
+After setting the name, use the Enum method from the name method.
+Look at the example below:
+```php
+$this->Name("status")->Enum(\MyProject\Enums\UserStatus::class);
+```
+After assigning the Enum, the process of saving and retrieving data will change.
+
+To add a row and also to update it, you must definitely use the defined enum. In the example below, you will see a sample of adding data.
+
+```php
+$Users = $Sql->Table("Users");
+if(!$Users->RowExists("first_name","Mohammad")){
+    $Users->Insert()
+        ->Key("first_name")->Value("Mohammad")
+        ->Key("last_name")->Value("Azad")
+        ->Key("status")->Value(MyProject\Enums\UserStatus::Active) # <--------
+        ->Key("wallet")->Value(10000)
+    ->End();
+}
+```
+
+Now, when you want to retrieve the value of ```status```, the output of the ```Result``` will be the same as the defined enum.
+
+Pay attention to the example below
+
+```php
+$Find = $Users->Select("*")->WHERE("user_id",1);
+$Data = $Find->LastRow();
+return $Data->Result['status']->name; // "Active"
+```
+
+You can also add functions to your enum. For example, we have added a function to translate the status into Persian.
+
+```php
+<?php
+
+namespace MyProject\Enums;
+
+enum UserStatus {
+    case Active;
+    case Inactive;
+    public function toPersian () {
+        return match ($this->name) {
+            "Active" => "قعال",
+            "Inactive" => "غیرفعال"
+        };
+    }
+}
+```
+
+Now, when we want to display the user’s status in Persian, we do it like this:
+
+```php
+return $Data->Result['status']->toPersian(); // فعال
 ```
 
 # 7. How do we extract a row or multiple rows from a data table?

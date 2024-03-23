@@ -3,7 +3,7 @@
 namespace Azad\Database\built_in;
 
 class Arrays {
-    public static function Value($data,$cb) {
+    public static function Value(array $data,$cb) : array {
         foreach ($data as $key => $value) {
             if (is_array($value)) {
                 $data[$key] = self::Value ($value,$cb);
@@ -12,5 +12,8 @@ class Arrays {
             }
         }
         return $data;
+    }
+    public static function ToObject(array $array) : object {
+        return json_decode(json_encode($array));
     }
 }

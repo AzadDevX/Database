@@ -5,6 +5,7 @@ require 'vendor/autoload.php';
 include_once("config.php");
 
 use Azad\Database\Connection;
+use Azad\Database\built_in\Time as Time;
 
 $Sql = new Connection(MySqlConfig::class);
 
@@ -35,13 +36,58 @@ if(!$Users->RowExists("first_name","Mohammad")){
     ->End();
 }
 
-$Find = $Users->Select("*");
+$Find = $Users->Select("*")->Where("user_id",1);
 
-var_dump($Find->Data()
-        ->Condition
-            ->IF("wallet")->MoreOrEqualThan(25000)
-        ->End()
-        ->Update
-            ->Key("wallet")->Increase(50000)
-        ->Push()
-->Result);
+$UpdateTime = $Find->LastRow()->Result['updated_time'];
+$Timestamp = strtotime($UpdateTime);
+echo "Update Timestamp: ".$Timestamp.PHP_EOL;
+// Update Timestamp: 1710868190
+$date = new Time($Timestamp);
+$passed_time = $date->HowLongAgo(time(),$data);
+echo "Passed secound: ".$passed_time.PHP_EOL;
+// Passed secound: 366309 (secound)
+var_dump($data);
+/*
+object(stdClass)#40 (6) {
+  ["Years"]=>
+  int(0)
+  ["Months"]=>
+  int(0)
+  ["Days"]=>
+  int(4)
+  ["Hours"]=>
+  int(5)
+  ["Minutes"]=>
+  int(45)
+  ["Secounds"]=>
+  int(9)
+}
+    4 days, 5 hours, 45 minutes, and 9 seconds have passed since the last update.
+*/
+
+$date->AddYears(1);
+$date->AddMonths(3);
+$date->AddHours(13);
+echo "New Timestamp: ".$date->timestamp.PHP_EOL;
+// New Timestamp: 1749794990
+
+$until_time = $date->LeftUntil (time(),$until_data);
+echo "Time Left Until now: ".$until_time.PHP_EOL;
+// Time Left Until now: 38560491 (secound)
+var_dump($until_data);
+/*
+object(stdClass)#41 (6) {
+  ["Years"]=>
+  int(1)
+  ["Months"]=>
+  int(2)
+  ["Days"]=>
+  int(26)
+  ["Hours"]=>
+  int(7)
+  ["Minutes"]=>
+  int(14)
+  ["Secounds"]=>
+  int(51)
+}
+*/

@@ -35,5 +35,7 @@ class MySqlConfig {
         $this->System['Debug'] = true;
         # Before the final release, set this value to true.
         # Although it will keep the processor busy, it provides guidance for debugging!
+        $this->System['Cache'] = $this->Project['directory']."/cache.txt";
+        // Save data in file and read by RAM (beta)
     }
 }

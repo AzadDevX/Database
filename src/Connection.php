@@ -49,6 +49,12 @@ class Connection extends Database {
         $this->LoadEncrypters ();
         $this->LoadTables ();
 
+        if (isset(parent::$SystemConfig[$this->HashID]["Cache"]) && file_exists(parent::$SystemConfig[$this->HashID]["Cache"])) {
+            $data = file_get_contents(parent::$SystemConfig[$this->HashID]["Cache"]);
+            $data = unserialize($data);
+            parent::$Tables[$this->HashID] = $data;
+        }
+
     }
 
 
@@ -100,7 +106,7 @@ class Connection extends Database {
         return new $class($data);
     }
 
-    public function CloseLog () {
+    public function Close () {
         $RunTime = microtime(1) - $this->ProjectStartAt;
         $MemoryUsage = memory_get_usage() - $this->MemoryUsage;
         parent::Log("##############################");
@@ -116,5 +122,9 @@ class Connection extends Database {
             parent::Log("################## Database Data");
             parent::Log(json_encode(parent::$Tables[$this->HashID],128|256));
         };
+        if (isset(parent::$SystemConfig[$this->HashID]["Cache"]) && file_exists(parent::$SystemConfig[$this->HashID]["Cache"])) {
+            $data = serialize(parent::$Tables[$this->HashID]);
+            file_put_contents(parent::$SystemConfig[$this->HashID]["Cache"],$data);
+        }
     }
 }

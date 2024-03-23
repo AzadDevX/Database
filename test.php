@@ -9,6 +9,15 @@ use Azad\Database\built_in\Time as Time;
 
 $Sql = new Connection(MySqlConfig::class);
 
+$Users = $Sql->Table("Users");
+for ($i=6; $i < 10000; $i++) { 
+    $Find = $Users->Select("*")->Where("user_id",$i);
+    $Find->LastRow()->Result;
+}
+
+$Sql->Close();
+
+/*
 $Sql->LoadPlugin("MyUsers",[]);
 
 $Users = $Sql->Table("Users");
@@ -36,18 +45,25 @@ if(!$Users->RowExists("first_name","Mohammad")){
     ->End();
 }
 
-$Find = $Users->Select("*")->Where("user_id",1);
+$Find1 = $Users->Select("*")->Where("user_id",1);
+$Find2 = $Users->Select("*")->Where("user_id",2);
+$Find3 = $Users->Select("*")->Where("user_id",3);
 
-$UpdateTime = $Find->LastRow()->Result['updated_time'];
-$Timestamp = strtotime($UpdateTime);
-echo "Update Timestamp: ".$Timestamp.PHP_EOL;
+var_dump($Find1->LastRow()->Result);
+var_dump($Find2->LastRow()->Result);
+var_dump($Find3->LastRow()->Result);
+
+
+
+
+/*
 // Update Timestamp: 1710868190
 $date = new Time($Timestamp);
 $passed_time = $date->HowLongAgo(time(),$data);
 echo "Passed secound: ".$passed_time.PHP_EOL;
 // Passed secound: 366309 (secound)
 var_dump($data);
-/*
+
 object(stdClass)#40 (6) {
   ["Years"]=>
   int(0)
@@ -63,7 +79,7 @@ object(stdClass)#40 (6) {
   int(9)
 }
     4 days, 5 hours, 45 minutes, and 9 seconds have passed since the last update.
-*/
+
 
 $date->AddYears(1);
 $date->AddMonths(3);
@@ -75,7 +91,7 @@ $until_time = $date->LeftUntil (time(),$until_data);
 echo "Time Left Until now: ".$until_time.PHP_EOL;
 // Time Left Until now: 38560491 (secound)
 var_dump($until_data);
-/*
+
 object(stdClass)#41 (6) {
   ["Years"]=>
   int(1)

@@ -21,7 +21,7 @@ class Enums extends Database {
         $ColumnData = parent::$Tables[parent::$MyHash][$table]['columns'][$column];
         if (isset($ColumnData['enum'])) {
             if (!$enum instanceof $ColumnData['enum']) {
-                throw new \Azad\Database\Exception\DataType("The values of the enum class do not match the database data.");
+                throw new \Azad\Database\Exceptions\DataType("The values of the enum class do not match the database data.");
             }
             if (isset($ColumnData['enum']::cases()[0]->value)) {
                 $value = $enum->value;

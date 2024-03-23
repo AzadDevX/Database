@@ -99,7 +99,7 @@ class Database {
                 $value = self::NormalizerResult($ColumnData['Normalizer'],$value);
             } else {
                 $Normalizer = $ColumnData['Normalizer'];
-                $value = \Azad\Database\Arrays::Value($value,function ($data) use ($Normalizer) {
+                $value = \Azad\Database\built_in\Arrays::Value($value,function ($data) use ($Normalizer) {
                     return self::NormalizerResult($Normalizer,$data);
                 });
             }

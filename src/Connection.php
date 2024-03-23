@@ -74,7 +74,7 @@ class Connection extends Database {
     }
     private function LoadTables () { // Tables maked here
         array_map(fn($filename) => include_once($filename),glob(parent::$dir_prj[$this->HashID]."/Tables/*.php"));
-        $TableList = \Azad\Database\Sort::TableForeign(\Azad\Database\Table\MakeINIT::MakeTables($this->HashID));
+        $TableList = \Azad\Database\built_in\Sort::TableForeign(\Azad\Database\Table\MakeINIT::MakeTables($this->HashID));
         array_map(fn($x) => $this->Query($x['query']),$TableList);
     }
     private function LoadPlugins () {

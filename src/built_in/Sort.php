@@ -1,6 +1,6 @@
 <?php
 
-namespace Azad\Database;
+namespace Azad\Database\built_in;
 
 class Sort {
     private static $Data;

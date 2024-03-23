@@ -150,7 +150,7 @@ After a successful connection, these folders will be created in the directory se
 ```php
     MyProject/
   
-      Enums/ # Soon
+      Enums/
     
       Encrypters/
   
@@ -158,7 +158,7 @@ After a successful connection, these folders will be created in the directory se
     
       Plugins/
   
-      Rebuilders/
+      Normalizers/
     
       Tables/
 ```
@@ -267,12 +267,12 @@ Size(size)
 ``size``: Data Type Size
 
 ```php
-Rebuilder(rebuilder_name) # Set a Rebuilder for Column
+Normalizer(normalizer_name) # Set a Normalizer for Column
 ```
 
-``rebuilder_name`` ``(string)`` : Rebuilder Name
+``normalizer_name`` ``(string)`` : normalizer Name
 
-**What are Rebuilders**? Rebuilders help you to standardize the appearance of your data. For example, they can make all letters lowercase (this aids in data evaluation and extraction)
+**What are Normalizers**? Normalizers help you to standardize the appearance of your data. For example, they can make all letters lowercase (this aids in data evaluation and extraction)
 
 In the Magic section, this feature has been elaborated upon in detail
 
@@ -329,8 +329,8 @@ class Users extends \Azad\Database\Table\Make {
     public $Unique = ["first_name","last_name"];
     public function __construct() {
         $this->Name("user_id")->Type(\Azad\Database\Types\ID::class)->Size(255);
-        $this->Name("first_name")->Type(\Azad\Database\Types\Varchar::class)->Size(255)->Rebuilder("Names");
-        $this->Name("last_name")->Type(\Azad\Database\Types\Varchar::class)->Size(255)->Rebuilder("Names");
+        $this->Name("first_name")->Type(\Azad\Database\Types\Varchar::class)->Size(255)->Normalizer("Names");
+        $this->Name("last_name")->Type(\Azad\Database\Types\Varchar::class)->Size(255)->Normalizer("Names");
         $this->Name("created_at")->Type(\Azad\Database\Types\CreatedAt::class);
         $this->Name("updated_time")->Type(\Azad\Database\Types\UpdateAt::class);
         $this->Save ();
@@ -370,9 +370,9 @@ First, you need to specify the parent table with ``IndexCorrelation`` method. th
 ```php
     public function __construct() {
         $this->Name("user_id")->Type(\Azad\Database\Types\ID::class)->Size(255);
-        $this->Name("first_name")->Type(\Azad\Database\Types\Varchar::class)->Size(255)->Rebuilder("Names");
-        $this->Name("last_name")->Type(\Azad\Database\Types\Varchar::class)->Size(255)->Rebuilder("Names");
-        $this->Name("address")->Type(\Azad\Database\Types\ArrayData::class)->Rebuilder("Names")->Encrypter("Base64");
+        $this->Name("first_name")->Type(\Azad\Database\Types\Varchar::class)->Size(255)->Normalizer("Names");
+        $this->Name("last_name")->Type(\Azad\Database\Types\Varchar::class)->Size(255)->Normalizer("Names");
+        $this->Name("address")->Type(\Azad\Database\Types\ArrayData::class)->Normalizer("Names")->Encrypter("Base64");
         $this->Name("created_at")->Type(\Azad\Database\Types\CreatedAt::class);
         $this->Name("updated_time")->Type(\Azad\Database\Types\UpdateAt::class);
         $this->Save ();
@@ -525,8 +525,8 @@ $Database = new Azad\Database\Connect("AzadSql");
 $Users = $Database->Table("Users");
 
 $Users->Insert()
-    ->Key("first_name")->Value('Mohammad') // Saved as 'mohammad' because the Rebuilder has been used
-    ->Key("last_name")->Value('Azad')  // Saved as 'azad' because the Rebuilder has been used
+    ->Key("first_name")->Value('Mohammad') // Saved as 'mohammad' because the Normalizer has been used
+    ->Key("last_name")->Value('Azad')  // Saved as 'azad' because the Normalizer has been used
 ->End();
 ```
 
@@ -899,39 +899,39 @@ Functional functions, (which are located in the main project) to expedite work. 
 
 # Magic
 
-## Rebuilders
+## Normalizers
 
-In a simple sense, it means sorting data. Use Rebuilder when you plan to store data regularly in the database.
+In a simple sense, it means sorting data. Use Normalizer when you plan to store data regularly in the database.
 
 ``tEhRAn -> Tehran``
 
-The data is sent to rebuilders before being saved, then the rebuilder stores it in the database after the changes are made.
+The data is sent to Normalizers before being saved, then the Normalizer stores it in the database after the changes are made.
 
-< **Data -> Rebuilder -> New Data -> Save** >
+![normalizer](https://github.com/AzadDevX/Database/assets/158297225/a2e4e4b0-a112-4c0d-9375-d83258e8d8d3)
 
-### How to make new Rebuilder
 
-To do this, enter the project folder and create a php file in the Rebuilders folder (``AzadSql\Rebuilders\x.php``)
-In this example, we use the name "Names", using Rebuilder "Names" to store the user's names as case lower 
+### How to make new Normalizer
 
-(``x.php -> Names.php``)
+To do this, enter the project folder and create a php file in the Normalizers folder (``AzadSql\Normalizers\x.php``)
+In this example, we use the name "strtolower", using Normalizer "strtolower" to store the user's names as case lower 
+(``AzadSql\Normalizers\strtolower.php``)
 
 **Rules:**
 
 1. Similar to the table structure, the file name needs to be the same as the class name.
-2. Use the namespace. ``ProjectName\Rebuilders``
-3. Inherit from ``\Azad\Database\Magic\Rebuilder``
-4. Create a method called ``Rebuild`` as **static** and set only one parameter for its input. ``Rebuild ($Data)``
-5. The end. The output of ``Rebuild`` is stored in the table and ``$Data`` is the data that is intended to be stored in the table
+2. Use the namespace. ``ProjectName\Normalizers``
+3. Inherit from ``\Azad\Database\Magic\Normalizer``
+4. Create a method called ``Normalization`` as **static** and set only one parameter for its input. ``Rebuild ($Data)``
+5. The end. The output of ``Normalization`` is stored in the table and ``$Data`` is the data that is intended to be stored in the table
 
-$Data -> Names::Rebuild($Data) -> Save
+$Data -> strtolower::Normalization($Data) -> Save
 
 ```php
 <?php
-# Names.php
-namespace MyProject\Rebuilders;
-class Names extends \Azad\Database\Magic\Rebuilder {
-    public static function Rebuild ($Data) {
+# strtolower.php
+namespace MyProject\Normalizers;
+class Names extends \Azad\Database\Magic\Normalizer {
+    public static function Normalization ($Data) {
         return strtolower($Data);
     }
 }
@@ -944,11 +944,11 @@ And in the table you want to do for the column you want:
         $this->Name("first_name")
             ->Type(\Azad\Database\Types\Varchar::class)
             ->Size(255)
-            ->Rebuilder("Names"); # <------
+            ->Normalizer("Names"); # <------
         $this->Name("last_name")
             ->Type(\Azad\Database\Types\Varchar::class)
             ->Size(255)
-            ->Rebuilder("Names"); # <------
+            ->Normalizer("Names"); # <------
     ...
 ```
 
@@ -960,14 +960,14 @@ Data encryption is done automatically and you don't need to decrypt and encrypt 
 
 Data is encrypted before it is stored and decrypted after it is received.
 
-Data -> Encrypt -> Save
 
-Get -> Decrypt -> Data
+![Encrypter](https://github.com/AzadDevX/Database/assets/158297225/b5b5e98b-a138-48fe-938e-fdde1898b4fb)
+
 
 ### How to make new Encrypter:
 
 To do this, enter the project folder and create a php file in the Encrypters folder (``AzadSql\Encrypters\x.php``)
-In this example, we use the name "Base64", Using Base64 Encrypter، encrypts your data to base64 before storing it and decrypts when receives it.
+In this example, we use the name "Base64", Using Base64 Encrypter, encrypts your data to base64 before storing it and decrypts when receives it.
 
 (``x.php -> Base64.php``)
 
@@ -1108,6 +1108,9 @@ array(5) {
 An interesting and very efficient feature. Have you ever experienced that after transferring funds between two users, one user’s balance decreases but the second user’s balance does not increase? It’s true, you might have been entangled in consecutive and complex conditions, but here we have a better solution.
 
 Using this feature, all data are evaluated before execution, listed in order, and if the execution of one of them encounters a problem, the previous data is recovered, and no data is changed.
+
+![Jobs](https://github.com/AzadDevX/Database/assets/158297225/3d564055-18bb-4eb9-a846-5df5c67b4759)
+
 
 Pay attention to the example below
 

@@ -960,14 +960,14 @@ Data encryption is done automatically and you don't need to decrypt and encrypt 
 
 Data is encrypted before it is stored and decrypted after it is received.
 
-Data -> Encrypt -> Save
 
-Get -> Decrypt -> Data
+![Encrypter](https://github.com/AzadDevX/Database/assets/158297225/b5b5e98b-a138-48fe-938e-fdde1898b4fb)
+
 
 ### How to make new Encrypter:
 
 To do this, enter the project folder and create a php file in the Encrypters folder (``AzadSql\Encrypters\x.php``)
-In this example, we use the name "Base64", Using Base64 Encrypter، encrypts your data to base64 before storing it and decrypts when receives it.
+In this example, we use the name "Base64", Using Base64 Encrypter, encrypts your data to base64 before storing it and decrypts when receives it.
 
 (``x.php -> Base64.php``)
 

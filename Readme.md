@@ -907,7 +907,8 @@ In a simple sense, it means sorting data. Use Normalizer when you plan to store 
 
 The data is sent to Normalizers before being saved, then the Normalizer stores it in the database after the changes are made.
 
-< **Data -> Normalizer -> New Data -> Save** >
+![normalizer](https://github.com/AzadDevX/Database/assets/158297225/a2e4e4b0-a112-4c0d-9375-d83258e8d8d3)
+
 
 ### How to make new Normalizer
 

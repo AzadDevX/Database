@@ -37,5 +37,6 @@ class MySqlConfig {
         # Although it will keep the processor busy, it provides guidance for debugging!
         $this->System['Cache'] = $this->Project['directory']."/cache.txt";
         // Save data in file and read by RAM (beta)
+        # Now, if you make changes manually, It is disturbed.
     }
 }

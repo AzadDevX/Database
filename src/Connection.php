@@ -4,7 +4,7 @@ namespace Azad\Database;
 
 class Connection extends Database {
 
-    public $Version = "v2.4.7";
+    public $Version = "v2.4.1";
     private $ProjectStartAt;
     private $MemoryUsage;
     public $HashID;
@@ -28,11 +28,11 @@ class Connection extends Database {
 
         $this->MakeFolders(parent::$dir_prj[$this->HashID]);
 
-        if (parent::$Log[$this->HashID]['retain_previous_data'] == false) { unlink(parent::$dir_prj[$this->HashID]."/".parent::$Log[$this->HashID]['file_name']); }
+        if (parent::$Log[$this->HashID]['retain_previous_data'] == false && file_exists(parent::$dir_prj[$this->HashID]."/".parent::$Log[$this->HashID]['file_name'])) { unlink(parent::$dir_prj[$this->HashID]."/".parent::$Log[$this->HashID]['file_name']); }
         parent::Log("-- The project is in progress --");
 
         parent::$name_prj[$this->HashID] = $ConfigData->Project["name"];
-        parent::$TablePrefix[$this->HashID] = $ConfigData->Table['prefix'];
+        parent::$TablePrefix[$this->HashID] = $ConfigData->Table['prefix'] ?? null;
         parent::$is_have_prefix[$this->HashID] = parent::$TablePrefix != '';
         parent::$SystemConfig[$this->HashID] = $ConfigData->System;
 
@@ -80,7 +80,9 @@ class Connection extends Database {
     }
     private function LoadTables () { // Tables maked here
         array_map(fn($filename) => include_once($filename),glob(parent::$dir_prj[$this->HashID]."/Tables/*.php"));
-        $TableList = \Azad\Database\built_in\Sort::TableForeign(\Azad\Database\Table\MakeINIT::MakeTables($this->HashID));
+        $MakeTable = \Azad\Database\Table\MakeINIT::MakeTables($this->HashID);
+        if ($MakeTable == null) { return false; }
+        $TableList = \Azad\Database\built_in\Sort::TableForeign($MakeTable);
         array_map(fn($x) => $this->Query($x['query']),$TableList);
     }
     private function LoadPlugins () {

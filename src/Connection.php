@@ -4,7 +4,7 @@ namespace Azad\Database;
 
 class Connection extends Database {
 
-    public $Version = "v2.4.1";
+    public $Version = "v2.4.7";
     private $ProjectStartAt;
     private $MemoryUsage;
     public $HashID;
@@ -32,7 +32,7 @@ class Connection extends Database {
         parent::Log("-- The project is in progress --");
 
         parent::$name_prj[$this->HashID] = $ConfigData->Project["name"];
-        parent::$TablePrefix[$this->HashID] = $ConfigData->Table['prefix'] ?? null;
+        parent::$TablePrefix[$this->HashID] = $ConfigData->Table['prefix'] ?? '';
         parent::$is_have_prefix[$this->HashID] = parent::$TablePrefix != '';
         parent::$SystemConfig[$this->HashID] = $ConfigData->System;
 

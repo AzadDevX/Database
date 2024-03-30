@@ -33,7 +33,8 @@ class Connection extends Database {
 
         parent::$name_prj[$this->HashID] = $ConfigData->Project["name"];
         parent::$TablePrefix[$this->HashID] = $ConfigData->Table['prefix'] ?? '';
-        parent::$is_have_prefix[$this->HashID] = parent::$TablePrefix != '';
+        parent::$is_have_prefix[$this->HashID] = parent::$TablePrefix[$this->HashID] != '';
+        var_dump(parent::$is_have_prefix[$this->HashID]);
         parent::$SystemConfig[$this->HashID] = $ConfigData->System;
 
         $ConnectionObj = $ConfigData->System['Database'];

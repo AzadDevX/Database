@@ -18,7 +18,7 @@ class MakeINIT extends \Azad\Database\Database {
             parent::$Tables[$HashID][$table_name]['short_types'] = $class_name->ShortKeyType;
             parent::$Tables[$HashID][$table_name]['primary_key'] = $class_name->PRIMARY_KEY;
         } ,self::$SubClass);
-        return parent::$Tables[$HashID];
+        return parent::$Tables[$HashID] ?? false;
     }
     public static function GetSetting ($class) {
         return get_class_vars($class);

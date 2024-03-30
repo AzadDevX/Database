@@ -122,9 +122,6 @@ class Connection extends Database {
             parent::Log("################## Database Data");
             parent::Log(json_encode(parent::$Tables[$this->HashID],128|256));
         };
-        if (isset(parent::$SystemConfig[$this->HashID]["Cache"]) && file_exists(parent::$SystemConfig[$this->HashID]["Cache"])) {
-            $data = serialize(parent::$Tables[$this->HashID]);
-            file_put_contents(parent::$SystemConfig[$this->HashID]["Cache"],$data);
-        }
+        
     }
 }

@@ -169,6 +169,10 @@ class Database {
             self::$Tables[self::$MyHash][$table_name]['list'] = $new_data;
             self::$CountRamInput += 1;
         }
+        if (isset(self::$SystemConfig[self::$MyHash]["Cache"]) && file_exists(self::$SystemConfig[self::$MyHash]["Cache"])) {
+            $data = serialize(self::$Tables[self::$MyHash]);
+            file_put_contents(self::$SystemConfig[self::$MyHash]["Cache"],$data);
+        }
         if (in_array("save_ram",self::$Log[self::$MyHash]['save'])) { self::Log(self::DateLog ()." \n Set data for Ram: TableName: [".$table_name."] \n WHERE PRIMARYS: ".json_encode(self::$Tables[self::$MyHash][$table_name]['where_by_primary'],128|256)." \n New List Data: ".json_encode($new_data,128|256)." \n Old List Data: ".json_encode($OldDataForLog,128|256).""); };
     }
     protected function GetFromRam ($table_name,$id) {
